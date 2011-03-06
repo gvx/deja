@@ -57,7 +57,6 @@ class ProperWord(Word):
 class WordList(Node):
 	def __init__(self, parent, tokens):
 		Node.__init__(self, parent)
-		self.tokens = tokens
 		for token in reversed(tokens):
 			self.gettokenclass(token)(self, token)
 	@staticmethod
@@ -70,8 +69,9 @@ class WordList(Node):
 			return 'num'
 		else:
 			return 'word'
-	def gettokenclass(self, token):
-		t = self.gettokentype(token)
+	@classmethod
+	def gettokenclass(cls, token):
+		t = cls.gettokentype(token)
 		if t == 'str':
 			return String
 		elif t == 'num':
@@ -82,9 +82,9 @@ class WordList(Node):
 			return Ident
 
 class Line(WordList):
-	def __init__(self, parent, linecontext):
-		WordList.__init__(self, parent, linecontext.tokens)
-		self.linenr = linecontext.linenr
+	def __init__(self, parent, tokens, linenr):
+		WordList.__init__(self, parent, tokens)
+		self.linenr = linenr
 
 class Statement(Node):
 	def __init__(self, parent, linenr):
