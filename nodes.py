@@ -23,10 +23,63 @@ class File(Node):
 		Node.__init__(self, None)
 		self.filename = filename
 
+class Word(Node):
+	def __init__(self, parent, value):
+		Node.__init__(self, parent)
+		self.value = self.convert(value)
+	def convert(self, value):
+		raise NotImplementedError
+	def tostr(self, indent, first=False):
+		return (not first and ' ' * indent or '') + str(self)
+	def __str__(self):
+		return self.__class__.__name__ + '(' + str(self.value) + ')'
+
+class String(Word):
+	def convert(self, value):
+		return value[1:]
+	def __str__(self):
+		return '"' + self.value + '"'
+
+class Number(Word):
+	def convert(self, value):
+		return int(value)
+
+class Ident(Word):
+	def convert(self, value):
+		return value[1:-1]
+	def __str__(self):
+		return "'" + self.value + "'"
+
+class ProperWord(Word):
+	def convert(self, value):
+		return value
+
 class WordList(Node):
 	def __init__(self, parent, tokens):
 		Node.__init__(self, parent)
 		self.tokens = tokens
+		for token in tokens:
+			self.gettokenclass(token)(self, token)
+	@staticmethod
+	def gettokentype(token):
+		if token.startswith('"'):
+			return 'str'
+		elif token.startswith("'") and token.endswith("'"):
+			return 'ident'
+		elif token.isdigit() or token.startswith('-') and token[1:].isdigit():
+			return 'num'
+		else:
+			return 'word'
+	def gettokenclass(self, token):
+		t = self.gettokentype(token)
+		if t == 'str':
+			return String
+		elif t == 'num':
+			return Number
+		elif t == 'word':
+			return ProperWord
+		elif t == 'ident':
+			return Ident
 
 class Line(WordList):
 	def __init__(self, parent, linecontext):
@@ -46,7 +99,6 @@ class SimpleStatement(Statement):
 		self.add(body)
 		self.body = body
 
-
 class Clause(Node):
 	pass
 
@@ -59,11 +111,4 @@ class BodyClause(Clause):
 		Node.__init__(self, None)
 		parent.addbody(self)
 		self.parent = parent
-
-class Word(Node):
-	def __init__(self, parent, value):
-		Node.__init__(self, parent)
-		self.value = self.convert(value)
-	def convert(self, value):
-		raise NotImplementedError
 

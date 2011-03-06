@@ -5,7 +5,6 @@ from ifelse import *
 from loop import *
 from func import *
 from trycatch import *
-from words import *
 
 STATEMENTS = 'func labda if elseif else while for catch'.split()
 STATEMENT_CLASS = {'func': FuncStatement, 'labda': LabdaStatement,
@@ -51,17 +50,6 @@ class LineContext(Context):
 				self.tokens.extend(s.split())
 		return self
 
-	@staticmethod
-	def gettokentype(token):
-		if token.startswith('"'):
-			return 'str'
-		elif token.startswith("'") and token.endswith("'"):
-			return 'ident'
-		elif token.isdigit() or token.startswith('-') and token[1:].isdigit():
-			return 'num'
-		else:
-			return 'word'
-
 	def statementize(self):
 		self.statement = None
 		if self.tokens and self.tokens[-1].endswith(':'):
@@ -81,7 +69,7 @@ class LineContext(Context):
 
 	def assert_labda(self):
 		for token in self.tokens:
-			if self.gettokentype(token) != 'word':
+			if WordList.gettokentype(token) != 'word':
 				raise DejaSyntaxError("Function definition containing wrong type of word", self, self.text.index(token))
 
 	def assert_func(self):

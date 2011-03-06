@@ -5,7 +5,6 @@ from ifelse import *
 from loop import *
 from func import *
 from trycatch import *
-from words import *
 
 from context import *
 
