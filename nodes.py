@@ -58,7 +58,7 @@ class WordList(Node):
 	def __init__(self, parent, tokens):
 		Node.__init__(self, parent)
 		self.tokens = tokens
-		for token in tokens:
+		for token in reversed(tokens):
 			self.gettokenclass(token)(self, token)
 	@staticmethod
 	def gettokentype(token):
