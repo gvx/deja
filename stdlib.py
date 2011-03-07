@@ -24,7 +24,7 @@ def swap(env, closure):
 
 @add('(print-stack)')
 def print_stack(env, closure):
-	print(env.stack)
+	print('[ ' + ' '.join(repr(x) for x in reversed(env.stack)) + ' ]')
 
 @add
 def dup(env, closure):
@@ -252,3 +252,7 @@ def use(env, closure):
 			raise DejaIOError(env, e.args[1], e.filename)
 		used.add(fname)
 		env.step_eval(tree)
+
+@add('(ident-count)')
+def ident_count(env, closure):
+	print(len(env.getident('(').idents))
