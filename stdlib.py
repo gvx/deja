@@ -73,8 +73,7 @@ def newstack(env, closure):
 
 @add
 def push_to(env, closure):
-	stack = env.popvalue()
-	env.ensure(stack, 'stack')
+	stack = env.ensure(env.popvalue(), 'stack')
 	stack.append(env.popvalue())
 
 @add
@@ -209,3 +208,33 @@ def in_(env, closure):
 	env.pushvalue(env.getident('in'))
 	env.pushvalue(stack)
 	env.pushvalue(stack.pop())
+
+@add
+def reversed_(env, closure):
+	env.pushvalue(list(reversed(env.ensure(env.popvalue(), 'stack'))))
+
+@add('reversed!')
+def reversed__(env, closure):
+	stack = env.ensure(env.popvalue(), 'stack')
+	stack.reverse()
+	env.pushvalue(stack)
+
+@add
+def push_through(env, closure):
+	stack = env.ensure(env.popvalue(), 'stack')
+	stack.append(env.popvalue())
+	env.pushvalue(stack)
+
+@add
+def copy_stack(env, closure):
+	env.pushvalue(list(env.ensure(env.popvalue(), 'stack')))
+
+@add
+def catch_if(env, closure):
+	i1 = env.ensure(env.popvalue(), 'ident')
+	i2 = env.ensure(env.popvalue(), 'ident')
+	stack = env.ensure(env.popvalue(), 'stack')
+	if i1 != i2:
+		raise DejaError(env, i2, stack)
+	env.pushvalue(stack)
+	env.pushvalue(i1)
