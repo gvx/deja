@@ -17,11 +17,18 @@ StackObject = list
 
 class IdentObject(WordObject):
 	idents = weakref.WeakValueDictionary()
-	def __new__(cls, name):
-		if name not in self.idents:
-			self.idents[name] = object.__new__(cls)
-			self.idents[name].name = name
-		return self.idents[name]
+	def __init__(self, name):
+		self.name = name
+		self.idents[name] = self
+	def __str__(self):
+		return "'" + self.name + "'"
+
+def getident(name):
+	if name not in IdentObject.idents:
+		return IdentObject(name)
+	else:
+		return IdentObject.idents[name]
+
 
 class FuncObject(WordObject):
 	def __init__(self, node):
@@ -33,44 +40,58 @@ class Closure(WordObject):
 		self.parent = parent
 		self.node = node
 		self.words = {}
+
 	def getword(self, ident):
 		if ident in self.words:
 			return self.words[ident]
 		elif self.parent:
 			return self.parent.getword(self, ident)
 		else:
-			return self.env.getword(env)
+			return self.env.getword(ident)
+
 	def setlocal(self, ident, value):
 		self.words[ident] = value
+
+def print_s(env, closure):
+	print(env.popvalue())
 
 class Environment(object):
 	def __init__(self):
 		self.running = True
-		self.words = {}
+		self.words = {'.': print_s}
 		self.stack = []
 		self.call_stack = []
+	
+	def getword(self, word):
+		if word in self.words:
+			return self.words[word]
+		else:
+			raise DejaNameError(self, word)
 
-	def pushword(self, word):
+	def setword(self, ident, value):
+		self.words[ident] = value
+
+	def pushword(self, word, closure):
 		if isinstance(word, Closure):
 			self.call_stack.append(word)
-			r = self.step_eval(word.node, closure)
-			if r:
-				return r
+			self.step_eval(word.node, closure)
 			self.call_stack.pop()
+		elif callable(word):
+			word(self, closure)
 		else:
 			self.stack.append(word)
 	
 	def popvalue(self):
-		if self.call_stack:
-			return self.call_stack.pop()
+		if self.stack:
+			return self.stack.pop()
 		else:
-			return DejaStackEmpty(self, None)
+			raise DejaStackEmpty(self)
 
 	def makeword(self, word, closure):
 		if isinstance(word, (Number, String)):
 			return word.value
 		elif isinstance(word, Ident):
-			return IdentObject(word.value)
+			return getident(word.value)
 		elif isinstance(word, ProperWord):
 			return closure.getword(word.value)
 
@@ -80,8 +101,9 @@ class Environment(object):
 
 		if isinstance(node, (File, WordList, Clause)):
 			for child in node.children:
-				if not self.step_eval(child, closure):
-					return False
+				r = self.step_eval(child, closure)
+				if r:
+					return r
 		elif isinstance(node, Word):
 			return self.pushword(self.makeword(node, closure), closure)
 		elif isinstance(node, IfStatement):
@@ -120,19 +142,18 @@ class Environment(object):
 			self.stack.append(closure)
 		elif isinstance(node, CatchStatement):
 			orig_callstack = len(self.call_stack)
-			r = self.step_eval(node.body, closure)
-			if r:
-				self.pushword(self.call_stack[orig_callstack:])
-				self.pushword(IdentObject(r.dj_str))
+			try:
+				return self.step_eval(node.body, closure)
+			except DejaError as r:
+				self.pushword(r.dj_info)
+				self.pushword(getident(r.dj_str))
 				self.call_stack = self.call_stack[:orig_callstack]
 				return self.step_eval(node.errorhandler, closure)
-
-	def traceback(self, r):
-		if isinstance(r, DejaError):
-			print(r)
-
 
 def eval(node, env=None):
 	if not env:
 		env = Environment()
-	env.traceback(env.step_eval(node))
+	try:
+		env.step_eval(node)
+	except DejaError as e:
+		print(e)

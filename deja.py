@@ -7,4 +7,4 @@ if len(sys.argv) > 1:
 else:
 	env = Environment()
 	for tree in parse_interactive():
-		env.step_eval(tree)
+		eval(tree, env)
