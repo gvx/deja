@@ -98,6 +98,9 @@ class LineContext(Context):
 		if self.tokens:
 			raise DejaSyntaxError("An else statement cannot have other words", self, self.text.index(self.tokens[0]))
 
+	def process(self):
+		return self.indent().stringify().decomment().wordify().statementize()
+
 class FileContext(Context):
 	def __init__(self, filenode):
 		self.filenode = filenode
@@ -125,11 +128,11 @@ class FileContext(Context):
 			if st == 'if':
 				self.last_node = IfClause(IfStatement(self.indentation_stack[self.last_indent], linecontext.linenr), linecontext.tokens)
 			elif st == 'elseif':
-				if not isinstance(self.indentation_stack[self.last_indent + 1], (IfClause, ElseIfClause)):
+				if len(self.indentation_stack) <= self.last_indent + 1 or not isinstance(self.indentation_stack[self.last_indent + 1], (IfClause, ElseIfClause)):
 					raise DejaSyntaxError("No if clause or elseif clause preceding elseif clause", linecontext, 0)
 				self.last_node = ElseIfClause(self.indentation_stack[self.last_indent + 1].parent, linecontext.tokens)
 			elif st == 'else':
-				if not isinstance(self.indentation_stack[self.last_indent + 1], (IfClause, ElseIfClause)):
+				if len(self.indentation_stack) <= self.last_indent + 1 or not isinstance(self.indentation_stack[self.last_indent + 1], (IfClause, ElseIfClause)):
 					raise DejaSyntaxError("No if clause or elseif clause preceding else clause", linecontext, 0)
 				self.last_node = ElseClause(self.indentation_stack[self.last_indent + 1].parent)
 			else:
