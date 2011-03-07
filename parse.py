@@ -12,6 +12,10 @@ def parse(filename):
 			print(e)
 
 def parse_interactive(filename='(interactive)'):
+	try:
+		import readline
+	except ImportError:
+		pass
 	l = 1
 	try:
 		while True:
