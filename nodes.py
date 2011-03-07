@@ -17,6 +17,11 @@ class Node(object):
 	def __str__(self):
 		return self.tostr(0)
 		#return self.__class__.__name__ + '[' + ','.join(str(x) for x in self.children) + ']'
+	def getfile(self):
+		f = self
+		while not isinstance(f, File):
+			f = f.parent
+		return f
 
 class File(Node):
 	def __init__(self, filename):
