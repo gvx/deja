@@ -1,4 +1,5 @@
 from errors import *
+from parse import *
 
 from nodes import *
 from ifelse import *
@@ -59,12 +60,12 @@ class Environment(object):
 
 	def __init__(self):
 		self.words = stdlib
-		self.words['('] = self.getident('(')
-		self.words[')'] = self.getident(')')
-		self.words[']'] = self.getident(']')
-
 		self.stack = []
 		self.call_stack = []
+
+		self.step_eval(parse_line("set '(' '('"))
+		self.step_eval(parse_line("set ')' ')'"))
+		self.step_eval(parse_line("set ']' ']'"))
 
 	def gettype(self, word):
 		if type(word) not in self.types:

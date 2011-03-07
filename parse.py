@@ -1,5 +1,14 @@
 from context import *
 
+def parse_line(line):
+	filename = 'line: '  + line
+	filenode = File(filename)
+	filecontext = FileContext(filenode)
+	filecontext.addline(LineContext(line.rstrip('\n'), filename, 0).process())
+	if filecontext.has_statement: # doesn't work on statements
+		return False
+	return filenode
+
 def parse(filename):
 	with open(filename) as f:
 		try:

@@ -1,4 +1,5 @@
 from errors import *
+from parse import *
 
 stdlib = {}
 
@@ -44,7 +45,7 @@ def getglobal(env, closure):
 	env.pushvalue(env.getword(env.popvalue()))
 
 @add
-def set(env, closure):
+def set_(env, closure):
 	ident = env.popvalue()
 	value = env.popvalue()
 	if not hasattr(ident, 'name'):
@@ -238,3 +239,16 @@ def catch_if(env, closure):
 		raise DejaError(env, i2, stack)
 	env.pushvalue(stack)
 	env.pushvalue(i1)
+
+used = set()
+
+@add
+def use(env, closure):
+	fname = env.ensure(env.popvalue(), 'str')
+	if fname not in used:
+		try:
+			tree = parse(fname)
+		except IOError as e:
+			raise DejaIOError(env, e.args[1], e.filename)
+		used.add(fname)
+		env.step_eval(tree)

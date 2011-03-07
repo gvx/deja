@@ -45,5 +45,12 @@ class DejaDivisionByZero(DejaError):
 	dj_str = 'divison-by-zero'
 	name = 'Division by zero'
 
+class DejaIOError(DejaError):
+	dj_str = 'io-error'
+	name = 'IO Error'
+	def __init__(self, env, msg, fname):
+		DejaError.__init__(self, env)
+		self.info = msg + ': ' + fname
+
 class ReturnException(Exception):
 	pass
