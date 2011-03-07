@@ -144,4 +144,3 @@ class FileContext(Context):
 			self.indentation_stack.append(self.last_node)
 		else:
 			self.last_node = Line(self.indentation_stack[self.last_indent], linecontext.tokens, linecontext.linenr)
-

@@ -117,4 +117,3 @@ class BodyClause(Clause):
 		Node.__init__(self, None)
 		parent.addbody(self)
 		self.parent = parent
-

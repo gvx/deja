@@ -36,4 +36,3 @@ String :: '"' <StringChar>* '"'
 Char ::= any non-whitespace character
 
 StringChar ::= any character other than a double quote
-

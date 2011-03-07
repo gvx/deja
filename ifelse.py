@@ -36,4 +36,3 @@ class ElseClause(BodyClause):
 		Node.__init__(self, None)
 		parent.addelse(self)
 		self.parent = parent
-

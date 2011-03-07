@@ -20,4 +20,3 @@ class ArgumentList(Clause):
 		self.parent = parent
 		for token in tokens:
 			WordList.gettokenclass(token)(self, token)
-
