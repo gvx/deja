@@ -27,6 +27,22 @@ class FuncObject(WordObject):
 	def __init__(self, node):
 		self.func_node = node
 
+class Closure(WordObject):
+	def __init__(self, env, parent, node):
+		self.env = env
+		self.parent = parent
+		self.node = node
+		self.words = {}
+	def getword(self, ident):
+		if ident in self.words:
+			return self.words[ident]
+		elif self.parent:
+			return self.parent.getword(self, ident)
+		else:
+			return self.env.getword(env)
+	def setlocal(self, ident, value):
+		self.words[ident] = value
+
 class Environment(object):
 	def __init__(self):
 		self.running = True
@@ -49,44 +65,49 @@ class Environment(object):
 		elif isinstance(word, ProperWord):
 			return self.getword(word.value)
 
-	def step_eval(self, node):
+	def step_eval(self, node, closure = None):
+		if isinstance(node, (File, Statement):
+			closure = Closure(self, closure, node)
+
 		if isinstance(node, (File, WordList, Clause)):
 			for child in node.children:
-				if not self.step_eval(child):
+				if not self.step_eval(child, closure):
 					return False
 		elif isinstance(node, Word):
-			self.pushword(self.makeword(node))
+			self.pushword(self.makeword(node), closure)
 			return True
 		elif isinstance(node, IfStatement):
-			r = self.step_eval(node.ifclause.conditionclause)
+			r = self.step_eval(node.ifclause.conditionclause, closure)
 			if not r:
 				return r
 			if self.popvalue():
-				return self.step_eval(node.ifclause)
+				return self.step_eval(node.ifclause, closure)
 			for elseif in node.elseifclauses:
-				r = self.step_eval(elseif.conditionclause)
+				r = self.step_eval(elseif.conditionclause, closure)
 				if not r:
 					return r
 				if self.popvalue():
-					return self.step_eval(elseif)
+					return self.step_eval(elseif, closure)
 			if node.elseclause:
-				return self.step_eval(node.elseclause)
+				return self.step_eval(node.elseclause, closure)
 		elif isinstance(node, WhileStatement):
 			while True:
-				r = self.step_eval(node.conditionclause)
+				r = self.step_eval(node.conditionclause, closure)
 				if not (r and self.popvalue()):
 					return r
-				r = self.step_eval(node.body)
+				r = self.step_eval(node.body, closure)
 				if not r:
 					return r
+		elif isinstance(node, ForStatement):
+			pass #find a way to implement for
 		elif isinstance(node, FuncStatement):
-			self.setword(node.name, node)
+			self.setword(node.name, closure)
 		elif isinstance(node, LabdaStatement):
-			self.stack.append(node)
+			self.stack.append(closure)
 		elif isinstance(node, CatchStatement):
-			r = self.step_eval(node.body)
+			r = self.step_eval(node.body, closure)
 			if not r:
-				r = self.step_eval(node.errorhandler)
+				r = self.step_eval(node.errorhandler, closure)
 				if not r:
 					return r
 
