@@ -1,0 +1,39 @@
+Program ::= <Block>*
+
+Block ::= <Head> ":" <NewLine>+ (<Indentation> <Block>)+
+        | <Line> <NewLine>+
+        | <IfBlock>
+
+IfBlock ::= "if" <Space> <Line> ":" <NewLine>+ (<Indentation> <Block>)+
+            ("elseif" <Space> <Line> ":" <NewLine>+ (<Indentation> <Block>)+)*
+            ("else" <Space>? ":" <NewLine>+ (<Indentation> <Block>)+)?
+
+Head ::= "while" <Space> <Line>
+       | "for" <Space> <ProperWord> (<Space> <Line>)? <Space>?
+       | "func" <Space> <ProperWord> <Arguments>
+       | "local" <Space> <ProperWord> <Arguments>
+       | "labda" <Arguments>
+       | <ProperWord> <Arguments>
+
+Indentation ::= <Tab>*
+
+Line ::= (<Word> (<Space> <Word>)*)? <Space>?
+
+Arguments ::= (<Space> <ProperWord>)* <Space>?
+
+Space ::= " "+
+
+Word ::= ProperWord
+       | Identity
+       | String
+
+Identity ::= "'" <ProperWord>? "'"
+
+ProperWord ::= <Char>+
+
+String :: '"' <StringChar>* '"'
+
+Char ::= any non-whitespace character
+
+StringChar ::= any character other than a double quote
+
