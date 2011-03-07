@@ -9,6 +9,7 @@ def add(f, *names):
 		names = [f.__name__]
 	for name in names:
 		stdlib[name] = f
+	return f
 
 @add('.')
 def prints(env, closure):
@@ -97,8 +98,8 @@ def error(env, closure):
 	env.ensure(sort, 'ident')
 	raise DejaError(env, sort.name, env.popvalue())
 
-@add('=', 'equals')
-def equals(env, closure):
+@add('=', 'equal')
+def equal(env, closure):
 	env.pushvalue(env.popvalue() == env.popvalue())
 
 @add('not')
@@ -116,3 +117,35 @@ def plus(env, closure):
 @add('return')
 def return_(env, closure):
 	raise ReturnException
+
+@add('[')
+def stackify(env, closure):
+	v = env.popvalue()
+	acc = []
+	while env.gettype(v) != 'ident' or v.name != ']':
+		acc.insert(0, v)
+		v = env.popvalue()
+	env.pushvalue(acc)
+
+@add('stop-iter')
+def stop_iter(env, closure=False):
+	env.pushvalue(0)
+	env.pushvalue(closure is True)
+	env.pushvalue(0)
+
+@add('range')
+def range_(env, closure):
+	curr = env.popvalue()
+	step = 1
+	if isinstance(curr, list):
+		step, stop, curr = curr
+	else:
+		stop = env.popvalue()
+		step = 1
+	if (step > 0 and curr >= stop) or (step < 0 and curr <= stop):
+		stop_iter(env)
+	else:
+		env.pushvalue(env.getident('range'))
+		env.pushvalue([step, stop, curr + step])
+		env.pushvalue(curr)
+

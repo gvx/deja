@@ -58,8 +58,11 @@ class Environment(object):
 			IdentObject: 'ident', StackObject: 'stack'}
 
 	def __init__(self):
-		self.running = True
 		self.words = stdlib
+		self.words['('] = self.getident('(')
+		self.words[')'] = self.getident(')')
+		self.words[']'] = self.getident(']')
+
 		self.stack = []
 		self.call_stack = []
 
@@ -151,7 +154,25 @@ class Environment(object):
 
 		elif isinstance(node, ForStatement):
 			self.step_eval(node.forclause, closure)
-			self.popvalue()
+			item = self.popvalue()
+			info = self.popvalue()
+			func = self.popvalue()
+			while func:
+				closure.setlocal(node.countername, item)
+				self.step_eval(node.body, closure)
+				self.pushvalue(info)
+				if self.gettype(func) == 'ident':
+					func = closure.getword(func.name)
+				if callable(func):
+					func(self, closure)
+				else:
+					self.step_eval(func, closure)
+				item = self.popvalue()
+				info = self.popvalue()
+				func = self.popvalue()
+			if info: # use-item
+				closure.setlocal(node.countername, item)
+				self.step_eval(node.body, closure)
 
 		elif isinstance(node, LocalFuncStatement):
 			return closure.parent.setlocal(node.name, closure)
