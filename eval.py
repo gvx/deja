@@ -6,6 +6,8 @@ from loop import *
 from func import *
 from trycatch import *
 
+from stdlib import stdlib
+
 import weakref
 
 class WordObject(object):
@@ -22,13 +24,6 @@ class IdentObject(WordObject):
 		self.idents[name] = self
 	def __str__(self):
 		return "'" + self.name + "'"
-
-def getident(name):
-	if name not in IdentObject.idents:
-		return IdentObject(name)
-	else:
-		return IdentObject.idents[name]
-
 
 class FuncObject(WordObject):
 	def __init__(self, node):
@@ -52,24 +47,44 @@ class Closure(WordObject):
 	def setlocal(self, ident, value):
 		self.words[ident] = value
 
-def print_s(env, closure):
-	print(env.popvalue())
-
 class Environment(object):
+	types = {NumberObject: 'num', StringObject: 'str', Closure: 'func',
+			IdentObject: 'ident', StackObject: 'stack'}
+
 	def __init__(self):
 		self.running = True
-		self.words = {'.': print_s}
+		self.words = stdlib
 		self.stack = []
 		self.call_stack = []
-	
+
+	def gettype(self, word):
+		if type(word) not in self.types:
+			return 'func' # assume implementation function
+		#	raise DejaError() #wrong type, should not happen
+		return self.types[type(word)]
+
+	def ensure(self, word, expected_type):
+		if self.gettype(word) != expected_type:
+			raise DejaTypeError(self, ident, expected_type)
+
 	def getword(self, word):
 		if word in self.words:
 			return self.words[word]
 		else:
 			raise DejaNameError(self, word)
 
+	@staticmethod
+	def getident(name):
+		if name not in IdentObject.idents:
+			return IdentObject(name)
+		else:
+			return IdentObject.idents[name]
+
 	def setword(self, ident, value):
 		self.words[ident] = value
+
+	def pushvalue(self, value):
+		self.stack.append(value)
 
 	def pushword(self, word, closure):
 		if isinstance(word, Closure):
@@ -91,7 +106,7 @@ class Environment(object):
 		if isinstance(word, (Number, String)):
 			return word.value
 		elif isinstance(word, Ident):
-			return getident(word.value)
+			return self.getident(word.value)
 		elif isinstance(word, ProperWord):
 			return closure.getword(word.value)
 
@@ -101,52 +116,44 @@ class Environment(object):
 
 		if isinstance(node, (File, WordList, Clause)):
 			for child in node.children:
-				r = self.step_eval(child, closure)
-				if r:
-					return r
+				self.step_eval(child, closure)
+
 		elif isinstance(node, Word):
 			return self.pushword(self.makeword(node, closure), closure)
+
 		elif isinstance(node, IfStatement):
-			r = self.step_eval(node.ifclause.conditionclause, closure)
-			if r:
-				return r
-			r = self.popvalue()
-			if isinstance(r, DejaError):
-				return r
-			elif r:
+			self.step_eval(node.ifclause.conditionclause, closure)
+			if self.popvalue():
 				return self.step_eval(node.ifclause, closure)
 			for elseif in node.elseifclauses:
-				r = self.step_eval(elseif.conditionclause, closure)
-				if r:
-					return r
-				r = self.popvalue()
-				if isinstance(r, DejaError):
-					return r
-				elif r:
+				self.step_eval(elseif.conditionclause, closure)
+				if self.popvalue():
 					return self.step_eval(elseif, closure)
 			if node.elseclause:
 				return self.step_eval(node.elseclause, closure)
+
 		elif isinstance(node, WhileStatement):
-			while True:
-				r = self.step_eval(node.conditionclause, closure)
-				if r or not self.popvalue():
-					return r
-				r = self.step_eval(node.body, closure)
-				if r:
-					return r
+			self.step_eval(node.conditionclause, closure)
+			while self.popvalue():
+				self.step_eval(node.body, closure)
+				self.step_eval(node.conditionclause, closure)
+
 		elif isinstance(node, ForStatement):
 			pass #find a way to implement for
+
 		elif isinstance(node, FuncStatement):
 			return self.setword(node.name, closure)
+
 		elif isinstance(node, LabdaStatement):
 			self.stack.append(closure)
+
 		elif isinstance(node, CatchStatement):
 			orig_callstack = len(self.call_stack)
 			try:
 				return self.step_eval(node.body, closure)
 			except DejaError as r:
 				self.pushword(r.dj_info)
-				self.pushword(getident(r.dj_str))
+				self.pushword(self.getident(r.dj_str))
 				self.call_stack = self.call_stack[:orig_callstack]
 				return self.step_eval(node.errorhandler, closure)
 
