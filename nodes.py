@@ -109,7 +109,8 @@ class Clause(Node):
 
 class ConditionClause(Clause, WordList):
 	def __init__(self, parent, tokens):
-		WordList.__init__(self, parent, tokens)
+		WordList.__init__(self, None, tokens)
+		self.parent = parent
 
 class BodyClause(Clause):
 	def __init__(self, parent):

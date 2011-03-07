@@ -8,13 +8,13 @@ class IfStatement(Statement):
 		self.elseifclauses = []
 		self.elseclause = None
 	def addif(self, ifclause):
-		self.add(ifclause)
+		#self.add(ifclause)
 		self.ifclause = ifclause
 	def addelseif(self, elseifclause):
-		self.add(elseifclause)
+		#self.add(elseifclause)
 		self.elseifclauses.append(elseifclause)
 	def addelse(self, elseclause):
-		self.add(elseclause)
+		#self.add(elseclause)
 		self.elseclause = elseclause
 
 class IfClause(BodyClause):

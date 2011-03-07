@@ -6,9 +6,10 @@ from loop import *
 from func import *
 from trycatch import *
 
-STATEMENTS = 'func labda if elseif else while for catch'.split()
+STATEMENTS = 'func labda local if elseif else while for catch'.split()
 STATEMENT_CLASS = {'func': FuncStatement, 'labda': LabdaStatement,
-	'while': WhileStatement, 'for': ForStatement, 'catch': CatchStatement,
+	'local': LocalFuncStatement, 'while': WhileStatement,
+	'for': ForStatement, 'catch': CatchStatement,
 }
 
 class Context(object):
@@ -76,6 +77,8 @@ class LineContext(Context):
 		if not self.tokens:
 			raise DejaSyntaxError("Missing function name", self, self.text.index(':'))
 		self.assert_labda()
+	
+	assert_local = assert_func
 
 	def assert_for(self):
 		if not self.tokens:

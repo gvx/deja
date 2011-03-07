@@ -40,12 +40,18 @@ class Closure(WordObject):
 		if ident in self.words:
 			return self.words[ident]
 		elif self.parent:
-			return self.parent.getword(self, ident)
+			return self.parent.getword(ident)
 		else:
 			return self.env.getword(ident)
 
 	def setlocal(self, ident, value):
 		self.words[ident] = value
+	
+	def __str__(self):
+		if hasattr(self.node, 'name'):
+			return 'Func ' + self.node.name
+		else:
+			return 'Labda'
 
 class Environment(object):
 	types = {NumberObject: 'num', StringObject: 'str', Closure: 'func',
@@ -65,7 +71,7 @@ class Environment(object):
 
 	def ensure(self, word, expected_type):
 		if self.gettype(word) != expected_type:
-			raise DejaTypeError(self, ident, expected_type)
+			raise DejaTypeError(self, word, expected_type)
 
 	def getword(self, word):
 		if word in self.words:
@@ -89,13 +95,18 @@ class Environment(object):
 	def pushword(self, word, closure):
 		if isinstance(word, Closure):
 			self.call_stack.append(word)
-			self.step_eval(word.node, closure)
+			for name in word.node.arguments.children:
+				word.setlocal(name.value, self.popvalue())
+			try:
+				self.step_eval(word.node.body, word)
+			except ReturnException:
+				pass
 			self.call_stack.pop()
 		elif callable(word):
 			word(self, closure)
 		else:
 			self.stack.append(word)
-	
+
 	def popvalue(self):
 		if self.stack:
 			return self.stack.pop()
@@ -114,7 +125,7 @@ class Environment(object):
 		if not closure or isinstance(node, (File, Statement)):
 			closure = Closure(self, closure, node)
 
-		if isinstance(node, (File, WordList, Clause)):
+		if isinstance(node, (File, WordList, Clause, Closure)):
 			for child in node.children:
 				self.step_eval(child, closure)
 
@@ -141,6 +152,9 @@ class Environment(object):
 		elif isinstance(node, ForStatement):
 			pass #find a way to implement for
 
+		elif isinstance(node, LocalFuncStatement):
+			return closure.parent.setlocal(node.name, closure)
+
 		elif isinstance(node, FuncStatement):
 			return self.setword(node.name, closure)
 
@@ -162,5 +176,8 @@ def eval(node, env=None):
 		env = Environment()
 	try:
 		env.step_eval(node)
+	except ReturnException:
+		pass
 	except DejaError as e:
 		print(e)
+

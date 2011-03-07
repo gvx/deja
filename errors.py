@@ -5,9 +5,9 @@ class DejaError(Exception):
 		self.env = env
 		if dj_str:
 			self.dj_str = dj_str
-		self.dj_info = dj_info or ['%s:%d' % (x.node.getfile(), x.node.linenr) for x in env.call_stack]
+		self.dj_info = dj_info or ['%s:%d' % (x.node.getfile().filename, x.node.linenr) for x in env.call_stack]
 	def __str__(self):
-		return '%s: %s\n ' % (self.name, self.info) + '\n '.join(self.dj_info)
+		return '%s: %s\n ' % (self.name, self.info) + '\n '.join(reversed(self.dj_info))
 
 class DejaSyntaxError(DejaError):
 	dj_str = 'syntax-error'
@@ -28,6 +28,7 @@ class DejaNameError(DejaError):
 	def __init__(self, env, ident):
 		DejaError.__init__(self, env)
 		self.ident = ident
+		print(ident)
 		self.dj_info.append(ident)
 
 class DejaTypeError(DejaError):
@@ -37,7 +38,10 @@ class DejaTypeError(DejaError):
 		DejaError.__init__(self, env)
 		self.value = value
 		self.expected = expected
-		self.info = 'Expected ' + expected + ', but got ' + value
+		self.info = 'Expected ' + expected + ', but got ' + str(value)
 		self.dj_info.append(expected)
-		self.dj_info.append(value)
+		self.dj_info.append(str(value))
+
+class ReturnException(Exception):
+	pass
 

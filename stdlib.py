@@ -62,7 +62,57 @@ def gettype(env, closure):
 	try:
 		v = env.popvalue()
 		env.ensure(v, 'ident')
-		env.pushvalue(env.gettype(closure.getword(v)))
+		env.pushvalue(env.getident(env.gettype(closure.getword(v.name))))
 	except DejaNameError:
 		env.pushvalue(env.getident('nil'))
 
+@add('[]')
+def newstack(env, closure):
+	env.pushvalue([])
+
+@add('push-to')
+def push_to(env, closure):
+	stack = env.popvalue()
+	env.ensure(stack, 'stack')
+	stack.append(env.popvalue())
+
+@add('pop-from')
+def pop_from(env, closure):
+	stack = env.popvalue()
+	env.ensure(stack, 'stack')
+	if not stack:
+		raise DejaEmptyStack()
+	env.pushvalue(stack.pop())
+
+@add
+def call(env, closure):
+	p = env.popvalue()
+	if env.gettype(p) == 'ident':
+		p = closure.getword(p.name)
+	env.pushword(p, closure)
+
+@add('error', 'raise')
+def error(env, closure):
+	sort = env.popvalue()
+	env.ensure(sort, 'ident')
+	raise DejaError(env, sort.name, env.popvalue())
+
+@add('=', 'equals')
+def equals(env, closure):
+	env.pushvalue(env.popvalue() == env.popvalue())
+
+@add('not')
+def not_(env, closure):
+	env.pushvalue(not env.popvalue() and 1 or 0)
+
+@add('+', 'add')
+def plus(env, closure):
+	a = env.popvalue()
+	env.ensure(a, 'num')
+	b = env.popvalue()
+	env.ensure(b, 'num')
+	env.pushvalue(a + b)
+
+@add('return')
+def return_(env, closure):
+	raise ReturnException
