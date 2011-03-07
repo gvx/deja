@@ -150,7 +150,8 @@ class Environment(object):
 				self.step_eval(node.conditionclause, closure)
 
 		elif isinstance(node, ForStatement):
-			pass #find a way to implement for
+			self.step_eval(node.forclause, closure)
+			self.popvalue()
 
 		elif isinstance(node, LocalFuncStatement):
 			return closure.parent.setlocal(node.name, closure)
@@ -166,8 +167,8 @@ class Environment(object):
 			try:
 				return self.step_eval(node.body, closure)
 			except DejaError as r:
-				self.pushword(r.dj_info)
-				self.pushword(self.getident(r.dj_str))
+				self.pushvalue(r.dj_info)
+				self.pushvalue(self.getident(r.dj_str))
 				self.call_stack = self.call_stack[:orig_callstack]
 				return self.step_eval(node.errorhandler, closure)
 

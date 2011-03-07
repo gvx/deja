@@ -7,7 +7,7 @@ class DejaError(Exception):
 			self.dj_str = dj_str
 		self.dj_info = dj_info or ['%s:%d' % (x.node.getfile().filename, x.node.linenr) for x in env.call_stack]
 	def __str__(self):
-		return '%s: %s\n ' % (self.name, self.info) + '\n '.join(reversed(self.dj_info))
+		return '%s: %s\n ' % (self.name, self.info) + '\n '.join(str(x) for x in reversed(self.dj_info))
 
 class DejaSyntaxError(DejaError):
 	dj_str = 'syntax-error'
@@ -28,8 +28,7 @@ class DejaNameError(DejaError):
 	def __init__(self, env, ident):
 		DejaError.__init__(self, env)
 		self.ident = ident
-		print(ident)
-		self.dj_info.append(ident)
+		self.dj_info.append(env.getident(ident))
 
 class DejaTypeError(DejaError):
 	dj_str = 'type-error'
