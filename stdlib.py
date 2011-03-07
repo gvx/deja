@@ -6,7 +6,7 @@ def add(f, *names):
 	if isinstance(f, str):
 		return lambda x: add(x, f, *names)
 	if not names:
-		names = [f.__name__]
+		names = [f.__name__.rstrip('_').replace('_', '-')]
 	for name in names:
 		stdlib[name] = f
 	return f
@@ -58,8 +58,8 @@ def local(env, closure):
 	env.ensure(ident, 'ident')
 	closure.setlocal(ident.name, value)
 
-@add('type')
-def gettype(env, closure):
+@add
+def type_(env, closure):
 	try:
 		v = env.popvalue()
 		env.ensure(v, 'ident')
@@ -71,13 +71,13 @@ def gettype(env, closure):
 def newstack(env, closure):
 	env.pushvalue([])
 
-@add('push-to')
+@add
 def push_to(env, closure):
 	stack = env.popvalue()
 	env.ensure(stack, 'stack')
 	stack.append(env.popvalue())
 
-@add('pop-from')
+@add
 def pop_from(env, closure):
 	stack = env.popvalue()
 	env.ensure(stack, 'stack')
@@ -99,22 +99,74 @@ def error(env, closure):
 	raise DejaError(env, sort.name, env.popvalue())
 
 @add('=', 'equal')
-def equal(env, closure):
+def eq(env, closure):
 	env.pushvalue(env.popvalue() == env.popvalue())
 
-@add('not')
+@add('!=', 'not-equal')
+def ne(env, closure):
+	env.pushvalue(env.popvalue() == env.popvalue())
+
+@add('<', 'less')
+def lt(env, closure):
+	env.pushvalue(env.ensure(env.popvalue(), 'num') < env.ensure(env.popvalue(), 'num'))
+
+@add('<=', 'less-or-equal')
+def le(env, closure):
+	env.pushvalue(env.ensure(env.popvalue(), 'num') <= env.ensure(env.popvalue(), 'num'))
+
+@add('>', 'greater')
+def gt(env, closure):
+	env.pushvalue(env.ensure(env.popvalue(), 'num') > env.ensure(env.popvalue(), 'num'))
+
+@add('>=', 'greater-or-equal')
+def ge(env, closure):
+	env.pushvalue(env.ensure(env.popvalue(), 'num') >= env.ensure(env.popvalue(), 'num'))
+
+@add
 def not_(env, closure):
-	env.pushvalue(not env.popvalue() and 1 or 0)
+	env.pushvalue(int(not env.popvalue()))
+
+@add
+def and_(env, closure):
+	env.pushvalue(env.popvalue() and env.popvalue())
+
+@add
+def or_(env, closure):
+	env.pushvalue(env.popvalue() or env.popvalue())
+
+@add
+def xor(env, closure):
+	env.pushvalue(int(bool(env.popvalue()) != bool(env.popvalue())))
 
 @add('+', 'add')
 def plus(env, closure):
-	a = env.popvalue()
-	env.ensure(a, 'num')
-	b = env.popvalue()
-	env.ensure(b, 'num')
-	env.pushvalue(a + b)
+	env.pushvalue(env.ensure(env.popvalue(), 'num') + env.ensure(env.popvalue(), 'num'))
 
-@add('return')
+@add('-', 'sub')
+def sub(env, closure):
+	env.pushvalue(env.ensure(env.popvalue(), 'num') - env.ensure(env.popvalue(), 'num'))
+
+@add('*', 'mul')
+def mul(env, closure):
+	env.pushvalue(env.ensure(env.popvalue(), 'num') * env.ensure(env.popvalue(), 'num'))
+
+@add('/', 'div')
+def div(env, closure):
+	dividend = env.ensure(env.popvalue(), 'num')
+	divisor = env.ensure(env.popvalue(), 'num')
+	if not divisor:
+		raise DejaDivisionByZero(env)
+	env.pushvalue(int(dividend / divisor))
+
+@add('%', 'mod')
+def mod(env, closure):
+	dividend = env.ensure(env.popvalue(), 'num')
+	divisor = env.ensure(env.popvalue(), 'num')
+	if not divisor:
+		raise DejaDivisionByZero(env)
+	env.pushvalue(int(dividend % divisor))
+
+@add
 def return_(env, closure):
 	raise ReturnException
 
@@ -127,13 +179,13 @@ def stackify(env, closure):
 		v = env.popvalue()
 	env.pushvalue(acc)
 
-@add('stop-iter')
+@add
 def stop_iter(env, closure=False):
 	env.pushvalue(0)
 	env.pushvalue(closure is True)
 	env.pushvalue(0)
 
-@add('range')
+@add
 def range_(env, closure):
 	curr = env.popvalue()
 	step = 1
@@ -149,3 +201,11 @@ def range_(env, closure):
 		env.pushvalue([step, stop, curr + step])
 		env.pushvalue(curr)
 
+@add
+def in_(env, closure):
+	stack = env.ensure(env.popvalue(), 'stack')
+	if not stack:
+		return stop_iter(env)
+	env.pushvalue(env.getident('in'))
+	env.pushvalue(stack)
+	env.pushvalue(stack.pop())

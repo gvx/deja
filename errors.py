@@ -41,6 +41,9 @@ class DejaTypeError(DejaError):
 		self.dj_info.append(expected)
 		self.dj_info.append(str(value))
 
+class DejaDivisionByZero(DejaError):
+	dj_str = 'divison-by-zero'
+	name = 'Division by zero'
+
 class ReturnException(Exception):
 	pass
-

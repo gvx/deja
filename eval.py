@@ -75,6 +75,7 @@ class Environment(object):
 	def ensure(self, word, expected_type):
 		if self.gettype(word) != expected_type:
 			raise DejaTypeError(self, word, expected_type)
+		return word
 
 	def getword(self, word):
 		if word in self.words:
@@ -202,4 +203,3 @@ def eval(node, env=None):
 		pass
 	except DejaError as e:
 		print(e)
-
