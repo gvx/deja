@@ -51,11 +51,15 @@ class Environment(object):
 		self.call_stack = []
 
 	def pushword(self, word):
-		if isinstance(word, FuncObject):
-			self.call_stack.append(word.func_node)
-			self.step_eval(word.func_node)
+		if isinstance(word, Closure):
+			self.call_stack.append(word)
+			r = self.step_eval(word.node, closure)
+			if not r:
+				return r
+			self.call_stack.pop()
 		else:
 			self.stack.append(word)
+		return True
 
 	def makeword(self, word):
 		if isinstance(word, (Number, String)):
@@ -66,7 +70,7 @@ class Environment(object):
 			return self.getword(word.value)
 
 	def step_eval(self, node, closure = None):
-		if isinstance(node, (File, Statement):
+		if isinstance(node, (File, Statement)):
 			closure = Closure(self, closure, node)
 
 		if isinstance(node, (File, WordList, Clause)):
@@ -74,8 +78,7 @@ class Environment(object):
 				if not self.step_eval(child, closure):
 					return False
 		elif isinstance(node, Word):
-			self.pushword(self.makeword(node), closure)
-			return True
+			return self.pushword(self.makeword(node), closure)
 		elif isinstance(node, IfStatement):
 			r = self.step_eval(node.ifclause.conditionclause, closure)
 			if not r:
