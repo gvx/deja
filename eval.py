@@ -49,7 +49,7 @@ class Closure(WordObject):
 
 	def setlocal(self, ident, value):
 		self.words[ident] = value
-	
+
 	def __str__(self):
 		if hasattr(self.node, 'name'):
 			return 'Func ' + self.node.name
