@@ -204,5 +204,7 @@ def eval(node, env=None):
 		env.step_eval(node)
 	except ReturnException:
 		pass
+	except RuntimeError as e:
+		print(e)
 	except DejaError as e:
 		print(e)
