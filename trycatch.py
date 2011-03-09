@@ -7,5 +7,6 @@ class CatchStatement(SimpleStatement):
 
 class ErrorHandler(Clause, WordList):
 	def __init__(self, parent, tokens):
-		WordList.__init__(self, parent, tokens)
+		WordList.__init__(self, None, tokens)
+		self.parent = parent
 

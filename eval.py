@@ -136,74 +136,128 @@ class Environment(object):
 		elif isinstance(word, ProperWord):
 			return closure.getword(word.value)
 
+	def getnextnode(self, node):
+		if node.children:
+			return node.children[0]
+		return self.getnextupnode(node)
+
+	def getnextupnode(self, node):
+		while node.parent:
+			p = node.parent
+			if isinstance(node, ConditionClause):
+				if isinstance(p, (WhileStatement, IfClause, ElseIfClause)):
+					if self.popvalue():
+						return p.body
+				elif isinstance(p, IfClause):
+					if self.popvalue():
+						return p.body
+					else:
+						if p.parent.elseifclauses:
+							return p.parent.elseifclauses[0]
+						elif p.parent.elseclause:
+							return p.parent.elseclause
+					node = p.parent
+					continue
+				elif isinstance(p, ElseIfClause):
+					if self.popvalue():
+						return p.body
+					node = p.parent
+					continue
+			elif isinstance(node, BodyClause):
+				if isinstance(p, (WhileStatement, ForStatement)):
+					return p.condition
+				elif isinstance(p, (IfClause, ElseIfClause)):
+					node = p.parent
+					continue
+				elif isinstance(p, LabdaStatement):
+					return self.call_stack.pop()
+			i = p.children.index(node)
+			if i < len(p.children) - 1:
+				next_node = p.children[i + 1]
+				if isinstance(next_node, WhileStatement):
+					if self.popvalue():
+						return next_node.body
+				elif isinstance(next_node, IfClause):
+					if self.popvalue():
+						return next_node.body
+				elif not isinstance(next_node, (IfClause, ElseIfClause, ElseClause)):
+					return next_node
+			node = p
+
+	def traceup(self, node): #look for an error handler
+		while node:
+			if isinstance(node, CatchStatement):
+				return node.errorhandler
+			node = node.parent
+
 	def step_eval(self, node, closure = None):
-		if not closure or isinstance(node, (File, Statement)):
-			closure = Closure(self, closure, node)
+		while node:
+			if not closure or isinstance(node, (File, Statement)):
+				closure = Closure(self, closure, node)
 
-		if isinstance(node, (File, WordList, Clause, Closure)):
-			for child in node.children:
-				self.step_eval(child, closure)
+			if isinstance(node, Word):
+				self.pushword(self.makeword(node, closure), closure)
+				continue
 
-		elif isinstance(node, Word):
-			return self.pushword(self.makeword(node, closure), closure)
-
-		elif isinstance(node, IfStatement):
-			self.step_eval(node.ifclause.conditionclause, closure)
-			if self.popvalue():
-				return self.step_eval(node.ifclause, closure)
-			for elseif in node.elseifclauses:
-				self.step_eval(elseif.conditionclause, closure)
+			elif isinstance(node, IfStatement):
+				self.step_eval(node.ifclause.conditionclause, closure)
 				if self.popvalue():
-					return self.step_eval(elseif, closure)
-			if node.elseclause:
-				return self.step_eval(node.elseclause, closure)
+					return self.step_eval(node.ifclause, closure)
+				for elseif in node.elseifclauses:
+					self.step_eval(elseif.conditionclause, closure)
+					if self.popvalue():
+						return self.step_eval(elseif, closure)
+				if node.elseclause:
+					return self.step_eval(node.elseclause, closure)
 
-		elif isinstance(node, WhileStatement):
-			self.step_eval(node.conditionclause, closure)
-			while self.popvalue():
-				self.step_eval(node.body, closure)
+			elif isinstance(node, WhileStatement):
 				self.step_eval(node.conditionclause, closure)
+				while self.popvalue():
+					self.step_eval(node.body, closure)
+					self.step_eval(node.conditionclause, closure)
 
-		elif isinstance(node, ForStatement):
-			self.step_eval(node.forclause, closure)
-			item = self.popvalue()
-			info = self.popvalue()
-			func = self.popvalue()
-			while func:
-				closure.setlocal(node.countername, item)
-				self.step_eval(node.body, closure)
-				self.pushvalue(info)
-				if self.gettype(func) == 'ident':
-					func = closure.getword(func.name)
-				if callable(func):
-					func(self, closure)
-				else:
-					self.step_eval(func, closure)
+			elif isinstance(node, ForStatement):
+				self.step_eval(node.forclause, closure)
 				item = self.popvalue()
 				info = self.popvalue()
 				func = self.popvalue()
-			if info: # use-item
-				closure.setlocal(node.countername, item)
-				self.step_eval(node.body, closure)
+				while func:
+					closure.setlocal(node.countername, item)
+					self.step_eval(node.body, closure)
+					self.pushvalue(info)
+					if self.gettype(func) == 'ident':
+						func = closure.getword(func.name)
+					if callable(func):
+						func(self, closure)
+					else:
+						self.step_eval(func, closure)
+					item = self.popvalue()
+					info = self.popvalue()
+					func = self.popvalue()
+				if info: # use-item
+					closure.setlocal(node.countername, item)
+					self.step_eval(node.body, closure)
 
-		elif isinstance(node, LocalFuncStatement) and closure.parent:
-			return closure.parent.setlocal(node.name, closure)
+			elif isinstance(node, LocalFuncStatement) and closure.parent:
+				return closure.parent.setlocal(node.name, closure)
 
-		elif isinstance(node, FuncStatement):
-			return self.setword(node.name, closure)
+			elif isinstance(node, FuncStatement):
+				return self.setword(node.name, closure)
 
-		elif isinstance(node, LabdaStatement):
-			self.stack.append(closure)
+			elif isinstance(node, LabdaStatement):
+				self.stack.append(closure)
 
-		elif isinstance(node, CatchStatement):
-			orig_callstack = len(self.call_stack)
-			try:
-				return self.step_eval(node.body, closure)
-			except DejaError as r:
-				self.pushvalue(r.dj_info)
-				self.pushvalue(self.getident(r.dj_str))
-				self.call_stack = self.call_stack[:orig_callstack]
-				return self.step_eval(node.errorhandler, closure)
+			elif isinstance(node, CatchStatement):
+				orig_callstack = len(self.call_stack)
+				try:
+					return self.step_eval(node.body, closure)
+				except DejaError as r:
+					self.pushvalue(r.dj_info)
+					self.pushvalue(self.getident(r.dj_str))
+					self.call_stack = self.call_stack[:orig_callstack]
+					return self.step_eval(node.errorhandler, closure)
+
+			node = self.getnextnode(node)
 
 def eval(node, env=None):
 	if not env:
