@@ -50,6 +50,14 @@ class Closure(WordObject):
 	def setlocal(self, ident, value):
 		self.words[ident] = value
 
+	def setword(self, ident, value):
+		if ident in self.words:
+			self.words[ident] = value
+		elif self.parent:
+			self.parent.setword(ident, value)
+		else:
+			self.env.setword(ident, value)
+
 	def __str__(self):
 		if hasattr(self.node, 'name'):
 			return 'Func ' + self.node.name
@@ -178,7 +186,7 @@ class Environment(object):
 				closure.setlocal(node.countername, item)
 				self.step_eval(node.body, closure)
 
-		elif isinstance(node, LocalFuncStatement):
+		elif isinstance(node, LocalFuncStatement) and closure.parent:
 			return closure.parent.setlocal(node.name, closure)
 
 		elif isinstance(node, FuncStatement):

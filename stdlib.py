@@ -50,6 +50,14 @@ def set_(env, closure):
 	value = env.popvalue()
 	if not hasattr(ident, 'name'):
 		raise DejaTypeError(env, ident, 'ident')
+	closure.setword(ident.name, value)
+
+@add
+def setglobal(env, closure):
+	ident = env.popvalue()
+	value = env.popvalue()
+	if not hasattr(ident, 'name'):
+		raise DejaTypeError(env, ident, 'ident')
 	env.setword(ident.name, value)
 
 @add
