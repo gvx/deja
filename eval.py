@@ -83,9 +83,9 @@ class Environment(object):
 		#	raise DejaError() #wrong type, should not happen
 		return self.types[type(word)]
 
-	def ensure(self, word, expected_type):
-		if self.gettype(word) != expected_type:
-			raise DejaTypeError(self, word, expected_type)
+	def ensure(self, word, *expected_types):
+		if self.gettype(word) not in expected_types:
+			raise DejaTypeError(self, word, len(expected_types) > 1 and ('one of ' + ', '.join(expected_types) or expected_types[0])
 		return word
 
 	def getword(self, word):
@@ -109,16 +109,11 @@ class Environment(object):
 
 	def pushword(self, word, closure):
 		if isinstance(word, Closure):
-			self.call_stack.append(word)
 			for name in word.node.arguments.children:
 				word.setlocal(name.value, self.popvalue())
-			try:
-				self.step_eval(word.node.body, word)
-			except ReturnException:
-				pass
-			self.call_stack.pop()
+			return word.body, word
 		elif callable(word):
-			word(self, closure)
+			return word(self, closure)
 		else:
 			self.stack.append(word)
 
@@ -136,36 +131,55 @@ class Environment(object):
 		elif isinstance(word, ProperWord):
 			return closure.getword(word.value)
 
-	def getnextnode(self, node):
+	def getnextnode(self, node, closure):
 		if node.children:
 			return node.children[0]
-		return self.getnextupnode(node)
+		return self.getnextupnode(node, closure)
 
-	def getnextupnode(self, node):
+	def getnextupnode(self, node, closure):
 		while node.parent:
 			p = node.parent
-			if isinstance(node, ConditionClause):
+			if isinstance(node, ForStatement):
+				item = self.popvalue()
+				hidden = self.popvalue()
+				func = self.ensure(self.popvalue(), 'ident', 'func')
+				p_ = 
+				if func:
+					p.info = (func, hidden)
+					p.repeat = True
+					p.closure.setlocal(p.countername, item)
+					return p.body
+				elif hidden:
+					p.repeat = False
+					p.closure.setlocal(p.countername, item)
+					return p.body
+			elif isinstance(node, ConditionClause):
 				if isinstance(p, (WhileStatement, IfClause, ElseIfClause)):
 					if self.popvalue():
 						return p.body
-				elif isinstance(p, IfClause):
-					if self.popvalue():
+				elif isinstance(p, ForStatement):
+					item = self.popvalue()
+					hidden = self.popvalue()
+					func = self.ensure(self.popvalue(), 'ident', 'func')
+					if func:
+						p.info = (func, hidden)
+						p.repeat = True
+						p.closure.setlocal(p.countername, item)
 						return p.body
-					else:
-						if p.parent.elseifclauses:
-							return p.parent.elseifclauses[0]
-						elif p.parent.elseclause:
-							return p.parent.elseclause
-					node = p.parent
-					continue
-				elif isinstance(p, ElseIfClause):
-					if self.popvalue():
+					elif hidden:
+						p.repeat = False
+						p.closure.setlocal(p.countername, item)
 						return p.body
-					node = p.parent
-					continue
 			elif isinstance(node, BodyClause):
-				if isinstance(p, (WhileStatement, ForStatement)):
+				if isinstance(p, WhileStatement):
 					return p.condition
+				elif isinstance(p, ForStatement):
+					if p.repeat:
+						self.call_stack.append(p)
+						self.pushvalue(p.hidden)
+						if self.gettype(p.func) == 'ident':
+							p.func = closure.getword(p.func)
+						return self.pushword(p.func, closure)
 				elif isinstance(p, (IfClause, ElseIfClause)):
 					node = p.parent
 					continue
@@ -173,15 +187,7 @@ class Environment(object):
 					return self.call_stack.pop()
 			i = p.children.index(node)
 			if i < len(p.children) - 1:
-				next_node = p.children[i + 1]
-				if isinstance(next_node, WhileStatement):
-					if self.popvalue():
-						return next_node.body
-				elif isinstance(next_node, IfClause):
-					if self.popvalue():
-						return next_node.body
-				elif not isinstance(next_node, (IfClause, ElseIfClause, ElseClause)):
-					return next_node
+				return p.children[i + 1]
 			node = p
 
 	def traceup(self, node): #look for an error handler
@@ -196,68 +202,45 @@ class Environment(object):
 				closure = Closure(self, closure, node)
 
 			if isinstance(node, Word):
-				self.pushword(self.makeword(node, closure), closure)
-				continue
-
-			elif isinstance(node, IfStatement):
-				self.step_eval(node.ifclause.conditionclause, closure)
-				if self.popvalue():
-					return self.step_eval(node.ifclause, closure)
-				for elseif in node.elseifclauses:
-					self.step_eval(elseif.conditionclause, closure)
-					if self.popvalue():
-						return self.step_eval(elseif, closure)
-				if node.elseclause:
-					return self.step_eval(node.elseclause, closure)
-
-			elif isinstance(node, WhileStatement):
-				self.step_eval(node.conditionclause, closure)
-				while self.popvalue():
-					self.step_eval(node.body, closure)
-					self.step_eval(node.conditionclause, closure)
-
-			elif isinstance(node, ForStatement):
-				self.step_eval(node.forclause, closure)
-				item = self.popvalue()
-				info = self.popvalue()
-				func = self.popvalue()
-				while func:
-					closure.setlocal(node.countername, item)
-					self.step_eval(node.body, closure)
-					self.pushvalue(info)
-					if self.gettype(func) == 'ident':
-						func = closure.getword(func.name)
-					if callable(func):
-						func(self, closure)
-					else:
-						self.step_eval(func, closure)
-					item = self.popvalue()
-					info = self.popvalue()
-					func = self.popvalue()
-				if info: # use-item
-					closure.setlocal(node.countername, item)
-					self.step_eval(node.body, closure)
+				n = self.pushword(self.makeword(node, closure), closure)
+				if n:
+					self.call_stack.append(node)
+					node, closure = n
+					continue
 
 			elif isinstance(node, LocalFuncStatement) and closure.parent:
-				return closure.parent.setlocal(node.name, closure)
+				closure.parent.setlocal(node.name, closure)
+				node = self.getnextupnode(node, closure)
+				if type(node) == tuple:
+					node, closure = node
+				continue
 
 			elif isinstance(node, FuncStatement):
-				return self.setword(node.name, closure)
+				self.setword(node.name, closure)
+				node = self.getnextupnode(node, closure)
+				if type(node) == tuple:
+					node, closure = node
+				continue
 
 			elif isinstance(node, LabdaStatement):
 				self.stack.append(closure)
+				node = self.getnextupnode(node, closure)
+				if type(node) == tuple:
+					node, closure = node
+				continue
 
-			elif isinstance(node, CatchStatement):
-				orig_callstack = len(self.call_stack)
-				try:
-					return self.step_eval(node.body, closure)
-				except DejaError as r:
-					self.pushvalue(r.dj_info)
-					self.pushvalue(self.getident(r.dj_str))
-					self.call_stack = self.call_stack[:orig_callstack]
-					return self.step_eval(node.errorhandler, closure)
+			node = self.getnextnode(node, closure)
+			if type(node) == tuple:
+				node, closure = node
 
-			node = self.getnextnode(node)
+			if isinstance(node, BodyClause) and isinstance(node.parent, ForStatement):
+				func, hidden = node.parent.info
+				self.pushvalue(hidden)
+				if self.gettype(func) == 'ident':
+					func = closure.getword(func)
+				n = self.pushword(func)
+				if n:
+					node, closure = n
 
 def eval(node, env=None):
 	if not env:
