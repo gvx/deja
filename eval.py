@@ -73,9 +73,9 @@ class Environment(object):
 		self.stack = []
 		self.call_stack = []
 
-		self.step_eval(parse_line("set '(' '('"))
-		self.step_eval(parse_line("set ')' ')'"))
-		self.step_eval(parse_line("set ']' ']'"))
+		self.eval(parse_line("set '(' '('"))
+		self.eval(parse_line("set ')' ')'"))
+		self.eval(parse_line("set ']' ']'"))
 
 	def gettype(self, word):
 		if type(word) not in self.types:
@@ -85,7 +85,7 @@ class Environment(object):
 
 	def ensure(self, word, *expected_types):
 		if self.gettype(word) not in expected_types:
-			raise DejaTypeError(self, word, len(expected_types) > 1 and ('one of ' + ', '.join(expected_types) or expected_types[0])
+			raise DejaTypeError(self, word, len(expected_types) > 1 and ('one of ' + ', '.join(expected_types) or expected_types[0]))
 		return word
 
 	def getword(self, word):
@@ -154,8 +154,8 @@ class Environment(object):
 					if self.popvalue():
 						return p.body
 				elif isinstance(p, (IfClause, ElseIfClause)):
-					if self.popvalue()
-						return p.children[0]
+					if self.popvalue():
+						return p.children[1]
 					else:
 						c = p.parent.elseifclauses
 						i = p in c and c.index(p) or -1
@@ -180,8 +180,8 @@ class Environment(object):
 							closure.func = closure.getword(closure.func)
 						return self.pushword(closure.func, closure)
 				elif isinstance(node, (IfClause, ElseIfClause)):
-					node = p.parent
-					continue
+					node = node.parent
+					p = node.parent
 				elif isinstance(p, LabdaStatement):
 					closure = self.call_stack.pop()
 					return closure.node, closure
@@ -202,39 +202,13 @@ class Environment(object):
 				closure = closure.parent
 			node = node.parent
 
-	def step_eval(self, node, closure=None):
+	def eval(self, node):
+		closure = Closure(self, None, node)
 		while node:
 			try:
-
-				if not closure or isinstance(node, (File, Statement)):
-					closure = Closure(self, closure, node)
-
-				if isinstance(node, Word):
-					n = self.pushword(self.makeword(node, closure), closure)
-					if n:
-						self.call_stack.append(node)
-						node, closure = n
-						continue
-
-				elif isinstance(node, LabdaStatement):
-					if isinstance(node, LocalFuncStatement) and closure.parent:
-						closure.parent.setlocal(node.name, closure)
-					elif isinstance(node, FuncStatement):
-						self.setword(node.name, closure)
-					else:
-						self.stack.append(closure)
-					closure = closure.parent
-					node = self.getnextupnode(node, closure)
-					if type(node) == tuple:
-						node, closure = node
-					continue
-
-				node = self.getnextnode(node, closure)
-				if type(node) == tuple:
-					node, closure = node
-
+				node, closure = self.step_eval(node, closure)
 			except DejaError as e:
-				node = self.traceup(node)
+				node = self.traceup(node, closure)
 				if node:
 					node, closure = node
 					self.pushvalue(e.dj_info)
@@ -242,12 +216,42 @@ class Environment(object):
 				else: #woops, fell outside the world
 					raise
 
+	def step_eval(self, node, closure):
+
+		if not closure or isinstance(node, (File, Statement)):
+			closure = Closure(self, closure, node)
+
+		if isinstance(node, Word):
+			n = self.pushword(self.makeword(node, closure), closure)
+			if n:
+				self.call_stack.append(node)
+				return n
+
+		elif isinstance(node, LabdaStatement):
+			if isinstance(node, LocalFuncStatement) and closure.parent:
+				closure.parent.setlocal(node.name, closure)
+			elif isinstance(node, FuncStatement):
+				self.setword(node.name, closure)
+			else:
+				self.stack.append(closure)
+			closure = closure.parent
+			node = self.getnextupnode(node, closure)
+			if type(node) == tuple:
+				node, closure = node
+			return node, closure
+
+		node = self.getnextnode(node, closure)
+		if type(node) == tuple:
+			node, closure = node
+		
+		return node, closure
+
 def eval(node, env=None):
 	if not env:
 		env = Environment()
 	try:
-		env.step_eval(node)
+		env.eval(node)
 	except ReturnException:
 		pass
-	except RuntimeError, DejaError as e:
+	except (RuntimeError, DejaError) as e:
 		print(e)

@@ -29,7 +29,7 @@ def print_stack(env, closure):
 @add
 def dup(env, closure):
 	if not env.stack:
-		raise DejaStackEmpty()
+		raise DejaStackEmpty(env)
 	env.pushvalue(env.stack[-1])
 
 @add
@@ -46,32 +46,26 @@ def getglobal(env, closure):
 
 @add
 def set_(env, closure):
-	ident = env.popvalue()
+	ident = env.ensure(env.popvalue(), 'ident')
 	value = env.popvalue()
-	if not hasattr(ident, 'name'):
-		raise DejaTypeError(env, ident, 'ident')
 	closure.setword(ident.name, value)
 
 @add
 def setglobal(env, closure):
-	ident = env.popvalue()
+	ident = env.ensure(env.popvalue(), 'ident')
 	value = env.popvalue()
-	if not hasattr(ident, 'name'):
-		raise DejaTypeError(env, ident, 'ident')
 	env.setword(ident.name, value)
 
 @add
 def local(env, closure):
-	ident = env.popvalue()
+	ident = env.ensure(env.popvalue(), 'ident')
 	value = env.popvalue()
-	env.ensure(ident, 'ident')
 	closure.setlocal(ident.name, value)
 
 @add
 def type_(env, closure):
 	try:
-		v = env.popvalue()
-		env.ensure(v, 'ident')
+		v = env.ensure(env.popvalue(), 'ident')
 		env.pushvalue(env.getident(env.gettype(closure.getword(v.name))))
 	except DejaNameError:
 		env.pushvalue(env.getident('nil'))
@@ -90,7 +84,7 @@ def pop_from(env, closure):
 	stack = env.popvalue()
 	env.ensure(stack, 'stack')
 	if not stack:
-		raise DejaEmptyStack()
+		raise DejaStackEmpty(env)
 	env.pushvalue(stack.pop())
 
 @add
@@ -108,11 +102,11 @@ def error(env, closure):
 
 @add('=', 'equal')
 def eq(env, closure):
-	env.pushvalue(env.popvalue() == env.popvalue())
+	env.pushvalue(int(env.popvalue() == env.popvalue()))
 
 @add('!=', 'not-equal')
 def ne(env, closure):
-	env.pushvalue(env.popvalue() == env.popvalue())
+	env.pushvalue(int(env.popvalue() != env.popvalue()))
 
 @add('<', 'less')
 def lt(env, closure):
@@ -268,3 +262,9 @@ def use(env, closure):
 @add('(ident-count)')
 def ident_count(env, closure):
 	print(len(env.getident('(').idents))
+
+@add
+def import_(env, closure):
+	for key, value in __import__(env.ensure(env.popvalue(), 'str'), globals(), locals(), ['DEJA_VU']).DEJA_VU.iteritems():
+		closure.setword(key, value)
+
