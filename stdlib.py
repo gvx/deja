@@ -176,7 +176,11 @@ def mod(env, closure):
 
 @add
 def return_(env, closure):
-	raise ReturnException
+	if self.call_stack:
+		closure = self.call_stack.pop()
+		return closure.node, closure
+	else:
+		raise ReturnException
 
 @add('[')
 def stackify(env, closure):

@@ -109,9 +109,10 @@ class Environment(object):
 
 	def pushword(self, word, closure):
 		if isinstance(word, Closure):
+			cc = Closure(self, word, word.node.body) #call closure
 			for name in word.node.arguments:
-				word.setlocal(name, self.popvalue())
-			return word.body, word
+				cc.setlocal(name, self.popvalue())
+			return word.node.body, cc
 		elif callable(word):
 			return word(self, closure)
 		else:
@@ -201,7 +202,7 @@ class Environment(object):
 				closure = closure.parent
 			node = node.parent
 
-	def step_eval(self, node, closure = None):
+	def step_eval(self, node, closure=None):
 		while node:
 			try:
 
