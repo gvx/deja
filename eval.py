@@ -193,49 +193,53 @@ class Environment(object):
 				return p.children[i + 1]
 			node = p
 
-	def traceup(self, node): #look for an error handler
+	def traceup(self, node, closure): #look for an error handler
 		while node:
 			if isinstance(node, CatchStatement):
-				return node.errorhandler
+				return node.errorhandler, closure
+			if isinstance(node, Statement):
+				closure = closure.parent
 			node = node.parent
 
 	def step_eval(self, node, closure = None):
 		while node:
-			if not closure or isinstance(node, (File, Statement)):
-				closure = Closure(self, closure, node)
+			try:
 
-			if isinstance(node, Word):
-				n = self.pushword(self.makeword(node, closure), closure)
-				if n:
-					self.call_stack.append(node)
-					node, closure = n
+				if not closure or isinstance(node, (File, Statement)):
+					closure = Closure(self, closure, node)
+
+				if isinstance(node, Word):
+					n = self.pushword(self.makeword(node, closure), closure)
+					if n:
+						self.call_stack.append(node)
+						node, closure = n
+						continue
+
+				elif isinstance(node, LabdaStatement):
+					if isinstance(node, LocalFuncStatement) and closure.parent:
+						closure.parent.setlocal(node.name, closure)
+					elif isinstance(node, FuncStatement):
+						self.setword(node.name, closure)
+					else:
+						self.stack.append(closure)
+					closure = closure.parent
+					node = self.getnextupnode(node, closure)
+					if type(node) == tuple:
+						node, closure = node
 					continue
 
-			elif isinstance(node, LabdaStatement):
-				if isinstance(node, LocalFuncStatement) and closure.parent:
-					closure.parent.setlocal(node.name, closure)
-				elif isinstance(node, FuncStatement):
-					self.setword(node.name, closure)
-				else:
-					self.stack.append(closure)
-				closure = closure.parent
-				node = self.getnextupnode(node, closure)
+				node = self.getnextnode(node, closure)
 				if type(node) == tuple:
 					node, closure = node
-				continue
 
-			node = self.getnextnode(node, closure)
-			if type(node) == tuple:
-				node, closure = node
-
-			if isinstance(node, BodyClause) and isinstance(node.parent, ForStatement):
-				func, hidden = node.parent.info
-				self.pushvalue(hidden)
-				if self.gettype(func) == 'ident':
-					func = closure.getword(func)
-				n = self.pushword(func)
-				if n:
-					node, closure = n
+			except DejaError as e:
+				node = self.traceup(node)
+				if node:
+					node, closure = node
+					self.pushvalue(e.dj_info)
+					self.pushvalue(e.dj_str)
+				else: #woops, fell outside the world
+					raise
 
 def eval(node, env=None):
 	if not env:
@@ -244,7 +248,5 @@ def eval(node, env=None):
 		env.step_eval(node)
 	except ReturnException:
 		pass
-	except RuntimeError as e:
-		print(e)
-	except DejaError as e:
+	except RuntimeError, DejaError as e:
 		print(e)

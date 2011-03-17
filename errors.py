@@ -1,6 +1,7 @@
 class DejaError(Exception):
 	dj_str = 'error'
 	info = ''
+	name = 'Error'
 	def __init__(self, env, dj_str=None, dj_info=None):
 		self.env = env
 		if dj_str:
