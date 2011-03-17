@@ -140,19 +140,14 @@ class Environment(object):
 		while node.parent:
 			p = node.parent
 			if isinstance(node, ForStatement):
-				item = self.popvalue()
-				hidden = self.popvalue()
-				func = self.ensure(self.popvalue(), 'ident', 'func')
-				p_ = 
-				if func:
-					p.info = (func, hidden)
-					p.repeat = True
-					p.closure.setlocal(p.countername, item)
-					return p.body
-				elif hidden:
-					p.repeat = False
-					p.closure.setlocal(p.countername, item)
-					return p.body
+				if closure.repeat:
+					closure.item = self.popvalue()
+					closure.hidden = self.popvalue()
+					closure.func = self.ensure(self.popvalue(), 'ident', 'func')
+					closure.repeat = bool(closure.func)
+					if func or hidden:
+						closure.setlocal(p.countername, item)
+						return p.body
 			elif isinstance(node, ConditionClause):
 				if isinstance(p, WhileStatement):
 					if self.popvalue():
@@ -170,33 +165,29 @@ class Environment(object):
 						node = p.parent
 						continue
 				elif isinstance(p, ForStatement):
-					item = self.popvalue()
-					hidden = self.popvalue()
-					func = self.ensure(self.popvalue(), 'ident', 'func')
-					if func:
-						p.info = (func, hidden)
-						p.repeat = True
-						p.closure.setlocal(p.countername, item)
-						return p.body
-					elif hidden:
-						p.repeat = False
-						p.closure.setlocal(p.countername, item)
-						return p.body
+					closure.repeat = True #this defers the check to the parent
+					node = p
+					continue
 			elif isinstance(node, BodyClause):
 				if isinstance(p, WhileStatement):
 					return p.condition
 				elif isinstance(p, ForStatement):
-					if p.repeat:
-						self.call_stack.append(p)
-						self.pushvalue(p.hidden)
-						if self.gettype(p.func) == 'ident':
-							p.func = closure.getword(p.func)
-						return self.pushword(p.func, closure)
+					if closure.repeat:
+						self.call_stack.append(closure)
+						self.pushvalue(closure.hidden)
+						if self.gettype(closure.func) == 'ident':
+							closure.func = closure.getword(closure.func)
+						return self.pushword(closure.func, closure)
 				elif isinstance(node, (IfClause, ElseIfClause)):
 					node = p.parent
 					continue
 				elif isinstance(p, LabdaStatement):
-					return self.call_stack.pop()
+					closure = self.call_stack.pop()
+					return closure.node, closure
+			
+			if isinstance(node, Statement): #escape to parent closure
+				closure = closure.parent
+
 			i = p.children.index(node)
 			if i < len(p.children) - 1:
 				return p.children[i + 1]
@@ -220,22 +211,14 @@ class Environment(object):
 					node, closure = n
 					continue
 
-			elif isinstance(node, LocalFuncStatement) and closure.parent:
-				closure.parent.setlocal(node.name, closure)
-				node = self.getnextupnode(node, closure)
-				if type(node) == tuple:
-					node, closure = node
-				continue
-
-			elif isinstance(node, FuncStatement):
-				self.setword(node.name, closure)
-				node = self.getnextupnode(node, closure)
-				if type(node) == tuple:
-					node, closure = node
-				continue
-
 			elif isinstance(node, LabdaStatement):
-				self.stack.append(closure)
+				if isinstance(node, LocalFuncStatement) and closure.parent:
+					closure.parent.setlocal(node.name, closure)
+				elif isinstance(node, FuncStatement):
+					self.setword(node.name, closure)
+				else:
+					self.stack.append(closure)
+				closure = closure.parent
 				node = self.getnextupnode(node, closure)
 				if type(node) == tuple:
 					node, closure = node
