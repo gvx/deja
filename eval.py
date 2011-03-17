@@ -109,8 +109,8 @@ class Environment(object):
 
 	def pushword(self, word, closure):
 		if isinstance(word, Closure):
-			for name in word.node.arguments.children:
-				word.setlocal(name.value, self.popvalue())
+			for name in word.node.arguments:
+				word.setlocal(name, self.popvalue())
 			return word.body, word
 		elif callable(word):
 			return word(self, closure)
@@ -154,9 +154,21 @@ class Environment(object):
 					p.closure.setlocal(p.countername, item)
 					return p.body
 			elif isinstance(node, ConditionClause):
-				if isinstance(p, (WhileStatement, IfClause, ElseIfClause)):
+				if isinstance(p, WhileStatement):
 					if self.popvalue():
 						return p.body
+				elif isinstance(p, (IfClause, ElseIfClause)):
+					if self.popvalue()
+						return p.children[0]
+					else:
+						c = p.parent.elseifclauses
+						i = p in c and c.index(p) or -1
+						if i < len(c) - 1:
+							return c[i+1]
+						elif p.parent.elseclause:
+							return p.parent.elseclause
+						node = p.parent
+						continue
 				elif isinstance(p, ForStatement):
 					item = self.popvalue()
 					hidden = self.popvalue()
@@ -180,7 +192,7 @@ class Environment(object):
 						if self.gettype(p.func) == 'ident':
 							p.func = closure.getword(p.func)
 						return self.pushword(p.func, closure)
-				elif isinstance(p, (IfClause, ElseIfClause)):
+				elif isinstance(node, (IfClause, ElseIfClause)):
 					node = p.parent
 					continue
 				elif isinstance(p, LabdaStatement):
