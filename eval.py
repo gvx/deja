@@ -146,9 +146,9 @@ class Environment(object):
 					closure.hidden = self.popvalue()
 					closure.func = self.ensure(self.popvalue(), 'ident', 'func')
 					closure.repeat = bool(closure.func)
-					if func or hidden:
-						closure.setlocal(p.countername, item)
-						return p.body
+					if closure.repeat or closure.hidden:
+						closure.setlocal(node.countername, closure.item)
+						return node.body
 			elif isinstance(node, ConditionClause):
 				if isinstance(p, WhileStatement):
 					if self.popvalue():
@@ -174,18 +174,20 @@ class Environment(object):
 					return p.condition
 				elif isinstance(p, ForStatement):
 					if closure.repeat:
+						print('q')
 						self.call_stack.append(closure)
 						self.pushvalue(closure.hidden)
 						if self.gettype(closure.func) == 'ident':
-							closure.func = closure.getword(closure.func)
+							closure.func = closure.getword(closure.func.name)
 						return self.pushword(closure.func, closure)
 				elif isinstance(node, (IfClause, ElseIfClause)):
 					node = node.parent
 					p = node.parent
 				elif isinstance(p, LabdaStatement):
 					closure = self.call_stack.pop()
+					print(closure.node, closure)
 					return closure.node, closure
-			
+
 			if isinstance(node, Statement): #escape to parent closure
 				closure = closure.parent
 
@@ -243,7 +245,7 @@ class Environment(object):
 		node = self.getnextnode(node, closure)
 		if type(node) == tuple:
 			node, closure = node
-		
+
 		return node, closure
 
 def eval(node, env=None):

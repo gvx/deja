@@ -6,7 +6,20 @@ class DejaError(Exception):
 		self.env = env
 		if dj_str:
 			self.dj_str = dj_str
-		self.dj_info = dj_info or ['%s:%d' % (x.node.getfile().filename, x.node.linenr) for x in env.call_stack]
+		self.dj_info = dj_info or [self.node_info(x) for x in env.call_stack]
+	@staticmethod
+	def node_info(node):
+		if hasattr(node, 'node'): #not a node, but a closure
+			return '%s:%d' % (node.node.getfile().filename, node.node.linenr)
+		elif hasattr(node, 'value'): #a Word
+			if hasattr(node.parent, 'linenr'):
+				return '%s:%d:%s' % (node.getfile().filename, node.parent.linenr, node.value)
+			if node.parent and hasattr(node.parent.parent, 'linenr'):
+				return '%s:%d:%s' % (node.getfile().filename, node.parent.parent.linenr, node.value)
+			return node.value
+		else:
+			return str(node) #??
+		
 	def __str__(self):
 		return '%s: %s\n ' % (self.name, self.info) + '\n '.join(str(x) for x in reversed(self.dj_info))
 

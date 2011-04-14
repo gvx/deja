@@ -201,11 +201,11 @@ def range_(env, closure):
 		stop = env.popvalue()
 		step = 1
 	if (step > 0 and curr >= stop) or (step < 0 and curr <= stop):
-		stop_iter(env)
-	else:
-		env.pushvalue(env.getident('range'))
-		env.pushvalue([step, stop, curr + step])
-		env.pushvalue(curr)
+		return stop_iter(env)
+	env.pushvalue(env.getident('range'))
+	env.pushvalue([step, stop, curr + step])
+	env.pushvalue(curr)
+	return closure.node, closure
 
 @add
 def in_(env, closure):
@@ -215,6 +215,7 @@ def in_(env, closure):
 	env.pushvalue(env.getident('in'))
 	env.pushvalue(stack)
 	env.pushvalue(stack.pop())
+	return closure.node.body, closure
 
 @add
 def reversed_(env, closure):
