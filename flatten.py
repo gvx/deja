@@ -28,6 +28,18 @@ class FuncDef(FlatNode):
 		self.name = name
 		self.is_local = is_local
 
+class PushErrorHandler(FlatNode):
+	def __init__(self, index):
+		self.index = index
+
+class PopErrorHandler(FlatNode):
+	pass
+
+class ForHeader(FlatNode):
+	def __init__(self, index, name):
+		self.index = index
+		self.name = name
+
 class Marker(object):
 	_I = 0
 	def __init__(self):
@@ -44,7 +56,7 @@ def refine(flattened): #removes all markers and replaces them by indices
 		del flattened[i]
 	#second pass: change all goto and branches
 	for item in flattened:
-		if isinstance(item, GoTo, Branch):
+		if hasattr(item, 'index'):
 			item.index = memo[item.index]
 	return flattened
 
@@ -79,8 +91,7 @@ def flatten(tree, acc=None):
 			flatten(branch.forclause, acc)
 			#///SET LOCAL
 			acc.append(m1)
-			#acc.append(branch...
-			acc.append(Branch(m2))
+			acc.append(ForHeader(m2, branch.countername))
 			flatten(branch.body, acc)
 			acc.append(GoTo(m1))
 			acc.append(m2)
@@ -104,5 +115,18 @@ def flatten(tree, acc=None):
 				flatten(branch.elseclause, acc)
 				acc.append(m_end)
 		elif isinstance(branch, CatchStatement):
+			m1 = Marker()
+			m2 = Marker()
+			m_end = Marker()
+			acc.append(PushErrorHandler(m2))
+			acc.append(GoTo(m1))
+			acc.append(m2)
+			flatten(branch.errorhandler, acc)
+			acc.append(GoTo(m_end))
+			acc.append(m1)
+			flatten(branch.body, acc)
+			acc.append(PopErrorHandler())
+			acc.append(m_end)
+			
 			pass #??? #push/pop error handlers?
 	return acc
