@@ -26,29 +26,8 @@ class LabdaNode(FlatNode):
 	def __init__(self, index):
 		self.index = index
 
-class FuncDef(FlatNode):
-	def __init__(self, func, name, is_local):
-		self.func = func
-		self.name = name
-		self.is_local = is_local
-
-class PushErrorHandler(FlatNode):
-	def __init__(self, index):
-		self.index = index
-
-class PopErrorHandler(FlatNode):
-	pass
-
-class ForHeader(FlatNode):
-	def __init__(self, index, name):
-		self.index = index
-		self.name = name
-
 class Marker(object):
-	_I = 0
-	def __init__(self):
-		Marker._I += 1
-		self.i = Marker._I
+	pass
 
 class SingleInstruction(object):
 	def __init__(self, opcode, ref):
@@ -79,20 +58,6 @@ class FreeLocals(object):
 
 free_locals = FreeLocals()
 
-def refine(flattened): #removes all markers and replaces them by indices
-	#first pass: fill dictionary
-	memo = {}
-	for item in reversed(flattened):
-		i = flattened.index(item)
-		if isinstance(item, Marker, int):
-			memo[item] = i
-		del flattened[i]
-	#second pass: change all goto and branches
-	for item in flattened:
-		if hasattr(item, 'index'):
-			item.index = memo[item.index]
-	return flattened
-
 def flatten(tree, acc=None):
 	if acc is None:
 		acc = []
@@ -112,7 +77,7 @@ def flatten(tree, acc=None):
 			acc.append(LabdaNode(m))
 			for argument in branch.arguments:
 				acc.append(SingleInstruction('SET_LOCAL', argument))
-			acc.append(flatten(branch))
+			flatten(branch, acc)
 			acc.append(SingleInstruction('RETURN', 0))
 			acc.append(m)
 			if isinstance(branch, LocalFuncStatement):

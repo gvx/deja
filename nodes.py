@@ -47,7 +47,7 @@ class String(Word):
 
 class Number(Word):
 	def convert(self, value):
-		return int(value)
+		return float(value)
 
 class Ident(Word):
 	def convert(self, value):
@@ -70,7 +70,7 @@ class WordList(Node):
 			return 'str'
 		elif token.startswith("'") and token.endswith("'"):
 			return 'ident'
-		elif token.isdigit() or token.startswith('-') and token[1:].isdigit():
+		elif token.count('.') < 2 and (token.remove('.').isdigit() or token.startswith('-') and token[1:].remove('.').isdigit()):
 			return 'num'
 		else:
 			return 'word'
