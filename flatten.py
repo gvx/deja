@@ -83,7 +83,7 @@ def flatten(tree, acc=None):
 			if isinstance(branch, LocalFuncStatement):
 				acc.append(SingleInstruction('SET_LOCAL', branch.name))
 			elif isinstance(branch, FuncStatement):
-				acc.append(SingleInstruction('SET', branch.name))
+				acc.append(SingleInstruction('SET_GLOBAL', branch.name))
 		elif isinstance(branch, WhileStatement):
 			m1 = Marker()
 			m2 = Marker()
