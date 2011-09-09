@@ -36,7 +36,7 @@ def convert(flat):
 			bytecode.append(k)
 		elif isinstance(k, Code):
 			for w in k.words:
-				if isinstance(w, ProperWord)
+				if isinstance(w, ProperWord):
 					if OPTIMIZE and w.value in OPTIMIZERS:
 						if w.value in ARGED_OPT:
 							if acc and acc[-1].opcode == 'PUSH_LITERAL' and acc[-1].ref.type == 'ident':

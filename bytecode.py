@@ -49,7 +49,7 @@ unsigned_int_s = struct.Struct('>I')
 def unsigned_int(x):
 	return unsigned_int_s.pack(x)
 
-double_s = struct.Struck('>d')
+double_s = struct.Struct('>d')
 def double(x):
 	return double_s.pack(x)
 
@@ -63,7 +63,7 @@ def write_literals(literals, acc):
 		acc.append(TYPES[literal[0]])
 		if literal[0] == 'num':
 			acc.append(double(literal[1]))
-		else
+		else:
 			acc.append(unsigned_int(literal[1]))
 			acc.append(literal[1])
 

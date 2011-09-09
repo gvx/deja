@@ -12,7 +12,7 @@ class Contain(object):
 class Bucket(object):
 	def __init__(self):
 		self.bucket = []
-	def get_value_and_type(self, v)
+	def get_value_and_type(self, v):
 		if isinstance(v, (ProperWord, Ident)):
 			b = 'ident'
 		elif isinstance(v, Number):

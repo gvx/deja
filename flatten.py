@@ -37,22 +37,24 @@ class SingleInstruction(object):
 class FreeLocals(object):
 	def __init__(self):
 		self.used = set()
+	@staticmethod
 	def charify(x):
 		if x > 255:
 			return self.charify(x // 256) + chr(x % 256)
 		return chr(x % 256)
+	@staticmethod
 	def uncharify(x):
 		if len(x) > 1:
 			return self.uncharify(x[1:]) * 256 + ord(x[0])
 		return ord(x)
-	def get_next():
+	def get_next(self):
 		i = 0
 		while i in self.used:
 			i += 1
 		self.used.add(i)
 		return '#' + self.charify(i)
-	def free(x):
-		assert x.starts_with('#')
+	def free(self, x):
+		assert x.startswith('#')
 		assert len(x) > 1
 		self.used.remove(self.uncharify(x[1:]))
 
