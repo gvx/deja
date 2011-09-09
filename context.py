@@ -6,7 +6,7 @@ from loop import *
 from func import *
 from trycatch import *
 
-STATEMENTS = 'func labda local if elseif else while for catch'.split()
+STATEMENTS = set('func labda local if elseif else while for catch'.split())
 STATEMENT_CLASS = {'func': FuncStatement, 'labda': LabdaStatement,
 	'local': LocalFuncStatement, 'while': WhileStatement,
 	'for': ForStatement, 'catch': CatchStatement,
