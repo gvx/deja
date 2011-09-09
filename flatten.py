@@ -33,6 +33,8 @@ class SingleInstruction(object):
 	def __init__(self, opcode, ref):
 		self.opcode = opcode
 		self.ref = ref
+	def __repr__(self):
+		return str(self.opcode) + ' ' + str(self.ref)
 
 class FreeLocals(object):
 	def __init__(self):
@@ -79,7 +81,7 @@ def flatten(tree, acc=None):
 			acc.append(LabdaNode(m))
 			for argument in branch.arguments:
 				acc.append(SingleInstruction('SET_LOCAL', argument))
-			flatten(branch, acc)
+			flatten(branch.body, acc)
 			acc.append(SingleInstruction('RETURN', 0))
 			acc.append(m)
 			if isinstance(branch, LocalFuncStatement):
@@ -132,7 +134,7 @@ def flatten(tree, acc=None):
 			acc.append(m)
 			for elseifclause in branch.elseifclauses:
 				m = Marker()
-				flatten(elseif.conditionclause, acc)
+				flatten(elseifclause.conditionclause, acc)
 				acc.append(Branch(m))
 				flatten(elseifclause, acc)
 				acc.append(GoTo(m_end))
