@@ -80,7 +80,7 @@ def flatten(tree, acc=None):
 			m = Marker()
 			acc.append(LabdaNode(m))
 			for argument in branch.arguments:
-				acc.append(SingleInstruction('SET_LOCAL', argument))
+				acc.append(SingleInstruction('SET_LOCAL', ProperWord(None, argument)))
 			flatten(branch.body, acc)
 			acc.append(SingleInstruction('RETURN', 0))
 			acc.append(m)

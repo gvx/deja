@@ -49,8 +49,8 @@ def convert(flat):
 						bytecode.append(SingleInstruction(OPTIMIZERS[w.value], s))
 					else:
 						bytecode.append(SingleInstruction('PUSH_WORD', w))
-				elif isinstance(w, Number) and w.convert().is_integer() and w.convert() <= POS_SIZE and w.convert() >= NEG_SIZE:
-					bytecode.append(SingleInstruction('PUSH_INTEGER', int(w.convert())))
+				elif isinstance(w, Number) and w.value.is_integer() and w.value <= POS_SIZE and w.value >= NEG_SIZE:
+					bytecode.append(SingleInstruction('PUSH_INTEGER', int(w.value)))
 				else:
 					bytecode.append(SingleInstruction('PUSH_LITERAL', w))
 		elif isinstance(k, Marker):

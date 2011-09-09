@@ -19,7 +19,7 @@ class Bucket(object):
 			b = 'num'
 		elif isinstance(v, String):
 			b = 'str'
-		return v.convert(), b
+		return v, b
 	def add(self, v):
 		value, b = self.get_value_and_type(v)
 		for item in self.bucket:
