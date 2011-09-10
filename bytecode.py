@@ -64,12 +64,12 @@ def write_literals(literals, acc):
 		if literal[0] == 'num':
 			acc.append(double(literal[1]))
 		else:
-			acc.append(unsigned_int(literal[1]))
+			acc.append(unsigned_int(len(literal[1])))
 			acc.append(literal[1])
 
 def write_bytecode(flat_code):
 	code, literals = flat_code
-	acc = [HEADER, chr(VERSION[0] * 16 + VERSION[1]), OP_SIZE * len(code)]
+	acc = [HEADER, chr(VERSION[0] * 16 + VERSION[1]), unsigned_int(len(code))]
 	write_code(code, acc)
 	write_literals(literals, acc)
 	return ''.join(acc)

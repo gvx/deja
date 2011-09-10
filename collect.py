@@ -19,7 +19,9 @@ class Bucket(object):
 			b = 'num'
 		elif isinstance(v, String):
 			b = 'str'
-		return v, b
+		elif isinstance(v, str):
+			return v, 'ident'
+		return v.value, b
 	def add(self, v):
 		value, b = self.get_value_and_type(v)
 		for item in self.bucket:
@@ -47,8 +49,8 @@ def collect(flat_file):
 		if instruction.opcode in valued_opcodes:
 			buck.add(instruction.ref)
 	buck.sort()
-	bucket.number()
+	buck.number()
 	for instruction in flat_file:
 		if instruction.opcode in valued_opcodes:
-			instruction.ref = bucket.get(instruction.ref)
-	return flat_file, bucket.raw()
+			instruction.ref = buck.get(instruction.ref)
+	return flat_file, buck.raw()

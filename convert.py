@@ -73,6 +73,6 @@ def refine(flattened): #removes all markers and replaces them by indices
 			del flattened[i]
 	#second pass: change all goto and branches
 	for i, item in enumerate(flattened):
-		if positional_instructions:
+		if item.opcode in positional_instructions:
 			item.ref = memo[item.ref] - i
 	return flattened
