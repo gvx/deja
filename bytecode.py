@@ -2,7 +2,7 @@ from collect import *
 
 import struct
 
-HEADER = '\x07DV\x04'
+HEADER = '\x07DV'
 VERSION = (0, 0)
 OP_SIZE = 5
 
@@ -31,7 +31,7 @@ OPCODES = {
 	'NEW_STACK':		'01000010',
 }
 for k in OPCODES:
-	OPCODES[k] = chr(int(OPCODES[k], 2))
+	OPCODES[k] = int(OPCODES[k], 2) * 0x1000000
 
 TYPES = {
 	'ident':	'00000000',
@@ -55,8 +55,7 @@ def double(x):
 
 def write_code(code, acc):
 	for op in code:
-		acc.append(OPCODES[op.opcode])
-		acc.append(signed_int(op.ref))
+		acc.append(OPCODES[op.opcode] | (signed_int(op.ref) & 0xFFFFFF))
 
 def write_literals(literals, acc):
 	for literal in literals:
