@@ -91,14 +91,14 @@ def flatten(tree, acc=None):
 		elif isinstance(branch, WhileStatement):
 			m1 = Marker()
 			m2 = Marker()
-			acc.append(SingleInstruction('ENTER_CLOSURE', 0))
+			acc.append(SingleInstruction('ENTER_SCOPE', 0))
 			acc.append(m1)
 			flatten(branch.conditionclause, acc)
 			acc.append(Branch(m2))
 			flatten(branch.body, acc)
 			acc.append(GoTo(m1))
 			acc.append(m2)
-			acc.append(SingleInstruction('LEAVE_CLOSURE', 0))
+			acc.append(SingleInstruction('LEAVE_SCOPE', 0))
 		elif isinstance(branch, ForStatement):
 			m1 = Marker()
 			m2 = Marker()
@@ -106,7 +106,7 @@ def flatten(tree, acc=None):
 			acc.append(m1)
 			acc.append(SingleInstruction('DUP', 0))
 			acc.append(Branch(m2))
-			acc.append(SingleInstruction('ENTER_CLOSURE', 0))
+			acc.append(SingleInstruction('ENTER_SCOPE', 0))
 			a = free_locals.get_next()
 			b = free_locals.get_next()
 			acc.append(SingleInstruction('SET_LOCAL', a))
@@ -115,7 +115,7 @@ def flatten(tree, acc=None):
 			flatten(branch.body, acc)
 			acc.append(SingleInstruction('PUSH_WORD', b))
 			acc.append(SingleInstruction('PUSH_WORD', a))
-			acc.append(SingleInstruction('LEAVE_CLOSURE', 0))
+			acc.append(SingleInstruction('LEAVE_SCOPE', 0))
 			acc.append(GoTo(m1))
 			free_locals.free(a)
 			free_locals.free(b)
@@ -126,7 +126,7 @@ def flatten(tree, acc=None):
 		elif isinstance(branch, IfStatement):
 			m_end = Marker()
 			m = Marker()
-			acc.append(SingleInstruction('ENTER_CLOSURE', 0))
+			acc.append(SingleInstruction('ENTER_SCOPE', 0))
 			flatten(branch.ifclause.conditionclause, acc)
 			acc.append(Branch(m))
 			flatten(branch.ifclause, acc)
@@ -142,6 +142,6 @@ def flatten(tree, acc=None):
 			if branch.elseclause:
 				flatten(branch.elseclause, acc)
 			acc.append(m_end)
-			acc.append(SingleInstruction('LEAVE_CLOSURE', 0))
+			acc.append(SingleInstruction('LEAVE_SCOPE', 0))
 		#elif isinstance(branch, CatchStatement): # left purposefully unimplemented
 	return acc

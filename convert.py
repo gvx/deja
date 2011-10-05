@@ -11,19 +11,9 @@ OPTIMIZERS = {
 	'get': 'GET',
 	'getglobal': 'GET_GLOBAL',
 	'return': 'RETURN',
-	'+': 'ADD',
-	'add': 'ADD',
-	'-': 'SUB',
-	'sub': 'SUB',
-	'*': 'MUL',
-	'mul': 'MUL',
-	'/': 'DIV',
-	'div': 'DIV',
-	'%': 'MOD',
-	'mod': 'MOD',
 	'drop': 'DROP',
 	'dup': 'DUP',
-	'[]': 'NEW_STACK',
+	'[]': 'NEW_LIST',
 }
 ARGED_OPT = set('SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL'.split())
 
