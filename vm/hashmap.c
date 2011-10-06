@@ -86,7 +86,7 @@ Bucket* new_bucket(String* s, V value)
 	return b;
 }
 
-void set_to_bucket(Bucket* b, String* s, V value)
+bool set_to_bucket(Bucket* b, String* s, V value)
 {
 	if (s->length == b->keysize)
 	{
@@ -104,16 +104,17 @@ void set_to_bucket(Bucket* b, String* s, V value)
 		{
 			clear_ref(b->value);
 			b->value = add_ref(value);
-			return;
+			return true;
 		}
 	}
 	if (b->next == NULL)
 	{
 		b->next = new_bucket(s, value);
+		return false;
 	}
 	else
 	{
-		set_to_bucket(b->next, s, value);	
+		return set_to_bucket(b->next, s, value);	
 	}
 }
 
@@ -126,10 +127,18 @@ void set_hashmap(HashMap* hm, V key, V value)
 	if (b == NULL)
 	{
 		hm->map[hash] = new_bucket(s, value);
+		hm->used++;
 	}
 	else
 	{
-		set_to_bucket(b, s, value);
+		if (set_to_bucket(b, s, value))
+		{
+			hm->used++;
+		}
+	}
+	if (hm->used > hm->size)
+	{
+		grow_hashmap(hm);
 	}
 }
 

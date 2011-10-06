@@ -17,8 +17,8 @@ V new_scope(V parent)
 	}
 	else
 	{
-	scope->parent = add_ref(parent);
-	scope->func = add_ref(((Scope*)parent->data.object)->func);
+		scope->parent = add_ref(parent);
+		scope->func = add_ref(((Scope*)parent->data.object)->func);
 	}
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 16);

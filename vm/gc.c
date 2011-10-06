@@ -40,6 +40,9 @@ void free_value(V t)
 {
 	Stack* s;
 	Scope* sc;
+	Bucket* b;
+	Bucket* bb;
+	int n;
 	switch (t->type)
 	{
 		case T_STR:
@@ -48,7 +51,7 @@ void free_value(V t)
 			free(t->data.string);
 			break;
 		case T_FUNC:
-			//TODO
+			free((Func*)t->data.object);
 			break;
 		case T_STACK:
 			s = (Stack*)(t->data.object);
@@ -57,7 +60,17 @@ void free_value(V t)
 			break;
 		case T_SCOPE:
 			sc = t->data.object;
-			//TODO: free hashmap
+			for (n = 0; n < sc->hm.size; n++)
+			{
+				b = sc->hm.map[n];
+				while(b != NULL)
+				{
+					bb = b;
+					b = b->next;
+					free(bb);
+				}
+			}
+			free(sc->hm.map);
 			free(sc);
 			break;
 	}
@@ -69,10 +82,12 @@ void release_value(V t)
 	V i;
 	Stack* s;
 	Scope* sc;
+	Bucket* b;
+	int n;
 	switch (t->type)
 	{
 		case T_FUNC:
-			//TODO
+			clear_ref(((Func*)t->data.object)->defscope);
 			break;
 		case T_STACK:
 			s = (Stack*)(t->data.object);
@@ -85,6 +100,15 @@ void release_value(V t)
 			sc = t->data.object;
 			clear_ref(sc->parent);
 			clear_ref(sc->func);
+			for (n = 0; n < sc->hm.size; n++)
+			{
+				b = sc->hm.map[n];
+				while(b != NULL)
+				{
+					clear_ref(b->value);
+					b = b->next;
+				}
+			}
 			break;
 	}
 	t->color = Black;
@@ -123,7 +147,9 @@ void mark_gray(V t)
 		switch (t->type)
 		{
 			case T_FUNC:
-				//TODO
+				child = ((Func*)t->data.object)->defscope;
+				child->refs--;
+				mark_gray(child);
 				break;
 			case T_STACK:
 				s = (Stack*)(t->data.object);
@@ -178,7 +204,12 @@ void scan_black(V t)
 	switch (t->type)
 	{
 		case T_FUNC:
-			//TODO
+			child = ((Func*)t->data.object)->defscope;
+			child->refs++;
+			if (child->color != Black)
+			{
+				scan_black(child);
+			}
 			break;
 		case T_STACK:
 			s = (Stack*)(t->data.object);
@@ -219,7 +250,7 @@ void scan(V t)
 			switch (t->type)
 			{
 				case T_FUNC:
-					//TODO
+					scan(((Func*)t->data.object)->defscope);
 					break;
 				case T_STACK:
 					s = (Stack*)(t->data.object);
@@ -264,7 +295,7 @@ void collect_white(V t)
 		switch (t->type)
 		{
 			case T_FUNC:
-				//TODO
+				collect_white(((Func*)t->data.object)->defscope);
 				break;
 			case T_STACK:
 				s = (Stack*)(t->data.object);
