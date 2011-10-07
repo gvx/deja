@@ -15,7 +15,7 @@
 #define OP_LABDA          0x20
 #define OP_ENTER_SCOPE    0x21
 #define OP_LEAVE_SCOPE    0x22
-#define OP_NEW_STACK      0x30
+#define OP_NEW_LIST       0x30
 #define OP_DROP           0x40
 #define OP_DUP            0x41
 #define OP_LINE_NUMBER    0x50

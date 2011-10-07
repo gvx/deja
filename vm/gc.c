@@ -334,6 +334,8 @@ void collect_white(V t)
 {
 	Stack* s;
 	Node* c;
+	Scope* sc;
+	Bucket* b;
 	V child;
 	int i;
 

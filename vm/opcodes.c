@@ -1,7 +1,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <netinet/in.h>
 
 #include "opcodes.h"
+#include "value.h"
 
 int signed_opcode(int opcode)
 {
@@ -33,18 +36,13 @@ void decode(int instruction, int *opcode, int *argument)
 	}
 }
 
-/*
-void do_instruction(int* source, Scope* scope)
+void do_instruction(int* source, V scope)
 {
 	int opcode, argument;
-	decode(*source, &opcode, &argument);
+	decode(ntohl(*source), &opcode, &argument);
 	switch (opcode)
 	{
 		case OP_PUSH_LITERAL:
-			break;
-		case OP_PUSH_INTEGER:
-			break;
-		case OP_PUSH_WORD:
 			break;
 		case OP_PUSH_INTEGER:
 			break;
@@ -86,4 +84,3 @@ void do_instruction(int* source, Scope* scope)
 			break;
 	}
 }
-*/

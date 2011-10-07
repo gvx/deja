@@ -5,6 +5,7 @@
 #include "opcodes.h"
 #include "stack.h"
 #include "value.h"
+#include "header.h"
 //#include "stdlib.h"
 //#include "env.h"
 
