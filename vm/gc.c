@@ -135,10 +135,20 @@ void possible_root(V t)
 	}
 }
 
+void mark_gray(V);
+
+void mark_gray_child(V child)
+{
+	child->refs--;
+	mark_gray(child);
+}
+
 void mark_gray(V t)
 {
 	Stack* s;
 	Node* c;
+	Scope* sc;
+	Bucket* b;
 	V child;
 	int i;
 	if (t->color != Gray)
@@ -148,8 +158,7 @@ void mark_gray(V t)
 		{
 			case T_FUNC:
 				child = ((Func*)t->data.object)->defscope;
-				child->refs--;
-				mark_gray(child);
+				mark_gray_child(child);
 				break;
 			case T_STACK:
 				s = (Stack*)(t->data.object);
@@ -158,12 +167,22 @@ void mark_gray(V t)
 				{
 					child = c->data;
 					c = c->next;
-					child->refs--;
-					mark_gray(child);
+					mark_gray_child(child);
 				}
 				break;
 			case T_SCOPE:
-				//TODO
+				sc = t->data.object;
+				mark_gray_child(sc->parent);
+				mark_gray_child(sc->func);
+				for (i = 0; i < sc->hm.size; i++)
+				{
+					b = sc->hm.map[i];
+					while(b != NULL)
+					{
+						mark_gray_child(b->value);
+						b = b->next;
+					}
+				}
 				break;
 		}
 	}
@@ -192,10 +211,23 @@ void mark_roots(void)
 	}
 }
 
+void scan_black(V);
+
+void scan_black_child(V child)
+{
+	child->refs++;
+	if (child->color != Black)
+	{
+		scan_black(child);
+	}
+}
+
 void scan_black(V t)
 {
 	Stack* s;
 	Node* c;
+	Scope* sc;
+	Bucket* b;
 	V child;
 	int i;
 
@@ -205,11 +237,7 @@ void scan_black(V t)
 	{
 		case T_FUNC:
 			child = ((Func*)t->data.object)->defscope;
-			child->refs++;
-			if (child->color != Black)
-			{
-				scan_black(child);
-			}
+			scan_black_child(child);
 			break;
 		case T_STACK:
 			s = (Stack*)(t->data.object);
@@ -218,15 +246,22 @@ void scan_black(V t)
 			{
 				child = c->data;
 				c = c->next;
-				child->refs++;
-				if (child->color != Black)
-				{
-					scan_black(child);
-				}
+				scan_black_child(child);
 			}
 			break;
 		case T_SCOPE:
-			//TODO
+			sc = t->data.object;
+			scan_black_child(sc->parent);
+			scan_black_child(sc->func);
+			for (i = 0; i < sc->hm.size; i++)
+			{
+				b = sc->hm.map[i];
+				while(b != NULL)
+				{
+					scan_black_child(b->value);
+					b = b->next;
+				}
+			}
 			break;
 	}
 }
@@ -235,6 +270,8 @@ void scan(V t)
 {
 	Stack* s;
 	Node* c;
+	Scope* sc;
+	Bucket* b;
 	V child;
 	int i;
 
@@ -263,7 +300,18 @@ void scan(V t)
 					}
 					break;
 				case T_SCOPE:
-					//TODO
+					sc = t->data.object;
+					scan(sc->parent);
+					scan(sc->func);
+					for (i = 0; i < sc->hm.size; i++)
+					{
+						b = sc->hm.map[i];
+						while(b != NULL)
+						{
+							scan(b->value);
+							b = b->next;
+						}
+					}
 					break;
 			}
 		}
@@ -308,7 +356,18 @@ void collect_white(V t)
 				}
 				break;
 			case T_SCOPE:
-				//TODO
+				sc = t->data.object;
+				collect_white(sc->parent);
+				collect_white(sc->func);
+				for (i = 0; i < sc->hm.size; i++)
+				{
+					b = sc->hm.map[i];
+					while(b != NULL)
+					{
+						collect_white(b->value);
+						b = b->next;
+					}
+				}
 				break;
 		}
 		free_value(t);
