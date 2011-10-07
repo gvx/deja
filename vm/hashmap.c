@@ -146,12 +146,27 @@ void grow_hashmap(HashMap* hm)
 {
 	Bucket** bl = calloc(sizeof(Bucket*), hm->size * 2);
 	int i;
+	int h;
+	Bucket* bb;
 	for (i = 0; i < hm->size; i++)
 	{ //rehash!
 		Bucket* b = hm->map[i];
 		do
 		{
-			bl[string_hash(b->keysize, b->key)] = b;
+			h = string_hash(b->keysize, b->key);
+			if (bl[h] == NULL)
+			{
+				bl[h] = b;
+			}
+			else
+			{
+				bb = bl[h];
+				while(bb->next)
+				{
+					bb = bb->next;
+				}
+				bb->next = b;
+			}
 		}
 		while(b = b->next);
 	}
