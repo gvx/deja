@@ -154,21 +154,11 @@ void grow_hashmap(HashMap* hm)
 		do
 		{
 			h = string_hash(b->keysize, b->key);
-			if (bl[h] == NULL)
-			{
-				bl[h] = b;
-			}
-			else
-			{
-				bb = bl[h];
-				while(bb->next)
-				{
-					bb = bb->next;
-				}
-				bb->next = b;
-			}
+			bb = b->next;
+			b->next = bl[h];
+			bl[h] = b;
 		}
-		while(b = b->next);
+		while(b = bb);
 	}
 	free(hm->map);
 	hm->map = bl;
