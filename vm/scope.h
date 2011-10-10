@@ -4,10 +4,13 @@
 #include "value.h"
 #include "hashmap.h"
 
+#include <stdint.h>
+
 typedef struct Scope
 {
 	V func;
 	V parent;
+	uint32_t* pc;
 	struct HashMap hm;
 } Scope;
 

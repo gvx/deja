@@ -44,12 +44,15 @@ void decode(int instruction, int *opcode, int *argument)
 	}
 }
 
-int* do_instruction(Header* h, int* source, Stack* S, Stack* scope_arr)
+int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v;
 	V key;
 	Scope *sc;
 	V scope = scope_arr->head->data;
+	uint32_t** pc = &((Scope*)scope->data.object)->pc;
+	uint32_t* source = *pc;
+	Func* f;
 	int opcode, argument;
 	decode(ntohl(*source), &opcode, &argument);
 	switch (opcode)
@@ -128,6 +131,7 @@ int* do_instruction(Header* h, int* source, Stack* S, Stack* scope_arr)
 		case OP_GET_GLOBAL:
 			break;
 		case OP_JMP:
+			*pc += argument;
 			return source + argument;
 		case OP_JMPZ:
 			v = pop(S);
@@ -135,14 +139,32 @@ int* do_instruction(Header* h, int* source, Stack* S, Stack* scope_arr)
 			clear_ref(v);
 			if (!t)
 			{
+				*pc += argument;
 				return source + argument;
 			}
 			break;
 		case OP_RETURN:
+			f = (Func*)((Scope*)scope->data.object)->func->data.object;
+			do
+			{
+				if (v != NULL)
+				{
+					clear_ref(v);
+				}
+				v = pop(scope_arr);
+				if (v == NULL)
+				{
+					// EOF
+					return source;
+				}
+			}
+			while ((Func*)((Scope*)v->data.object)->func->data.object == f);
+			push(scope_arr, v);
+			((Scope*)v->data.object)->pc++;
 			break;
 		case OP_LABDA:
 			v = new_value(T_FUNC);
-			Func* f = malloc(sizeof(Func));
+			f = malloc(sizeof(Func));
 			f->defscope = scope;
 			f->start = source + 1;
 			v->data.object = f;
@@ -170,5 +192,6 @@ int* do_instruction(Header* h, int* source, Stack* S, Stack* scope_arr)
 		case OP_SOURCE_FILE:
 			break;
 	}
+	*pc++;
 	return source + 1;
 }
