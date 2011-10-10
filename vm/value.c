@@ -68,7 +68,7 @@ bool truthy(V t)
 		case T_IDENT:
 			return t->data.string->length > 0;
 		case T_STACK:
-			return ((Stack*)t->data.object)->size > 0;
+			return toStack(t)->size > 0;
 		default:
 			return true;
 	}	

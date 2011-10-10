@@ -50,7 +50,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	V key;
 	Scope *sc;
 	V scope = scope_arr->head->data;
-	uint32_t** pc = &((Scope*)scope->data.object)->pc;
+	uint32_t** pc = &toScope(scope)->pc;
 	uint32_t* source = *pc;
 	Func* f;
 	int opcode, argument;
@@ -64,12 +64,12 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, int_to_value(argument));
 			break;
 		case OP_PUSH_WORD:
-			sc = (Scope*)scope->data.object;
+			sc = toScope(scope);
 			key = get_literal(h, argument);
 			v = get_hashmap(&sc->hm, key);
 			while (v == NULL)
 			{
-				sc = (Scope*)sc->parent->data.object;
+				sc = toScope(sc->parent);
 				if (sc == NULL)
 				{
 					//some error?
@@ -82,7 +82,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				//push v to the call stack
 				push(scope_arr, new_function_scope(v));
-				return ((Func*)v->data.object)->start;
+				return toFunc(v)->start;
 			}
 			else
 			{
@@ -91,11 +91,11 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_SET:
 			v = pop(S);
-			sc = (Scope*)scope->data.object;
+			sc = toScope(scope);
 			V key = get_literal(h, argument);
 			while (!change_hashmap(sc->hm, key, v))
 			{
-				sc = (Scope*)sc->parent->data.object;
+				sc = toScope(sc->parent);
 				if (sc == NULL)
 				{
 					//set in the global environment
@@ -106,18 +106,18 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_SET_LOCAL:
 			v = pop(S);
-			set_hashmap(&((Scope*)scope->data.object)->hm, get_literal(h, argument), v);
+			set_hashmap(&(toScope(scope)->hm), get_literal(h, argument), v);
 			clear_ref(v);
 			break;
 		case OP_SET_GLOBAL:
 			break;
 		case OP_GET:
-			sc = (Scope*)scope->data.object;
+			sc = toScope(scope);
 			key = get_literal(h, argument);
 			v = get_hashmap(&sc->hm, key);
 			while (v == NULL)
 			{
-				sc = (Scope*)sc->parent->data.object;
+				sc = toScope(sc->parent);
 				if (sc == NULL)
 				{
 					//some error?
@@ -144,7 +144,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			break;
 		case OP_RETURN:
-			f = (Func*)((Scope*)scope->data.object)->func->data.object;
+			f = toFunc(toScope(scope)->func);
 			do
 			{
 				if (v != NULL)
@@ -158,9 +158,9 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 					return source;
 				}
 			}
-			while ((Func*)((Scope*)v->data.object)->func->data.object == f);
+			while (toFunc(toScope(v)->func) == f);
 			push(scope_arr, v);
-			((Scope*)v->data.object)->pc++;
+			toScope(v)->pc++;
 			break;
 		case OP_LABDA:
 			v = new_value(T_FUNC);

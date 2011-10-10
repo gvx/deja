@@ -51,15 +51,15 @@ void free_value(V t)
 			free(t->data.string);
 			break;
 		case T_FUNC:
-			free((Func*)t->data.object);
+			free(toFunc(t));
 			break;
 		case T_STACK:
-			s = (Stack*)(t->data.object);
+			s = toStack(t);
 			while (pop(s));
 			free(s);
 			break;
 		case T_SCOPE:
-			sc = t->data.object;
+			sc = toScope(t);
 			for (n = 0; n < sc->hm.size; n++)
 			{
 				b = sc->hm.map[n];
@@ -87,17 +87,17 @@ void release_value(V t)
 	switch (t->type)
 	{
 		case T_FUNC:
-			clear_ref(((Func*)t->data.object)->defscope);
+			clear_ref(toFunc(t)->defscope);
 			break;
 		case T_STACK:
-			s = (Stack*)(t->data.object);
+			s = toStack(t);
 			while (i = pop(s))
 			{
 				clear_ref(i);
 			}
 			break;
 		case T_SCOPE:
-			sc = t->data.object;
+			sc = toScope(t);
 			clear_ref(sc->parent);
 			clear_ref(sc->func);
 			for (n = 0; n < sc->hm.size; n++)
@@ -157,11 +157,11 @@ void mark_gray(V t)
 		switch (t->type)
 		{
 			case T_FUNC:
-				child = ((Func*)t->data.object)->defscope;
+				child = toFunc(t)->defscope;
 				mark_gray_child(child);
 				break;
 			case T_STACK:
-				s = (Stack*)(t->data.object);
+				s = toStack(t);
 				c = s->head;
 				for (i = 0; i < s->size; i++)
 				{
@@ -171,7 +171,7 @@ void mark_gray(V t)
 				}
 				break;
 			case T_SCOPE:
-				sc = t->data.object;
+				sc = toScope(t);
 				mark_gray_child(sc->parent);
 				mark_gray_child(sc->func);
 				for (i = 0; i < sc->hm.size; i++)
@@ -236,11 +236,11 @@ void scan_black(V t)
 	switch (t->type)
 	{
 		case T_FUNC:
-			child = ((Func*)t->data.object)->defscope;
+			child = toFunc(t)->defscope;
 			scan_black_child(child);
 			break;
 		case T_STACK:
-			s = (Stack*)(t->data.object);
+			s = toStack(t);
 			c = s->head;
 			for (i = 0; i < s->size; i++)
 			{
@@ -250,7 +250,7 @@ void scan_black(V t)
 			}
 			break;
 		case T_SCOPE:
-			sc = t->data.object;
+			sc = toScope(t);
 			scan_black_child(sc->parent);
 			scan_black_child(sc->func);
 			for (i = 0; i < sc->hm.size; i++)
@@ -287,10 +287,10 @@ void scan(V t)
 			switch (t->type)
 			{
 				case T_FUNC:
-					scan(((Func*)t->data.object)->defscope);
+					scan(toFunc(t)->defscope);
 					break;
 				case T_STACK:
-					s = (Stack*)(t->data.object);
+					s = toStack(t);
 					c = s->head;
 					for (i = 0; i < s->size; i++)
 					{
@@ -345,10 +345,10 @@ void collect_white(V t)
 		switch (t->type)
 		{
 			case T_FUNC:
-				collect_white(((Func*)t->data.object)->defscope);
+				collect_white(toFunc(t)->defscope);
 				break;
 			case T_STACK:
-				s = (Stack*)(t->data.object);
+				s = toStack(t);
 				c = s->head;
 				for (i = 0; i < s->size; i++)
 				{
@@ -358,7 +358,7 @@ void collect_white(V t)
 				}
 				break;
 			case T_SCOPE:
-				sc = t->data.object;
+				sc = toScope(t);
 				collect_white(sc->parent);
 				collect_white(sc->func);
 				for (i = 0; i < sc->hm.size; i++)

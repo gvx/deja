@@ -37,7 +37,7 @@ HashMap* new_hashmap(int initialsize)
 
 void hashmap_from_scope(V v_scope, int initialsize)
 {
-	Scope* scope = (Scope*)v_scope->data.object;
+	Scope* scope = toScope(v_scope);
 	scope->hm.used = 0;
 	scope->hm.size = initialsize;
 	Bucket** bl = calloc(initialsize, sizeof(Bucket*));

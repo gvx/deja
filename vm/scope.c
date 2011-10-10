@@ -18,7 +18,7 @@ V new_scope(V parent)
 	else
 	{
 		scope->parent = add_ref(parent);
-		scope->func = add_ref(((Scope*)parent->data.object)->func);
+		scope->func = add_ref(toScope(parent)->func);
 	}
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 16);
@@ -29,7 +29,7 @@ V new_function_scope(V function)
 {
 	V sc = new_value(T_SCOPE);
 	Scope* scope = malloc(sizeof(Scope));
-	scope->parent = add_ref(((Func*)function->data.object)->defscope);
+	scope->parent = add_ref(toFunc(function)->defscope);
 	scope->func = add_ref(function);
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 32);
