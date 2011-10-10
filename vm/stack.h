@@ -18,6 +18,6 @@ typedef struct
 Stack* newstack();
 void push(Stack*, V);
 V pop(Stack*);
-int size_of(Stack*);
+int stack_size(Stack*);
 
 #endif

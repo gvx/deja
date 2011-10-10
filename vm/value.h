@@ -41,4 +41,6 @@ V a_to_value(char*);
 V str_to_value(int, char*);
 V newlist();
 
+bool truthy(V);
+
 #endif

@@ -48,17 +48,7 @@ V get_from_bucket(Bucket* b, String* s)
 {
 	if (s->length == b->keysize)
 	{
-		int i;
-		bool equal = true;
-		for (i = 0; i < s->length; i++)
-		{
-			if (b->key[i] != s->data[i])
-			{
-				equal = false;
-				break;
-			}
-		}
-		if (equal)
+		if (!memcmp(b->key, s->data, s->length))
 		{
 			return b->value;
 		}
@@ -90,27 +80,17 @@ bool set_to_bucket(Bucket* b, String* s, V value)
 {
 	if (s->length == b->keysize)
 	{
-		int i;
-		bool equal = true;
-		for (i = 0; i < s->length; i++)
-		{
-			if (b->key[i] != s->data[i])
-			{
-				equal = false;
-				break;
-			}
-		}
-		if (equal)
+		if (!memcmp(b->key, s->data, s->length))
 		{
 			clear_ref(b->value);
 			b->value = add_ref(value);
-			return true;
+			return false;
 		}
 	}
 	if (b->next == NULL)
 	{
 		b->next = new_bucket(s, value);
-		return false;
+		return true;
 	}
 	else
 	{
@@ -139,6 +119,43 @@ void set_hashmap(HashMap* hm, V key, V value)
 	if (hm->used > hm->size)
 	{
 		grow_hashmap(hm);
+	}
+}
+
+bool change_bucket(Bucket* b, String* s, V value)
+{
+	if (s->length == b->keysize)
+	{
+		if (!memcmp(b->key, s->data, s->length))
+		{
+			clear_ref(b->value);
+			b->value = add_ref(value);
+			return true;
+		}
+	}
+	if (b->next == NULL)
+	{
+		return false;
+	}
+	else
+	{
+		return change_bucket(b->next, s, value);	
+	}
+}
+
+bool change_hashmap(HashMap* hm, V key, V value)
+{
+	assert(key->type == T_IDENT); //FIXME: replace with exception system
+	String* s = key->data.object;
+	int hash = string_hash(s->length, s->data) % hm->size;
+	Bucket* b = hm->map[hash];
+	if (b == NULL)
+	{
+		return false;
+	}
+	else
+	{
+		return change_bucket(b, s, value);
 	}
 }
 

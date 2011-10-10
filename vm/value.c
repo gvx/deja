@@ -55,3 +55,21 @@ V newlist()
 	t->data.object = s;
 	return t;
 }
+
+bool truthy(V t)
+{
+	switch(t->type)
+	{
+		case T_NIL:
+			return false;
+		case T_NUM:
+			return t->data.number != 0.0;
+		case T_STR:
+		case T_IDENT:
+			return t->data.string->length > 0;
+		case T_STACK:
+			return ((Stack*)t->data.object)->size > 0;
+		default:
+			return true;
+	}	
+}

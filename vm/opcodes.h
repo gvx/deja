@@ -8,7 +8,7 @@
 #define OP_SET_LOCAL      0x04
 #define OP_SET_GLOBAL     0x05
 #define OP_GET            0x06
-#define OP_GET_GLOBAL     0x07	
+#define OP_GET_GLOBAL     0x07
 #define OP_JMP            0x10
 #define OP_JMPZ           0x11
 #define OP_RETURN         0x12

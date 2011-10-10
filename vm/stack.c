@@ -17,7 +17,7 @@ void push(Stack *stack, V v)
 	Node *new_node = malloc(sizeof(Node));
 	if (new_node != NULL)
 	{
-		new_node->data = add_ref(v);
+		new_node->data = v;
 		new_node->next = (stack->size++ > 0) ? stack->head : NULL;
 		stack->head = new_node;
 	}
@@ -37,7 +37,7 @@ V pop(Stack *stack)
 	return NULL;
 }
 
-int size_of(Stack *stack)
+int stack_size(Stack *stack)
 {
 	return stack->size;
 }

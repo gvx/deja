@@ -11,4 +11,7 @@ typedef struct Scope
 	struct HashMap hm;
 } Scope;
 
+V new_scope(V);
+V new_function_scope(V);
+
 #endif

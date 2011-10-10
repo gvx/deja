@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	}
 	printf("%f\n", astack.head->next->next->data->data.number);
 	printf("%d\n", astack.size);
-	while(size_of(&astack))
+	while(stack_size(&astack))
 	{
 		V v2 = pop(&astack);
 		printf("%d, %f\n", astack.size, v2->data.number);
