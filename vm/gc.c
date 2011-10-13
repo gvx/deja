@@ -91,6 +91,7 @@ void release_value(V t)
 	Stack* s;
 	Scope* sc;
 	Bucket* b;
+	File* f;
 	int n;
 	switch (t->type)
 	{
@@ -119,7 +120,12 @@ void release_value(V t)
 			}
 			break;
 		case T_FILE:
-			//TODO
+			f = toFile(t);
+			for (n = 0; n < f->header.n_literals; n++)
+			{
+				release_value(f->header.literals[n]);
+			}
+			release_value(f->name);
 			break;
 	}
 	t->color = Black;
@@ -160,6 +166,7 @@ void mark_gray(V t)
 	Node* c;
 	Scope* sc;
 	Bucket* b;
+	File* f;
 	V child;
 	int i;
 	if (t->color != Gray)
@@ -196,7 +203,12 @@ void mark_gray(V t)
 				}
 				break;
 			case T_FILE:
-				//TODO
+				f = toFile(t);
+				for (i = 0; i < f->header.n_literals; i++)
+				{
+					mark_gray_child(f->header.literals[i]);
+				}
+				mark_gray_child(f->name);
 				break;
 		}
 	}
@@ -242,6 +254,7 @@ void scan_black(V t)
 	Node* c;
 	Scope* sc;
 	Bucket* b;
+	File* f;
 	V child;
 	int i;
 
@@ -278,7 +291,12 @@ void scan_black(V t)
 			}
 			break;
 		case T_FILE:
-			//TODO
+			f = toFile(t);
+			for (i = 0; i < f->header.n_literals; i++)
+			{
+				scan_black_child(f->header.literals[i]);
+			}
+			scan_black_child(f->name);
 			break;
 	}
 }
@@ -289,6 +307,7 @@ void scan(V t)
 	Node* c;
 	Scope* sc;
 	Bucket* b;
+	File* f;
 	V child;
 	int i;
 
@@ -331,7 +350,12 @@ void scan(V t)
 					}
 					break;
 				case T_FILE:
-					//TODO
+					f = toFile(t);
+					for (i = 0; i < f->header.n_literals; i++)
+					{
+						scan(f->header.literals[i]);
+					}
+					scan(f->name);
 					break;
 			}
 		}
@@ -356,6 +380,7 @@ void collect_white(V t)
 	Node* c;
 	Scope* sc;
 	Bucket* b;
+	File* f;
 	V child;
 	int i;
 
@@ -392,7 +417,12 @@ void collect_white(V t)
 				}
 				break;
 			case T_FILE:
-				//TODO
+				f = toFile(t);
+				for (i = 0; i < f->header.n_literals; i++)
+				{
+					collect_white(f->header.literals[i]);
+				}
+				collect_white(f->name);
 				break;
 		}
 		free_value(t);
