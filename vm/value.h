@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#define toFile(x) ((File*)x->data.object)
 #define toScope(x) ((Scope*)x->data.object)
 #define toFunc(x) ((Func*)x->data.object)
 #define toStack(x) ((Stack*)x->data.object)

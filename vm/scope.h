@@ -8,6 +8,7 @@
 
 typedef struct Scope
 {
+	V file;
 	V func;
 	V parent;
 	uint32_t* pc;

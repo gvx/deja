@@ -48,7 +48,7 @@ V str_to_value(int max, char* str)
 	return t;
 }
 
-V newlist()
+V newlist(void)
 {
 	V t = new_value(T_STACK);
 	Stack* s = newstack();

@@ -9,6 +9,7 @@
 #define T_FUNC 0x04
 // Section 0x1*: internal types
 #define T_SCOPE 0x10
+#define T_FILE 0x11
 // Section 0xF*: implicit types
 #define T_NIL 0xFF
 

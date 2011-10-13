@@ -5,21 +5,17 @@
 #include "scope.h"
 #include "func.h"
 #include "types.h"
+#include "file.h"
 
 V new_scope(V parent)
 {
 	V sc = new_value(T_SCOPE);
+	Scope* pscope = toScope(parent);
 	Scope* scope = malloc(sizeof(Scope));
-	if (parent == NULL)
-	{
-		scope->parent = NULL;
-		scope->func = NULL;
-	}
-	else
-	{
-		scope->parent = add_ref(parent);
-		scope->func = add_ref(toScope(parent)->func);
-	}
+	scope->parent = add_ref(parent);
+	scope->func = add_ref(pscope->func);
+	scope->file = add_ref(pscope->file);
+	scope->pc = pscope->pc + 1;
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 16);
 	return sc;
@@ -31,7 +27,22 @@ V new_function_scope(V function)
 	Scope* scope = malloc(sizeof(Scope));
 	scope->parent = add_ref(toFunc(function)->defscope);
 	scope->func = add_ref(function);
+	scope->file = add_ref(toScope(scope->parent)->file);
+	scope->pc = toFunc(function)->start;
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 32);
+	return sc;
+}
+
+V new_file_scope(V file)
+{
+	V sc = new_value(T_SCOPE);
+	Scope* scope = malloc(sizeof(Scope));
+	scope->parent = NULL;
+	scope->func = NULL;
+	scope->file = add_ref(file);
+	scope->pc = toFile(file)->code;
+	sc->data.object = scope;
+	hashmap_from_scope(sc, 64);
 	return sc;
 }

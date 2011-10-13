@@ -73,6 +73,9 @@ void free_value(V t)
 			free(sc->hm.map);
 			free(sc);
 			break;
+		case T_FILE:
+			//TODO
+			break;
 	}
 	free(t);
 }
@@ -109,6 +112,9 @@ void release_value(V t)
 					b = b->next;
 				}
 			}
+			break;
+		case T_FILE:
+			//TODO
 			break;
 	}
 	t->color = Black;
@@ -183,6 +189,9 @@ void mark_gray(V t)
 						b = b->next;
 					}
 				}
+				break;
+			case T_FILE:
+				//TODO
 				break;
 		}
 	}
@@ -263,6 +272,9 @@ void scan_black(V t)
 				}
 			}
 			break;
+		case T_FILE:
+			//TODO
+			break;
 	}
 }
 
@@ -312,6 +324,9 @@ void scan(V t)
 							b = b->next;
 						}
 					}
+					break;
+				case T_FILE:
+					//TODO
 					break;
 			}
 		}
@@ -370,6 +385,9 @@ void collect_white(V t)
 						b = b->next;
 					}
 				}
+				break;
+			case T_FILE:
+				//TODO
 				break;
 		}
 		free_value(t);
