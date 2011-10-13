@@ -160,7 +160,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			while (toFunc(toScope(v)->func) == f);
 			push(scope_arr, v);
-			toScope(v)->pc++;
+			pc = &toScope(v)->pc;
 			break;
 		case OP_LABDA:
 			v = new_value(T_FUNC);
@@ -172,9 +172,14 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_ENTER_SCOPE:
 			push(scope_arr, new_scope(scope));
+			pc = &toScope(get_head(scope_arr))->pc;
 			break;
 		case OP_LEAVE_SCOPE:
-			clear_ref(pop(scope_arr));
+			v = pop(scope_arr);
+			sc = toScope(get_head(scope_arr));
+			sc->pc = *pc;
+			pc = &sc->pc;
+			clear_ref(v);
 			break;
 		case OP_NEW_LIST:
 			push(S, newlist());
@@ -183,7 +188,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(pop(S));
 			break;
 		case OP_DUP:
-			push(S, add_ref(S->head->data));
+			push(S, add_ref(get_head(S)));
 			break;
 		case OP_LINE_NUMBER:
 			break;

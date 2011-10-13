@@ -4,6 +4,7 @@
 #include "stack.h"
 #include "scope.h"
 #include "func.h"
+#include "file.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -42,6 +43,7 @@ void free_value(V t)
 	Scope* sc;
 	Bucket* b;
 	Bucket* bb;
+	File* f;
 	int n;
 	switch (t->type)
 	{
@@ -74,7 +76,10 @@ void free_value(V t)
 			free(sc);
 			break;
 		case T_FILE:
-			//TODO
+			f = toFile(t);
+			free(f->header.literals);
+			free(f->code);
+			free(f);
 			break;
 	}
 	free(t);

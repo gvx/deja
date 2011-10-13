@@ -3,6 +3,8 @@
 
 #include "value.h"
 
+#define get_head(x) (x->head->data)
+
 typedef struct Node
 {
 	struct Value *data;

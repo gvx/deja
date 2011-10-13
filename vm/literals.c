@@ -81,6 +81,7 @@ void read_literals(FILE* f, Header* h)
 		}
 		arr[i] = t;
 	}
+	h->n_literals = n;
 	h->literals = arr;
 }
 

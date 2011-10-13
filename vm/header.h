@@ -18,6 +18,7 @@ typedef struct
 	char version;
 	uint32_t size;
 	V* literals;
+	uint32_t n_literals;
 } Header;
 
 Header read_header(FILE*);
