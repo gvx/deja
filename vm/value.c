@@ -31,7 +31,7 @@ V a_to_value(char* str)
 	char* str2 = malloc(l);
 	memcpy(str2, str, l);
 	s->data = str2;
-	t->data.string = s;
+	t->data.object = s;
 	return t;
 }
 
@@ -44,7 +44,7 @@ V str_to_value(int max, char* str)
 	char* str2 = malloc(max);
 	memcpy(str2, str, max);
 	s->data = str2;
-	t->data.string = s;
+	t->data.object = s;
 	return t;
 }
 
@@ -63,10 +63,10 @@ bool truthy(V t)
 		case T_NIL:
 			return false;
 		case T_NUM:
-			return t->data.number != 0.0;
+			return toNumber(t) != 0.0;
 		case T_STR:
 		case T_IDENT:
-			return t->data.string->length > 0;
+			return toString(t)->length > 0;
 		case T_STACK:
 			return toStack(t)->size > 0;
 		default:

@@ -47,8 +47,8 @@ void free_value(V t)
 	{
 		case T_STR:
 		case T_IDENT:
-			free(t->data.string->data);
-			free(t->data.string);
+			free(toString(t)->data);
+			free(toString(t));
 			break;
 		case T_FUNC:
 			free(toFunc(t));
