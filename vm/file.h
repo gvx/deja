@@ -10,7 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
+typedef struct
+{
 	V name;
 	Header header;
 	uint32_t *code;
