@@ -7,6 +7,7 @@ typedef enum
 	Exit,
 	NameError,
 	ValueError,
+	TypeError,
 	UserError
 } Error;
 

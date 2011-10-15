@@ -48,6 +48,20 @@ V str_to_value(int max, char* str)
 	return t;
 }
 
+V get_ident(const char* name)
+{
+	V t = new_value(T_IDENT);
+	t->color = Green;
+	String* s = malloc(sizeof(String));
+	size_t l = strlen(name);
+	s->length = l;
+	char* name2 = malloc(l);
+	memcpy(name2, name, l);
+	s->data = name2;
+	t->data.object = s;
+	return t;
+}
+
 V newlist(void)
 {
 	V t = new_value(T_STACK);

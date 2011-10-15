@@ -60,7 +60,7 @@ Error mul(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error div(Header* h, Stack* S, Stack* scope_arr)
+Error div_(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v1 = pop(S);
 	V v2 = pop(S);
@@ -80,16 +80,80 @@ Error div(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
+const char* gettype(V r)
+{
+	switch (r->type)
+	{
+		case T_IDENT:
+			return "ident";
+		case T_STR:
+			return "str";
+		case T_NUM:
+			return "num";
+		case T_STACK:
+			return "list";
+		case T_FUNC:
+		case T_CFUNC:
+			return "func";
+	}
+
+}
+
+Error type(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = pop(S);
+	if (v->type != T_IDENT)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	V t;
+	V r = get_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, v);
+	clear_ref(v);
+	if (r == NULL)
+	{
+		t = get_ident("nil");
+	}
+	else
+	{
+		t = get_ident(gettype(r));
+	}
+	clear_ref(r);
+	push(S, t);
+}
+
 Error print(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = pop(S);
+	String* s;
 	switch (v->type)
 	{
+		case T_IDENT:
+			s = toString(v);
+			printf("'%*s'", s->length, s->data);
+			break;
+		case T_STR:
+			s = toString(v);
+			printf("%*s", s->length, s->data);
+			break;
 		case T_NUM:
-			printf("%f\n", toNumber(v));
+			printf("%g", toNumber(v));
+			break;
+		case T_STACK:
+			printf("<stack>");
+			break;
+		case T_CFUNC:
+		case T_FUNC:
+			printf("<func>");
 			break;
 	};
 	clear_ref(v);
+}
+
+Error print_nl(Header* h, Stack* S, Stack* scope_arr)
+{
+	print(h, S, scope_arr);
+	printf("\n");
 }
 
 static CFunc stdlib[] = {
@@ -99,9 +163,11 @@ static CFunc stdlib[] = {
 	{"sub", sub},
 	{"*", mul},
 	{"mul", mul},
-	{"/", div},
-	{"div", div},
-	{".", print},
+	{"/", div_},
+	{"div", div_},
+	{".", print_nl},
+	{".\\", print},
+	{"type", type},
 	{NULL, NULL}
 };
 

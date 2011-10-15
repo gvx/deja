@@ -47,6 +47,7 @@ V int_to_value(int);
 V double_to_value(double);
 V a_to_value(char*);
 V str_to_value(int, char*);
+V get_ident(const char*);
 V newlist();
 
 bool truthy(V);

@@ -119,6 +119,9 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(v);
 			break;
 		case OP_SET_GLOBAL:
+			v = pop(S);
+			set_hashmap(&toScope(toFile(toScope(scope)->file)->global)->hm, get_literal(h, argument), v);
+			clear_ref(v);
 			break;
 		case OP_GET:
 			sc = toScope(scope);
@@ -138,6 +141,12 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, add_ref(v));
 			break;
 		case OP_GET_GLOBAL:
+			v = get_hashmap(&toScope(toFile(toScope(scope)->file)->global)->hm, get_literal(h, argument));
+			if (v == NULL)
+			{
+				return NameError;
+			}
+			push(S, add_ref(v));
 			break;
 		case OP_JMP:
 			*pc += argument;

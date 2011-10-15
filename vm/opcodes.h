@@ -4,6 +4,7 @@
 #include "error.h"
 #include "header.h"
 #include "stack.h"
+#include "file.h"
 
 #define OP_PUSH_LITERAL   0x00
 #define OP_PUSH_INTEGER   0x01

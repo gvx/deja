@@ -11,6 +11,7 @@
 #include "types.h"
 #include "value.h"
 #include "gc.h"
+#include "file.h"
 
 typedef struct
 {
