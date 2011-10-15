@@ -17,5 +17,6 @@ typedef struct Scope
 
 V new_scope(V);
 V new_function_scope(V);
+V new_file_scope(V);
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef OPCODES_DEF
 #define OPCODES_DEF
 
+#include "error.h"
+#include "header.h"
+#include "stack.h"
+
 #define OP_PUSH_LITERAL   0x00
 #define OP_PUSH_INTEGER   0x01
 #define OP_PUSH_WORD      0x02
@@ -21,5 +25,7 @@
 #define OP_LINE_NUMBER    0x50
 #define OP_LINE_TEXT      0x51
 #define OP_SOURCE_FILE    0x52
+
+Error do_instruction(Header*, Stack*, Stack*);
 
 #endif

@@ -44,7 +44,7 @@ void decode(int instruction, int *opcode, int *argument)
 	}
 }
 
-int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
+Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v;
 	V key;
@@ -74,7 +74,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				{
 					//some error?
 					//*error = name error
-					return source;
+					return NameError;
 				}
 				v = get_hashmap(&sc->hm, key);
 			}
@@ -82,7 +82,8 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				//push v to the call stack
 				push(scope_arr, new_function_scope(v));
-				return toFunc(v)->start;
+				//return toFunc(v)->start;
+				return Nothing;
 			}
 			else
 			{
@@ -93,13 +94,17 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			v = pop(S);
 			sc = toScope(scope);
 			V key = get_literal(h, argument);
-			while (!change_hashmap(sc->hm, key, v))
+			while (!change_hashmap(&sc->hm, key, v))
 			{
-				sc = toScope(sc->parent);
-				if (sc == NULL)
+				if (sc->parent == NULL)
 				{
 					//set in the global environment
+					set_hashmap(&sc->hm, key, v);
 					break;
+				}
+				else
+				{
+					sc = toScope(sc->parent);
 				}
 			}
 			clear_ref(v);
@@ -122,7 +127,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				{
 					//some error?
 					//*error = name error
-					return source;
+					return NameError;
 				}
 				v = get_hashmap(&sc->hm, key);
 			}
@@ -132,7 +137,8 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_JMP:
 			*pc += argument;
-			return source + argument;
+			//return source + argument;
+			return Nothing;
 		case OP_JMPZ:
 			v = pop(S);
 			bool t = truthy(v);
@@ -140,7 +146,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			if (!t)
 			{
 				*pc += argument;
-				return source + argument;
+				return Nothing;
 			}
 			break;
 		case OP_RETURN:
@@ -155,7 +161,7 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				if (v == NULL)
 				{
 					// EOF
-					return source;
+					return Exit;
 				}
 			}
 			while (toFunc(toScope(v)->func) == f);
@@ -198,5 +204,6 @@ int* do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 	}
 	*pc++;
-	return source + 1;
+	return Nothing;
+	//return source + 1;
 }
