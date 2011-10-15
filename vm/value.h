@@ -9,6 +9,7 @@
 #define toStack(x) ((Stack*)x->data.object)
 #define toString(x) ((String*)x->data.object)
 #define toNumber(x) (x->data.number)
+#define toCFunc(x) ((Error (*)(Header*, Stack*, Stack*))x->data.object)
 
 // Déjà Vu utilises the synchronous cycle collection algorithm
 // described by David F. Bacon and V.T. Rajan (2001)

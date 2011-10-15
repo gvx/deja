@@ -9,7 +9,7 @@
 #include "error.h"
 #include "file.h"
 #include "scope.h"
-//#include "stdlib.h"
+#include "lib.h"
 //#include "env.h"
 
 
@@ -20,6 +20,7 @@ int run_file(V file_name)
 	Stack *S = newstack();
 	Stack *scope = newstack();
 	push(scope, new_file_scope(file));
+	open_lib(&toScope(get_head(scope))->hm);
 	while (e == Nothing)
 	{
 		e = do_instruction(&toFile(file)->header, S, scope);

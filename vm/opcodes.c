@@ -85,6 +85,10 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				//return toFunc(v)->start;
 				return Nothing;
 			}
+			else if (v->type == T_CFUNC)
+			{
+				return toCFunc(v)(h, S, scope_arr);
+			}
 			else
 			{
 				push(S, add_ref(v));
