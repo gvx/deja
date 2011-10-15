@@ -156,6 +156,54 @@ Error print_nl(Header* h, Stack* S, Stack* scope_arr)
 	printf("\n");
 }
 
+Error make_new_list(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = newlist();
+	push(S, v);
+}
+
+Error produce_list(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = newlist();
+	V p;
+	String *s;
+	while (stack_size(S))
+	{
+		p = pop(S);
+		if (p->type == T_IDENT)
+		{
+			s = toString(p);
+			if (s->length == 1 && s->data[0] == ']')
+			{
+				clear_ref(p);
+				return Nothing;
+			}
+		}
+		push(toStack(v), p);
+		clear_ref(p);
+	}
+	return StackEmpty;
+}
+
+Error if_(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v0 = pop(S);
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (truthy(v0))
+	{
+		push(S, v1);
+	}
+	else
+	{
+		push(S, v2);
+	}
+	clear_ref(v0);
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -168,8 +216,13 @@ static CFunc stdlib[] = {
 	{".", print_nl},
 	{".\\", print},
 	{"type", type},
+	{"[]", make_new_list},
+	{"[", produce_list},
+	{"if", if_},
 	{NULL, NULL}
 };
+
+static char* autonyms[] = {"(", ")", "]", NULL};
 
 void open_lib(HashMap* hm)
 {
@@ -183,5 +236,11 @@ void open_lib(HashMap* hm)
 		v->data.object = stdlib[i].cfunc;
 		set_hashmap(hm, s, v);
 		i++;
+	}
+	char** k;
+	for (k = autonyms; *k; k++)
+	{
+		V j = get_ident(*k);
+		set_hashmap(hm, j, j);
 	}
 }

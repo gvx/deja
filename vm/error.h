@@ -8,6 +8,7 @@ typedef enum
 	NameError,
 	ValueError,
 	TypeError,
+	StackEmpty,
 	UserError
 } Error;
 
