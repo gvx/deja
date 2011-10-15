@@ -18,5 +18,6 @@ typedef struct Scope
 V new_scope(V);
 V new_function_scope(V);
 V new_file_scope(V);
+V new_global_scope(void);
 
 #endif

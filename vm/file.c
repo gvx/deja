@@ -1,6 +1,6 @@
 #include "file.h"
 
-V load_file(V file_name)
+V load_file(V file_name, V global)
 {
 	V new_file = NULL;
 	FILE* f = fopen(toString(file_name)->data, "rb");
@@ -12,6 +12,7 @@ V load_file(V file_name)
 		File* f_obj = malloc(sizeof(File));
 		f_obj->name = add_ref(file_name);
 		f_obj->header = h;
+		f_obj->global = global;
 		uint32_t *code = malloc(h.size);
 		fread(code, h.size, 1, f);
 		f_obj->code = code;

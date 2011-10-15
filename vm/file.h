@@ -13,10 +13,11 @@
 typedef struct
 {
 	V name;
+	V global;
 	Header header;
 	uint32_t *code;
 } File;
 
-V load_file(V);
+V load_file(V, V);
 
 #endif

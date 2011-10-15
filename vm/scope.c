@@ -38,11 +38,24 @@ V new_file_scope(V file)
 {
 	V sc = new_value(T_SCOPE);
 	Scope* scope = malloc(sizeof(Scope));
-	scope->parent = NULL;
+	scope->parent = toFile(file)->global;
 	scope->func = NULL;
 	scope->file = add_ref(file);
 	scope->pc = toFile(file)->code;
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 64);
+	return sc;
+}
+
+V new_global_scope(void)
+{
+	V sc = new_value(T_SCOPE);
+	Scope* scope = malloc(sizeof(Scope));
+	scope->parent = NULL;
+	scope->func = NULL;
+	scope->file = NULL;
+	scope->pc = NULL;
+	sc->data.object = scope;
+	hashmap_from_scope(sc, 128);
 	return sc;
 }

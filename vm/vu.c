@@ -16,11 +16,12 @@
 int run_file(V file_name)
 {
 	Error e = Nothing;
-	V file = load_file(file_name);
+	V global = new_global_scope();
+	V file = load_file(file_name, global);
 	Stack *S = newstack();
 	Stack *scope = newstack();
 	push(scope, new_file_scope(file));
-	open_lib(&toScope(get_head(scope))->hm);
+	open_lib(&toScope(global)->hm);
 	while (e == Nothing)
 	{
 		e = do_instruction(&toFile(file)->header, S, scope);
