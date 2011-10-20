@@ -100,7 +100,7 @@ void release_value(V t)
 			break;
 		case T_STACK:
 			s = toStack(t);
-			while (i = pop(s))
+			while ((i = pop(s)))
 			{
 				clear_ref(i);
 			}
@@ -455,12 +455,15 @@ void collect_cycles(void)
 
 void clear_ref(V t)
 {
-	if (--t->refs == 0)
+	if (t != NULL)
 	{
-		release_value(t);
-	}
-	else if (t->color != Green)
-	{
-		possible_root(t);
+		if (--t->refs == 0)
+		{
+			release_value(t);
+		}
+		else if (t->color != Green)
+		{
+			possible_root(t);
+		}
 	}
 }

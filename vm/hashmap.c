@@ -175,7 +175,7 @@ void grow_hashmap(HashMap* hm)
 			b->next = bl[h];
 			bl[h] = b;
 		}
-		while(b = bb);
+		while((b = bb));
 	}
 	free(hm->map);
 	hm->map = bl;
