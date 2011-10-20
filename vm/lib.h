@@ -21,6 +21,7 @@ typedef struct
 	Error (*cfunc)(Header*, Stack*, Stack*);
 } CFunc;
 
-void open_lib(HashMap*);
+void open_lib(CFunc[], HashMap*);
+void open_std_lib(HashMap*);
 
 #endif

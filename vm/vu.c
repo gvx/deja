@@ -21,7 +21,7 @@ int run_file(V file_name)
 	Stack *S = newstack();
 	Stack *scope = newstack();
 	push(scope, new_file_scope(file));
-	open_lib(&toScope(global)->hm);
+	open_std_lib(&toScope(global)->hm);
 	while (e == Nothing)
 	{
 		e = do_instruction(&toFile(file)->header, S, scope);

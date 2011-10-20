@@ -282,19 +282,24 @@ static CFunc stdlib[] = {
 
 static char* autonyms[] = {"(", ")", "]", NULL};
 
-void open_lib(HashMap* hm)
+void open_lib(CFunc lib[], HashMap* hm)
 {
 	int i = 0;
 	V s;
 	V v;
-	while (stdlib[i].name != NULL)
+	while (lib[i].name != NULL)
 	{
-		s = a_to_value(stdlib[i].name); 
+		s = a_to_value(lib[i].name); 
 		v = new_value(T_CFUNC);
-		v->data.object = stdlib[i].cfunc;
+		v->data.object = lib[i].cfunc;
 		set_hashmap(hm, s, v);
 		i++;
 	}
+}
+
+void open_std_lib(HashMap* hm)
+{
+	open_lib(stdlib, hm);
 	char** k;
 	for (k = autonyms; *k; k++)
 	{
