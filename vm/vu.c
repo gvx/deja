@@ -31,6 +31,10 @@ int run_file(V file_name)
 		printf("An error occurred.\n");
 		//at this point we can use the scope stack to produce a traceback
 	}
+	//clean-up
+	clear_stack(S);
+	clear_stack(scope);
+	clear_ref(file);
 	return 0;
 }
 

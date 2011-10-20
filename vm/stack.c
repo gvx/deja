@@ -41,3 +41,12 @@ int stack_size(Stack *stack)
 {
 	return stack->size;
 }
+
+void clear_stack(Stack *stack)
+{
+	while (stack_size(stack) > 0)
+	{
+		clear_ref(pop(stack));
+	}
+	free(S);
+}

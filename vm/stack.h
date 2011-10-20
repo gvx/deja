@@ -21,5 +21,6 @@ Stack* newstack();
 void push(Stack*, V);
 V pop(Stack*);
 int stack_size(Stack*);
+void clear_stack(Stack*);
 
 #endif
