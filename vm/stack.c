@@ -48,5 +48,5 @@ void clear_stack(Stack *stack)
 	{
 		clear_ref(pop(stack));
 	}
-	free(S);
+	free(stack);
 }

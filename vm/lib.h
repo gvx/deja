@@ -2,6 +2,7 @@
 #define LIB_DEF
 
 #include <stdio.h>
+#include <math.h>
 
 #include "scope.h"
 #include "header.h"
@@ -12,6 +13,7 @@
 #include "value.h"
 #include "gc.h"
 #include "file.h"
+#include "func.h"
 
 typedef struct
 {

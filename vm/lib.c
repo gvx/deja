@@ -80,6 +80,26 @@ Error div_(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
+Error mod_(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type == T_NUM && v2->type == T_NUM)
+	{
+		V r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
+		clear_ref(v1);
+		clear_ref(v2);
+		push(S, r);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return ValueError;
+	}
+}
+
 const char* gettype(V r)
 {
 	switch (r->type)
@@ -204,6 +224,34 @@ Error if_(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error return_(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = NULL;
+	V scope = scope_arr->head->data;
+	Func* f = toFunc(toScope(scope)->func);
+	do
+	{
+		if (v != NULL)
+		{
+			clear_ref(v);
+		}
+		v = pop(scope_arr);
+		if (v == NULL)
+		{
+			// EOF
+			return Exit;
+		}
+	}
+	while (toFunc(toScope(v)->func) == f);
+	push(scope_arr, v);
+	return Nothing;
+}
+
+Error exit_(Header* h, Stack* S, Stack* scope_arr)
+{
+	return Exit;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -213,12 +261,16 @@ static CFunc stdlib[] = {
 	{"mul", mul},
 	{"/", div_},
 	{"div", div_},
+	{"%", mod_},
+	{"mod", mod_},
 	{".", print_nl},
 	{".\\", print},
 	{"type", type},
 	{"[]", make_new_list},
 	{"[", produce_list},
 	{"if", if_},
+	{"return", return_},
+	{"exit", exit_},
 	{NULL, NULL}
 };
 

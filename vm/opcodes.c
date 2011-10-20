@@ -164,6 +164,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_RETURN:
 			f = toFunc(toScope(scope)->func);
+			v = NULL;
 			do
 			{
 				if (v != NULL)
