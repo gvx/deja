@@ -115,6 +115,8 @@ const char* gettype(V r)
 		case T_FUNC:
 		case T_CFUNC:
 			return "func";
+		default:
+			return "nil"; //not really true, but meh.
 	}
 
 }
@@ -140,6 +142,7 @@ Error type(Header* h, Stack* S, Stack* scope_arr)
 	}
 	clear_ref(r);
 	push(S, t);
+	return Nothing;
 }
 
 Error print(Header* h, Stack* S, Stack* scope_arr)
@@ -168,18 +171,21 @@ Error print(Header* h, Stack* S, Stack* scope_arr)
 			break;
 	};
 	clear_ref(v);
+	return Nothing;
 }
 
 Error print_nl(Header* h, Stack* S, Stack* scope_arr)
 {
 	print(h, S, scope_arr);
 	printf("\n");
+	return Nothing;
 }
 
 Error make_new_list(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = newlist();
 	push(S, v);
+	return Nothing;
 }
 
 Error produce_list(Header* h, Stack* S, Stack* scope_arr)
