@@ -62,6 +62,10 @@ V get_hashmap(HashMap* hm, V key)
 	String* s = key->data.object;
 	int hash = string_hash(s->length, s->data) % hm->size;
 	Bucket* b = hm->map[hash];
+	if (b == NULL)
+	{
+		return NULL;
+	}
 	return get_from_bucket(b, s);
 }
 

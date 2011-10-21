@@ -48,10 +48,10 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v;
 	V key;
-	Scope *sc;
+	uint32_t *pc;
 	V scope = scope_arr->head->data;
-	uint32_t** pc = &toScope(scope)->pc;
-	uint32_t* source = *pc;
+	Scope *sc = toScope(scope);
+	uint32_t* source = toScope(scope)->pc;
 	Func* f;
 	int opcode, argument;
 	decode(ntohl(*source), &opcode, &argument);
@@ -64,7 +64,6 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, int_to_value(argument));
 			break;
 		case OP_PUSH_WORD:
-			sc = toScope(scope);
 			key = get_literal(h, argument);
 			v = get_hashmap(&sc->hm, key);
 			while (v == NULL)
@@ -149,21 +148,26 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, add_ref(v));
 			break;
 		case OP_JMP:
-			*pc += argument;
+			sc->pc += argument;
 			//return source + argument;
-			return Nothing;
+			//return Nothing;
 		case OP_JMPZ:
 			v = pop(S);
 			bool t = truthy(v);
 			clear_ref(v);
 			if (!t)
 			{
-				*pc += argument;
-				return Nothing;
+				sc->pc += argument;
+		//		return Nothing;
 			}
 			break;
 		case OP_RETURN:
-			f = toFunc(toScope(scope)->func);
+			v = sc->func;
+			if (v == NULL)
+			{
+				return Exit;
+			}
+			f = toFunc(v);
 			v = NULL;
 			do
 			{
@@ -174,13 +178,11 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				v = pop(scope_arr);
 				if (v == NULL)
 				{
-					// EOF
 					return Exit;
 				}
 			}
 			while (toFunc(toScope(v)->func) == f);
 			push(scope_arr, v);
-			pc = &toScope(v)->pc;
 			break;
 		case OP_LABDA:
 			v = new_value(T_FUNC);
@@ -192,13 +194,12 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_ENTER_SCOPE:
 			push(scope_arr, new_scope(scope));
-			pc = &toScope(get_head(scope_arr))->pc;
 			break;
 		case OP_LEAVE_SCOPE:
+			pc = sc->pc;
 			v = pop(scope_arr);
 			sc = toScope(get_head(scope_arr));
-			sc->pc = *pc;
-			pc = &sc->pc;
+			sc->pc = pc;
 			clear_ref(v);
 			break;
 		case OP_NEW_LIST:
@@ -217,7 +218,5 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 		case OP_SOURCE_FILE:
 			break;
 	}
-	*pc++;
 	return Nothing;
-	//return source + 1;
 }

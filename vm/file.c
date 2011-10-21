@@ -13,8 +13,8 @@ V load_file(V file_name, V global)
 		f_obj->name = add_ref(file_name);
 		f_obj->header = h;
 		f_obj->global = global;
-		uint32_t *code = malloc(h.size);
-		fread(code, h.size, 1, f);
+		uint32_t *code = malloc(h.size * 4);
+		fread(code, 4, h.size, f);
 		f_obj->code = code;
 		new_file->data.object = f_obj;
 	}

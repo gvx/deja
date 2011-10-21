@@ -27,14 +27,21 @@ bool little_endian(void)
 void read_literals(FILE* f, Header* h)
 {
 	long oldpos = ftell(f);
+	long startpos;
 	int i;
 	int n = 0;
 	char type;
 	uint32_t str_length; 
+	fseek(f, h->size * 4, SEEK_CUR);
+	startpos = ftell(f);
 	while (!feof(f))
 	{
-		n++;
 		fread(&type, sizeof(type), 1, f);
+		if (feof(f))
+		{
+			break;
+		}
+		n++;
 		if (type == TYPE_NUM)
 		{
 			fseek(f, 8, SEEK_CUR);
@@ -48,7 +55,7 @@ void read_literals(FILE* f, Header* h)
 	V* arr = calloc(n, sizeof(V));
 	V t;
 	String* s;
-	fseek(f, oldpos, SEEK_SET);
+	fseek(f, startpos, SEEK_SET);
 	for (i = 0; i < n; i++)
 	{
 		fread(&type, sizeof(type), 1, f);
@@ -78,11 +85,13 @@ void read_literals(FILE* f, Header* h)
 			fread(s->data, s->length, 1, f);
 			t = new_value(type == TYPE_STR ? T_STR : T_IDENT);
 			t->data.object = s;
+			t->color = Green;
 		}
 		arr[i] = t;
 	}
 	h->n_literals = n;
 	h->literals = arr;
+	fseek(f, oldpos, SEEK_SET);
 }
 
 V get_literal(Header* h, uint32_t index)

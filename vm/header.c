@@ -3,7 +3,7 @@
 Header read_header(FILE *f)
 {
 	Header header;
-	fread(&header, sizeof(header), 1, f);
+	fread(&header, 8, 1, f);
 	header.size = ntohl(header.size);
 	return header;
 }

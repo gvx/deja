@@ -1,11 +1,13 @@
 #ifndef HASHMAP_DEF
 #define HASHMAP_DEF
 
+#include <stdint.h>
+
 #include "value.h"
 
 typedef struct Bucket
 {
-	int keysize;
+	uint32_t keysize;
 	char *key;
 	V value;
 	struct Bucket *next;

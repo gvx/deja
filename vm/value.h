@@ -2,6 +2,7 @@
 #define VALUE_DEF
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #define toFile(x) ((File*)x->data.object)
 #define toScope(x) ((Scope*)x->data.object)
@@ -39,7 +40,7 @@ typedef Value* V;
 
 typedef struct String
 {
-	unsigned int length;
+	uint32_t length;
 	char* data;
 } String;
 

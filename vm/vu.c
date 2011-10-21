@@ -26,6 +26,10 @@ Error run_file(V global, V file_name)
 	while (e == Nothing)
 	{
 		e = do_instruction(&toFile(file)->header, S, scope);
+		if (stack_size(scope) > 0)
+		{
+			toScope(scope->head->data)->pc++;
+		}
 	}
 	if (e != Exit) //uh oh
 	{
