@@ -50,7 +50,7 @@ def double(x):
 
 def write_code(code, acc):
 	for op in code:
-		acc.append(OPCODES[op.opcode] | (signed_int(op.ref) & 0xFFFFFF))
+		acc.append(signed_int(OPCODES[op.opcode] | (op.ref & 0xFFFFFF)))
 
 def write_literals(literals, acc):
 	for literal in literals:
