@@ -53,12 +53,25 @@ def convert(flat):
 			bytecode.append(SingleInstruction('LABDA', k.index))
 	return bytecode
 
+def is_return(node):
+	return isinstance(node, SingleInstruction) and node.opcode == 'RETURN'
+
+def optimize(flattened): #optimize away superfluous RETURN statements
+	prev_instruction = None
+	prev_prev_instruction = None
+	for instruction in reversed(flattened):
+		if is_return(instruction) and (is_return(prev_instruction) or (isinstance(prev_instruction, Marker) and is_return(prev_prev_instruction))):
+			flattened.remove(instruction)
+		prev_prev_instruction = prev_instruction
+		prev_instruction = instruction
+	return flattened
+
 def refine(flattened): #removes all markers and replaces them by indices
 	#first pass: fill dictionary
 	memo = {}
 	for item in reversed(flattened):
-		i = flattened.index(item)
 		if isinstance(item, Marker):
+			i = flattened.index(item)
 			memo[item] = i
 			del flattened[i]
 	#second pass: change all goto and branches
