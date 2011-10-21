@@ -28,9 +28,9 @@ def convert(flat):
 			for w in k.words:
 				if isinstance(w, ProperWord):
 					if OPTIMIZE and w.value in OPTIMIZERS:
-						if w.value in ARGED_OPT:
-							if acc and acc[-1].opcode == 'PUSH_LITERAL' and acc[-1].ref.type == 'ident':
-								s = acc.pop().ref
+						if OPTIMIZERS[w.value] in ARGED_OPT:
+							if bytecode and bytecode[-1].opcode == 'PUSH_LITERAL' and isinstance(bytecode[-1].ref, Ident):
+								s = bytecode.pop().ref
 							else:
 								bytecode.append(SingleInstruction('PUSH_WORD', w))
 								continue
