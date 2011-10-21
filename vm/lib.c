@@ -289,7 +289,7 @@ void open_lib(CFunc lib[], HashMap* hm)
 	V v;
 	while (lib[i].name != NULL)
 	{
-		s = a_to_value(lib[i].name); 
+		s = get_ident(lib[i].name); 
 		v = new_value(T_CFUNC);
 		v->data.object = lib[i].cfunc;
 		set_hashmap(hm, s, v);

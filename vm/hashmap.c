@@ -8,9 +8,9 @@
 
 #include <assert.h> //FIXME
 
-int string_hash(int length, const char *key)
+uint32_t string_hash(int length, const char *key)
 {
-	unsigned int hash = 2166136261;
+	uint32_t hash = 2166136261;
 	int i;
 	for (i = 0; i < length; i++)
 	{
@@ -102,7 +102,7 @@ void set_hashmap(HashMap* hm, V key, V value)
 {
 	assert(key->type == T_IDENT); //FIXME: replace with exception system
 	String* s = key->data.object;
-	int hash = string_hash(s->length, s->data) % hm->size;
+	uint32_t hash = string_hash(s->length, s->data) % hm->size;
 	Bucket* b = hm->map[hash];
 	if (b == NULL)
 	{

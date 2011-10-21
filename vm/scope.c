@@ -38,7 +38,7 @@ V new_file_scope(V file)
 {
 	V sc = new_value(T_SCOPE);
 	Scope* scope = malloc(sizeof(Scope));
-	scope->parent = toFile(file)->global;
+	scope->parent = add_ref(toFile(file)->global);
 	scope->func = NULL;
 	scope->file = add_ref(file);
 	scope->pc = toFile(file)->code;

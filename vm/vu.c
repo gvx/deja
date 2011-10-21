@@ -12,16 +12,17 @@
 #include "lib.h"
 //#include "env.h"
 
-
-int run_file(V file_name)
+Error run_file(V global, V file_name)
 {
 	Error e = Nothing;
-	V global = new_global_scope();
 	V file = load_file(file_name, global);
+	if (file == NULL)
+	{
+		return IllegalFile;
+	}
 	Stack *S = newstack();
 	Stack *scope = newstack();
 	push(scope, new_file_scope(file));
-	open_std_lib(&toScope(global)->hm);
 	while (e == Nothing)
 	{
 		e = do_instruction(&toFile(file)->header, S, scope);
@@ -35,11 +36,36 @@ int run_file(V file_name)
 	clear_stack(S);
 	clear_stack(scope);
 	clear_ref(file);
-	return 0;
+	return e;
 }
 
+void run(V file_name)
+{
+	V global = new_global_scope();
+	open_std_lib(&toScope(global)->hm);
+	Error e = run_file(global, file_name);
+	//Do something with e
+}
+
+bool exists(char* fname)
+{
+	FILE *f = fopen(fname, "r");
+	if (f == NULL)
+	{
+		return false;
+	}
+	else
+	{
+		fclose(f);
+		return true;
+	}
+}
 
 int main(int argc, char *argv[])
 {
+	if (argc > 1 && exists(argv[1]))
+	{
+		run(a_to_value(argv[1]));
+	}
 	return 0;
 }

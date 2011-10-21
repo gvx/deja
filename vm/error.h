@@ -9,6 +9,7 @@ typedef enum
 	ValueError,
 	TypeError,
 	StackEmpty,
+	IllegalFile,
 	UserError
 } Error;
 
