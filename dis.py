@@ -6,6 +6,7 @@ for k in OPCODES:
 	DECODE_OPCODES[OPCODES[k] / 0x1000000] = k
 
 WORD_ARG = set('GET SET GET_GLOBAL SET_GLOBAL SET_LOCAL PUSH_LITERAL PUSH_WORD'.split())
+POS_ARG = set('JMP JMPZ LABDA'.split())
 
 def d_unsigned_int(x):
 	return unsigned_int_s.unpack('\x00' + x)[0]
@@ -50,8 +51,10 @@ def make_line_00(i, x, literals):
 		arg = literals[d_unsigned_int(x[1:])]
 	elif op == 'PUSH_INTEGER':
 		arg = d_signed_int(x[1:])
-	else:
+	elif op in POS_ARG:
 		arg = i + d_signed_int(x[1:])
+	else:
+		return op
 	return op + ' ' + str(arg)
 
 def dis_00(text):

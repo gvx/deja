@@ -51,6 +51,7 @@ def convert(flat):
 			bytecode.append(SingleInstruction('JMPZ', k.index))
 		elif isinstance(k, LabdaNode):
 			bytecode.append(SingleInstruction('LABDA', k.index))
+	bytecode.append(SingleInstruction('RETURN', 0))
 	return bytecode
 
 def is_return(node):
