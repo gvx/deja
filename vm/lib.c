@@ -258,6 +258,46 @@ Error exit_(Header* h, Stack* S, Stack* scope_arr)
 	return Exit;
 }
 
+Error lt(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type == T_NUM && v2->type == T_NUM)
+	{
+		V r = double_to_value(toNumber(v1) < toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		push(S, r);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return ValueError;
+	}
+}
+
+Error gt(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type == T_NUM && v2->type == T_NUM)
+	{
+		V r = double_to_value(toNumber(v1) > toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		push(S, r);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return ValueError;
+	}
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -277,6 +317,8 @@ static CFunc stdlib[] = {
 	{"if", if_},
 	{"return", return_},
 	{"exit", exit_},
+	{"<", lt},
+	{">", gt},
 	{NULL, NULL}
 };
 
