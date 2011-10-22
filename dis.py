@@ -54,8 +54,8 @@ def make_line_00(i, x, literals):
 	elif op in POS_ARG:
 		arg = i + d_signed_int(x[1:])
 	else:
-		return op
-	return op + ' ' + str(arg)
+		arg = ''
+	return '%03d %s %s' % (i, op, arg)
 
 def dis_00(text):
 	if len(text) < 4:
