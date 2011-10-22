@@ -35,7 +35,7 @@ void decode(int instruction, int *opcode, int *argument)
 		*argument = instruction & 8388607;
 		if (instruction & (1 << 23))
 		{
-			*argument = -*argument;
+			*argument = -(~*argument & 8388607) - 1;
 		}
 	}
 	else
