@@ -70,11 +70,14 @@ def optimize(flattened): #optimize away superfluous RETURN statements
 def refine(flattened): #removes all markers and replaces them by indices
 	#first pass: fill dictionary
 	memo = {}
-	for item in reversed(flattened):
+	i = 0
+	while i < len(flattened):
+		item = flattened[i]
 		if isinstance(item, Marker):
-			i = flattened.index(item)
 			memo[item] = i
 			del flattened[i]
+		else:
+			i += 1
 	#second pass: change all goto and branches
 	for i, item in enumerate(flattened):
 		if item.opcode in positional_instructions:
