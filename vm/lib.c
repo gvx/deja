@@ -298,6 +298,35 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
+Error eq(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1 = pop(S);
+	V v2 = pop(S);
+	int t = 0;
+	if (v1 == v2) //identical objects
+	{
+		t = 1;
+	}
+	else if (v1->type == v2->type)
+	{
+		if (v1->type == T_NUM)
+		{
+			t = toNumber(v1) == toNumber(v2);
+		}
+		else if (v1->type == T_IDENT || v1->type == T_STR)
+		{
+			String* s1 = toString(v1);
+			String* s2 = toString(v2);
+			if (s1->length == s2->length)
+			{
+				t = !memcmp(s1->data, s2->data, s1->length);
+			}
+		}
+	}
+	push(S, int_to_value(t));
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -319,6 +348,7 @@ static CFunc stdlib[] = {
 	{"exit", exit_},
 	{"<", lt},
 	{">", gt},
+	{"=", eq},
 	{NULL, NULL}
 };
 
