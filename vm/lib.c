@@ -324,6 +324,16 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 		}
 	}
 	push(S, int_to_value(t));
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
+Error not(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = pop(S);
+	push(S, int_to_value(truthy(v) ? 0 : 1));
+	clear_ref(v);
 	return Nothing;
 }
 
@@ -349,6 +359,7 @@ static CFunc stdlib[] = {
 	{"<", lt},
 	{">", gt},
 	{"=", eq},
+	{"not", not},
 	{NULL, NULL}
 };
 
