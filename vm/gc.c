@@ -123,9 +123,9 @@ void release_value(V t)
 			f = toFile(t);
 			for (n = 0; n < f->header.n_literals; n++)
 			{
-				release_value(f->header.literals[n]);
+				clear_ref(f->header.literals[n]);
 			}
-			release_value(f->name);
+			clear_ref(f->name);
 			break;
 	}
 	t->color = Black;

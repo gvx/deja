@@ -58,7 +58,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	switch (opcode)
 	{
 		case OP_PUSH_LITERAL:
-			push(S, get_literal(h, argument));
+			push(S, add_ref(get_literal(h, argument)));
 			break;
 		case OP_PUSH_INTEGER:
 			push(S, int_to_value(argument));
@@ -148,7 +148,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, add_ref(v));
 			break;
 		case OP_JMP:
-			sc->pc += argument;
+			sc->pc += argument - 1;
 			//return source + argument;
 			//return Nothing;
 		case OP_JMPZ:
@@ -157,7 +157,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(v);
 			if (!t)
 			{
-				sc->pc += argument;
+				sc->pc += argument - 1;
 		//		return Nothing;
 			}
 			break;

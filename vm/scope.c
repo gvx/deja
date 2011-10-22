@@ -13,9 +13,9 @@ V new_scope(V parent)
 	Scope* pscope = toScope(parent);
 	Scope* scope = malloc(sizeof(Scope));
 	scope->parent = add_ref(parent);
-	scope->func = add_ref(pscope->func);
-	scope->file = add_ref(pscope->file);
-	scope->pc = pscope->pc + 1;
+	scope->func = pscope->func == NULL ? NULL : add_ref(pscope->func);
+	scope->file = pscope->file == NULL ? NULL : add_ref(pscope->file);
+	scope->pc = pscope->pc;
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 16);
 	return sc;
