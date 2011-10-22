@@ -151,6 +151,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc += argument - 1;
 			//return source + argument;
 			//return Nothing;
+			break;
 		case OP_JMPZ:
 			v = pop(S);
 			bool t = truthy(v);
