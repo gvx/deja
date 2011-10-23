@@ -415,6 +415,23 @@ Error in(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error reversed(Header* h, Stack* S, Stack* scope_arr)
+{
+	V list = pop(S);
+	if (list->type != T_STACK)
+	{
+		clear_ref(list);
+		return ValueError;
+	}
+	V rev = newlist();
+	while (stack_size(toStack(list)) > 0)
+	{
+		push(toStack(rev), pop(toStack(list)));
+	}
+	push(S, rev);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -440,6 +457,7 @@ static CFunc stdlib[] = {
 	{"not", not},
 	{"range", range},
 	{"in", in},
+	{"reversed", reversed},
 	{NULL, NULL}
 };
 
