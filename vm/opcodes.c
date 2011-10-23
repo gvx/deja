@@ -114,7 +114,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_SET_LOCAL:
 			v = pop(S);
-			set_hashmap(&(toScope(scope)->hm), get_literal(h, argument), v);
+			set_hashmap(&sc->hm, get_literal(h, argument), v);
 			clear_ref(v);
 			break;
 		case OP_SET_GLOBAL:
@@ -198,10 +198,9 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_LEAVE_SCOPE:
 			pc = sc->pc;
-			v = pop(scope_arr);
+			clear_ref(pop(scope_arr));
 			sc = toScope(get_head(scope_arr));
 			sc->pc = pc;
-			clear_ref(v);
 			break;
 		case OP_NEW_LIST:
 			push(S, newlist());

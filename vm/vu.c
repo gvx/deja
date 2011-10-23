@@ -28,7 +28,7 @@ Error run_file(V global, V file_name)
 		e = do_instruction(&toFile(file)->header, S, scope);
 		if (stack_size(scope) > 0)
 		{
-			toScope(scope->head->data)->pc++;
+			toScope(get_head(scope))->pc++;
 		}
 	}
 	if (e != Exit) //uh oh

@@ -71,7 +71,7 @@ V get_hashmap(HashMap* hm, V key)
 
 Bucket* new_bucket(String* s, V value)
 {
-	Bucket* b = malloc(sizeof(Bucket*));
+	Bucket* b = malloc(sizeof(Bucket));
 	b->keysize = s->length;
 	b->key = malloc(s->length);
 	memcpy(b->key, s->data, s->length);
