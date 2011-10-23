@@ -12,6 +12,7 @@ V new_scope(V parent)
 	V sc = new_value(T_SCOPE);
 	Scope* pscope = toScope(parent);
 	Scope* scope = malloc(sizeof(Scope));
+	scope->is_func_scope = false;
 	scope->parent = add_ref(parent);
 	scope->func = pscope->func == NULL ? NULL : add_ref(pscope->func);
 	scope->file = pscope->file == NULL ? NULL : add_ref(pscope->file);
@@ -25,6 +26,7 @@ V new_function_scope(V function)
 {
 	V sc = new_value(T_SCOPE);
 	Scope* scope = malloc(sizeof(Scope));
+	scope->is_func_scope = true;
 	scope->parent = add_ref(toFunc(function)->defscope);
 	scope->func = add_ref(function);
 	scope->file = add_ref(toScope(scope->parent)->file);
@@ -38,6 +40,7 @@ V new_file_scope(V file)
 {
 	V sc = new_value(T_SCOPE);
 	Scope* scope = malloc(sizeof(Scope));
+	scope->is_func_scope = true;
 	scope->parent = add_ref(toFile(file)->global);
 	scope->func = NULL;
 	scope->file = add_ref(file);
@@ -51,6 +54,7 @@ V new_global_scope(void)
 {
 	V sc = new_value(T_SCOPE);
 	Scope* scope = malloc(sizeof(Scope));
+	scope->is_func_scope = false;
 	scope->parent = NULL;
 	scope->func = NULL;
 	scope->file = NULL;

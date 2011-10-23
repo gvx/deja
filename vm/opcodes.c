@@ -48,13 +48,12 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v;
 	V key;
-	uint32_t *pc;
-	V scope = scope_arr->head->data;
+	V scope = get_head(scope_arr);
 	Scope *sc = toScope(scope);
-	uint32_t* source = toScope(scope)->pc;
 	Func* f;
+	uint32_t *pc;
 	int opcode, argument;
-	decode(ntohl(*source), &opcode, &argument);
+	decode(ntohl(*sc->pc), &opcode, &argument);
 	switch (opcode)
 	{
 		case OP_PUSH_LITERAL:
@@ -71,18 +70,13 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				sc = toScope(sc->parent);
 				if (sc == NULL)
 				{
-					//some error?
-					//*error = name error
 					return NameError;
 				}
 				v = get_hashmap(&sc->hm, key);
 			}
 			if (v->type == T_FUNC)
 			{
-				//push v to the call stack
 				push(scope_arr, new_function_scope(v));
-				//return toFunc(v)->start;
-				return Nothing;
 			}
 			else if (v->type == T_CFUNC)
 			{
@@ -95,7 +89,6 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_SET:
 			v = pop(S);
-			sc = toScope(scope);
 			V key = get_literal(h, argument);
 			while (!change_hashmap(&sc->hm, key, v))
 			{
@@ -119,7 +112,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_SET_GLOBAL:
 			v = pop(S);
-			set_hashmap(&toScope(toFile(toScope(scope)->file)->global)->hm, get_literal(h, argument), v);
+			set_hashmap(&toScope(toFile(sc->file)->global)->hm, get_literal(h, argument), v);
 			clear_ref(v);
 			break;
 		case OP_GET:
@@ -130,8 +123,6 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				sc = toScope(sc->parent);
 				if (sc == NULL)
 				{
-					//some error?
-					//*error = name error
 					return NameError;
 				}
 				v = get_hashmap(&sc->hm, key);
@@ -139,7 +130,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, add_ref(v));
 			break;
 		case OP_GET_GLOBAL:
-			v = get_hashmap(&toScope(toFile(toScope(scope)->file)->global)->hm, get_literal(h, argument));
+			v = get_hashmap(&toScope(toFile(sc->file)->global)->hm, get_literal(h, argument));
 			if (v == NULL)
 			{
 				return NameError;
@@ -148,8 +139,6 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_JMP:
 			sc->pc += argument - 1;
-			//return source + argument;
-			//return Nothing;
 			break;
 		case OP_JMPZ:
 			v = pop(S);
@@ -158,7 +147,6 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			if (!t)
 			{
 				sc->pc += argument - 1;
-		//		return Nothing;
 			}
 			break;
 		case OP_RETURN:
@@ -167,28 +155,23 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return Exit;
 			}
-			f = toFunc(v);
 			v = NULL;
 			do
 			{
-				if (v != NULL)
-				{
-					clear_ref(v);
-				}
+				clear_ref(v);
 				v = pop(scope_arr);
 				if (v == NULL)
 				{
 					return Exit;
 				}
 			}
-			while (toFunc(toScope(v)->func) == f);
-			push(scope_arr, v);
+			while (!toScope(v)->is_func_scope);
 			break;
 		case OP_LABDA:
 			v = new_value(T_FUNC);
 			f = malloc(sizeof(Func));
 			f->defscope = scope;
-			f->start = source + 1;
+			f->start = sc->pc;
 			v->data.object = f;
 			push(S, v);
 			sc->pc += argument - 1;

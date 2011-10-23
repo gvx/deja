@@ -265,8 +265,11 @@ Error if_(Header* h, Stack* S, Stack* scope_arr)
 Error return_(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = NULL;
-	V scope = scope_arr->head->data;
-	Func* f = toFunc(toScope(scope)->func);
+	V scope = get_head(scope_arr);
+	if (toScope(v)->func == NULL)
+	{
+		return Exit;
+	}
 	do
 	{
 		clear_ref(v);
@@ -276,8 +279,7 @@ Error return_(Header* h, Stack* S, Stack* scope_arr)
 			return Exit;
 		}
 	}
-	while (toFunc(toScope(v)->func) == f);
-	push(scope_arr, v);
+	while (!toScope(scope)->is_func_scope);
 	return Nothing;
 }
 
@@ -557,7 +559,6 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 	{
 		return e;
 	}
-	Func* f = toFunc(toScope(get_head(scope_arr))->func);
 	do
 	{
 		clear_ref(v);
@@ -567,8 +568,7 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 			return Exit;
 		}
 	}
-	while (toFunc(toScope(v)->func) == f);
-	push(scope_arr, v);
+	while (!toScope(v)->is_func_scope);
 	v = pop(S);
 	if (v->type == T_FUNC)
 	{
@@ -591,7 +591,6 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 Error self_tail(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = NULL;
-	Func* f = toFunc(toScope(get_head(scope_arr))->func);
 	do
 	{
 		clear_ref(v);
@@ -601,10 +600,16 @@ Error self_tail(Header* h, Stack* S, Stack* scope_arr)
 			return Exit;
 		}
 	}
-	while (toFunc(toScope(get_head(scope_arr))->func) == f);
+	while (!toScope(v)->is_func_scope);
 	push(scope_arr, v);
 	Scope* sc = toScope(v);
-	sc->pc = f->start;
+	sc->pc = toFunc(sc->func)->start;
+	return Nothing;
+}
+
+Error print_depth(Header* h, Stack* S, Stack* scope_arr)
+{
+	printf("(depth:%d)\n", stack_size(scope_arr));
 	return Nothing;
 }
 
@@ -642,6 +647,7 @@ static CFunc stdlib[] = {
 	{"tail-call", tail_call},
 	{"recurse", self_tail},
 	{"(print-stack)", print_stack},
+	{"(print-depth)", print_depth},
 	{NULL, NULL}
 };
 

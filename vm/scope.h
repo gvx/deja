@@ -11,6 +11,7 @@ typedef struct Scope
 	V file;
 	V func;
 	V parent;
+	bool is_func_scope;
 	uint32_t* pc;
 	struct HashMap hm;
 } Scope;
