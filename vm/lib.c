@@ -1,5 +1,31 @@
 #include "lib.h"
 
+void print_value(V v)
+{
+	String* s;
+	switch (v->type)
+	{
+		case T_IDENT:
+			s = toString(v);
+			printf("'%*s'", s->length, s->data);
+			break;
+		case T_STR:
+			s = toString(v);
+			printf("%*s", s->length, s->data);
+			break;
+		case T_NUM:
+			printf("%g", toNumber(v));
+			break;
+		case T_STACK:
+			printf("<stack>");
+			break;
+		case T_CFUNC:
+		case T_FUNC:
+			printf("<func>");
+			break;
+	};
+}
+
 Error add(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v1 = pop(S);
@@ -148,28 +174,7 @@ Error type(Header* h, Stack* S, Stack* scope_arr)
 Error print(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = pop(S);
-	String* s;
-	switch (v->type)
-	{
-		case T_IDENT:
-			s = toString(v);
-			printf("'%*s'", s->length, s->data);
-			break;
-		case T_STR:
-			s = toString(v);
-			printf("%*s", s->length, s->data);
-			break;
-		case T_NUM:
-			printf("%g", toNumber(v));
-			break;
-		case T_STACK:
-			printf("<stack>");
-			break;
-		case T_CFUNC:
-		case T_FUNC:
-			printf("<func>");
-			break;
-	};
+	print_value(v);
 	clear_ref(v);
 	return Nothing;
 }
@@ -432,6 +437,20 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error print_stack(Header* h, Stack* S, Stack* scope_arr)
+{
+	Node* n = S->head;
+	printf("[ ");
+	while (n != NULL)
+	{
+		print_value(n->data);
+		printf(" ");
+		n = n->next;
+	}
+	printf("]\n");
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -458,6 +477,7 @@ static CFunc stdlib[] = {
 	{"range", range},
 	{"in", in},
 	{"reversed", reversed},
+	{"(print-stack)", print_stack},
 	{NULL, NULL}
 };
 
@@ -487,4 +507,6 @@ void open_std_lib(HashMap* hm)
 		V j = get_ident(*k);
 		set_hashmap(hm, j, j);
 	}
+	set_hashmap(hm, get_ident("true"), int_to_value(1));
+	set_hashmap(hm, get_ident("false"), int_to_value(0));
 }
