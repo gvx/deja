@@ -613,6 +613,14 @@ Error print_depth(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error input(Header* h, Stack* S, Stack* scope_arr)
+{
+	char line[80];
+	fgets(line, 80, stdin);
+	push(S, a_to_value(line));
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"+", add},
@@ -648,6 +656,7 @@ static CFunc stdlib[] = {
 	{"recurse", self_tail},
 	{"(print-stack)", print_stack},
 	{"(print-depth)", print_depth},
+	{"input", input},
 	{NULL, NULL}
 };
 

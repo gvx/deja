@@ -12,7 +12,7 @@
 
 #define MAX_ROOTS 1024
 
-static int root_size;
+static int root_size = 0;
 static V roots[MAX_ROOTS];
 
 void collect_cycles(void);
