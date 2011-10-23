@@ -464,6 +464,60 @@ Error swap(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error push_to(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V list = pop(S);
+	if (list->type != T_STACK)
+	{
+		clear_ref(list);
+		return ValueError;
+	}
+	V val = pop(S);
+	push(toStack(list), val);
+	clear_ref(list);
+	return Nothing;
+}
+
+Error push_through(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V list = pop(S);
+	if (list->type != T_STACK)
+	{
+		clear_ref(list);
+		return ValueError;
+	}
+	V val = pop(S);
+	push(toStack(list), val);
+	push(S, list);
+	return Nothing;
+}
+
+Error pop_from(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	V list = pop(S);
+	if (list->type != T_STACK)
+	{
+		clear_ref(list);
+		return ValueError;
+	}
+	V val = pop(toStack(list));
+	push(S, val);
+	clear_ref(list);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -491,6 +545,9 @@ static CFunc stdlib[] = {
 	{"in", in},
 	{"reversed", reversed},
 	{"swap", swap},
+	{"push-to", push_to},
+	{"push-through", push_through},
+	{"pop-from", pop_from},
 	{"(print-stack)", print_stack},
 	{NULL, NULL}
 };
