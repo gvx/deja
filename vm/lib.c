@@ -451,6 +451,19 @@ Error print_stack(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error swap(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V v1 = pop(S);
+	V v2 = pop(S);
+	push(S, v1);
+	push(S, v2);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -477,6 +490,7 @@ static CFunc stdlib[] = {
 	{"range", range},
 	{"in", in},
 	{"reversed", reversed},
+	{"swap", swap},
 	{"(print-stack)", print_stack},
 	{NULL, NULL}
 };
