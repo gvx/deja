@@ -123,7 +123,6 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(v);
 			break;
 		case OP_GET:
-			sc = toScope(scope);
 			key = get_literal(h, argument);
 			v = get_hashmap(&sc->hm, key);
 			while (v == NULL)
@@ -192,6 +191,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			f->start = source + 1;
 			v->data.object = f;
 			push(S, v);
+			sc->pc += argument - 1;
 			break;
 		case OP_ENTER_SCOPE:
 			push(scope_arr, new_scope(scope));

@@ -26,6 +26,33 @@ void print_value(V v)
 	};
 }
 
+Error get(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	V key = pop(S);
+	if (key->type != T_IDENT)
+	{
+		return ValueError;
+	}
+	Scope *sc = toScope(get_head(scope_arr));
+	V v = get_hashmap(&sc->hm, key);
+	while (v == NULL)
+	{
+		sc = toScope(sc->parent);
+		if (sc == NULL)
+		{
+			return NameError;
+		}
+		v = get_hashmap(&sc->hm, key);
+	}
+	push(S, add_ref(v));
+	clear_ref(key);
+	return Nothing;
+}
+
 Error add(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v1 = pop(S);
@@ -242,14 +269,10 @@ Error return_(Header* h, Stack* S, Stack* scope_arr)
 	Func* f = toFunc(toScope(scope)->func);
 	do
 	{
-		if (v != NULL)
-		{
-			clear_ref(v);
-		}
+		clear_ref(v);
 		v = pop(scope_arr);
 		if (v == NULL)
 		{
-			// EOF
 			return Exit;
 		}
 	}
@@ -518,7 +541,75 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error tail_call(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	V v = NULL;
+	if (get_head(S)->type != T_IDENT)
+	{
+		return ValueError;
+	}
+	Error e = get(h, S, scope_arr);
+	if (e != Nothing)
+	{
+		return e;
+	}
+	Func* f = toFunc(toScope(get_head(scope_arr))->func);
+	do
+	{
+		clear_ref(v);
+		v = pop(scope_arr);
+		if (v == NULL)
+		{
+			return Exit;
+		}
+	}
+	while (toFunc(toScope(v)->func) == f);
+	push(scope_arr, v);
+	v = pop(S);
+	if (v->type == T_FUNC)
+	{
+		push(scope_arr, new_function_scope(v));
+		clear_ref(v);
+	}
+	else if (v->type == T_CFUNC)
+	{
+		e = toCFunc(v)(h, S, scope_arr);
+		clear_ref(v);
+		return e;
+	}
+	else
+	{
+		push(S, v);
+	}
+	return Nothing;
+}
+
+Error self_tail(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = NULL;
+	Func* f = toFunc(toScope(get_head(scope_arr))->func);
+	do
+	{
+		clear_ref(v);
+		v = pop(scope_arr);
+		if (v == NULL)
+		{
+			return Exit;
+		}
+	}
+	while (toFunc(toScope(get_head(scope_arr))->func) == f);
+	push(scope_arr, v);
+	Scope* sc = toScope(v);
+	sc->pc = f->start;
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
+	{"get", get},
 	{"+", add},
 	{"add", add},
 	{"-", sub},
@@ -548,6 +639,8 @@ static CFunc stdlib[] = {
 	{"push-to", push_to},
 	{"push-through", push_through},
 	{"pop-from", pop_from},
+	{"tail-call", tail_call},
+	{"recurse", self_tail},
 	{"(print-stack)", print_stack},
 	{NULL, NULL}
 };
