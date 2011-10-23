@@ -337,6 +337,60 @@ Error not(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error range(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1;
+	V v2;
+	V v = pop(S);
+	if (v->type == T_STACK)
+	{
+		v1 = pop(toStack(v));
+		v2 = pop(toStack(v));
+		clear_ref(v);
+	}
+	else
+	{
+		v1 = v;
+		v2 = pop(S);
+	}
+	if (v1->type == T_NUM && v2->type == T_NUM)
+	{
+		if (toNumber(v1) > toNumber(v2))
+		{
+			push(S, int_to_value(0));
+			clear_ref(v1);
+			clear_ref(v2);
+		}
+		else
+		{
+			push(S, v1);
+			V list = newlist();
+			push(toStack(list), v2);
+			push(toStack(list), double_to_value(toNumber(v1) + 1.0));
+			push(S, list);
+			/* METHOD 1: look up
+			   more computation
+			   fails if the global "range" is overwritten
+			*/
+			//push(S, add_ref(get_hashmap(&toScope(toFile(toScope(scope_arr->head->data)->file)->global)->hm, get_ident("range"))));
+			/* METHOD 2: create value
+			   less computation
+			   works even if the global "range" is overwritten
+			*/
+			V r = new_value(T_CFUNC);
+			r->data.object = range;
+			push(S, r);
+		}
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return ValueError;
+	}
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -360,6 +414,7 @@ static CFunc stdlib[] = {
 	{">", gt},
 	{"=", eq},
 	{"not", not},
+	{"range", range},
 	{NULL, NULL}
 };
 
