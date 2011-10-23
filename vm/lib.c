@@ -193,7 +193,7 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 	V v = newlist();
 	V p;
 	String *s;
-	while (stack_size(S))
+	while (stack_size(S) > 0)
 	{
 		p = pop(S);
 		if (p->type == T_IDENT)
@@ -202,11 +202,11 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 			if (s->length == 1 && s->data[0] == ']')
 			{
 				clear_ref(p);
+				push(S, v);
 				return Nothing;
 			}
 		}
 		push(toStack(v), p);
-		clear_ref(p);
 	}
 	return StackEmpty;
 }
@@ -391,6 +391,30 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
+Error in(Header* h, Stack* S, Stack* scope_arr)
+{
+	V list = pop(S);
+	if (list->type != T_STACK)
+	{
+		clear_ref(list);
+		return ValueError;
+	}
+	if (stack_size(toStack(list)) > 0)
+	{
+		V item = pop(toStack(list));
+		push(S, item);
+		push(S, list);
+		V r = new_value(T_CFUNC);
+		r->data.object = in;
+		push(S, r);
+	}
+	else
+	{
+		push(S, int_to_value(0));
+	}
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"+", add},
 	{"add", add},
@@ -415,6 +439,7 @@ static CFunc stdlib[] = {
 	{"=", eq},
 	{"not", not},
 	{"range", range},
+	{"in", in},
 	{NULL, NULL}
 };
 
