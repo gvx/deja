@@ -156,8 +156,11 @@ void mark_gray(V);
 
 void mark_gray_child(V child)
 {
-	child->refs--;
-	mark_gray(child);
+	if (child != NULL)
+	{
+		child->refs--;
+		mark_gray(child);
+	}
 }
 
 void mark_gray(V t)
@@ -241,10 +244,13 @@ void scan_black(V);
 
 void scan_black_child(V child)
 {
-	child->refs++;
-	if (child->color != Black)
+	if (child != NULL)
 	{
-		scan_black(child);
+		child->refs++;
+		if (child->color != Black)
+		{
+			scan_black(child);
+		}
 	}
 }
 
