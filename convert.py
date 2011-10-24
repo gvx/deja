@@ -1,7 +1,7 @@
 from flatten import *
 
-POS_SIZE = 2**31 - 1
-NEG_SIZE = -2**31
+POS_SIZE = 2**23 - 1
+NEG_SIZE = -2**23
 
 OPTIMIZE = True
 OPTIMIZERS = {
