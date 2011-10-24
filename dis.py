@@ -40,8 +40,8 @@ class Literals(object):
 				b = '"' + self.source[5:5 + length] + '"'
 				self.source = self.source[5 + length:]
 			elif s == '\x02':
-				b = d_double(self.source[:8+1])
-				self.source = self.source[8+1:]
+				b = d_double(self.source[1:9])
+				self.source = self.source[9:]
 			self.cache.append(b)
 		return self.cache[item]
 
