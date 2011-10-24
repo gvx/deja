@@ -21,7 +21,7 @@ typedef struct
 	Error (*cfunc)(Header*, Stack*, Stack*);
 } CFunc;
 
-V new_cfunc(CFunc);
+V new_cfunc(Error (*)(Header*, Stack*, Stack*));
 void open_lib(CFunc[], HashMap*);
 void open_std_lib(HashMap*);
 

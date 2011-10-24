@@ -681,7 +681,7 @@ void open_std_lib(HashMap* hm)
 	set_hashmap(hm, get_ident("false"), int_to_value(0));
 }
 
-V new_cfunc(func)
+V new_cfunc(Error (*func)(Header*, Stack*, Stack*))
 {
 	V v = new_value(T_CFUNC);
 	v->data.object = func;
