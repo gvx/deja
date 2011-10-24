@@ -215,14 +215,14 @@ Error print_nl(Header* h, Stack* S, Stack* scope_arr)
 
 Error make_new_list(Header* h, Stack* S, Stack* scope_arr)
 {
-	V v = newlist();
+	V v = new_list();
 	push(S, v);
 	return Nothing;
 }
 
 Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 {
-	V v = newlist();
+	V v = new_list();
 	V p;
 	String *s;
 	while (stack_size(S) > 0)
@@ -394,7 +394,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 		else
 		{
 			push(S, v1);
-			V list = newlist();
+			V list = new_list();
 			push(toStack(list), v2);
 			push(toStack(list), double_to_value(toNumber(v1) + 1.0));
 			push(S, list);
@@ -453,7 +453,7 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(list);
 		return ValueError;
 	}
-	V rev = newlist();
+	V rev = new_list();
 	while (stack_size(toStack(list)) > 0)
 	{
 		push(toStack(rev), pop(toStack(list)));

@@ -186,7 +186,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc = pc;
 			break;
 		case OP_NEW_LIST:
-			push(S, newlist());
+			push(S, new_list());
 			break;
 		case OP_DROP:
 			clear_ref(pop(S));

@@ -62,10 +62,10 @@ V get_ident(const char* name)
 	return t;
 }
 
-V newlist(void)
+V new_list(void)
 {
 	V t = new_value(T_STACK);
-	Stack* s = newstack();
+	Stack* s = new_stack();
 	t->data.object = s;
 	return t;
 }

@@ -4,7 +4,7 @@
 #include "value.h"
 #include "stack.h"
 
-Stack* newstack()
+Stack* new_stack()
 {
 	Stack* nstack = malloc(sizeof(Stack));
 	nstack->size = 0;

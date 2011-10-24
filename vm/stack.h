@@ -17,7 +17,7 @@ typedef struct
 	Node *head;
 } Stack;
 
-Stack* newstack();
+Stack* new_stack();
 void push(Stack*, V);
 V pop(Stack*);
 int stack_size(Stack*);

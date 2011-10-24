@@ -20,8 +20,8 @@ Error run_file(V global, V file_name)
 	{
 		return IllegalFile;
 	}
-	Stack *S = newstack();
-	Stack *scope = newstack();
+	Stack *S = new_stack();
+	Stack *scope = new_stack();
 	push(scope, new_file_scope(file));
 	while (e == Nothing)
 	{
