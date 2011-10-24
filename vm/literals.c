@@ -5,23 +5,52 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 
 #define TYPE_IDENT '\x00'
 #define TYPE_STR '\x01'
 #define TYPE_NUM '\x02'
 
-union bo_double
+#if __BYTE_ORDER == __BIG_ENDIAN
+#define ntohll(x) (x)
+#else
+uint64_t ntohll(uint64_t i)
 {
-	double d;
-	unsigned char c[8];
-};
+	return ntohl(i >> 32) | ((uint64_t)ntohl(i & (((uint64_t)1 << 32) - 1)) << 32);
+}
+#endif
 
-bool little_endian(void)
+double unpack754(uint64_t i)
 {
-	union bo_double test;
-	test.d = 1.0;
-	return test.c[0] != '\0';
+    double result;
+    long long shift;
+
+    if (i == 0)
+    {
+    	return 0.0;
+    }
+
+    result = (i & ((1LL << 52) - 1));
+    result /= (1LL << 52);
+    result += 1.0;
+
+    shift = ((i >> 52) & ((1LL << 11) - 1)) - (1 << 10) + 1;
+    while(shift-- > 0)
+    {
+	    result *= 2.0;
+	}
+    while(++shift < 0)
+    {
+	    result /= 2.0;
+	}
+
+	if (i & (1LL >> 63))
+	{
+		result = -result;
+	}
+
+    return result;
 }
 
 void read_literals(FILE* f, Header* h)
@@ -61,22 +90,11 @@ void read_literals(FILE* f, Header* h)
 		fread(&type, sizeof(type), 1, f);
 		if (type == TYPE_NUM)
 		{
-			t = new_value(T_NUM);
-			union bo_double d;
+			uint64_t d;
 			fread(&d, sizeof(d), 1, f);
-			if (little_endian())
-			{
-				union bo_double d2;
-				int j;
-				for (j = 0; j < 8; j++)
-				{
-					d2.c[8-j] = d.c[j];
-				}
-				d.d = d2.d;
-			}
-			t->data.number = d.d;
+			t = double_to_value(unpack754(ntohll(d));
 		}
-		else if (type == TYPE_STR || type == TYPE_IDENT)
+		else //if (type == TYPE_STR || type == TYPE_IDENT)
 		{
 			fread(&str_length, sizeof(str_length), 1, f);
 			s = malloc(sizeof(String));
