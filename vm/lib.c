@@ -635,6 +635,37 @@ Error copy(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error use(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	V fname = pop(S);
+	if (fname->type != T_IDENT)
+	{
+		return ValueError;
+	}
+	V file = load_file(fname, toFile(toScope(get_head(scope_arr))->file)->global);
+	Stack *S_ = new_stack();
+	Stack *scope = new_stack();
+	push(scope, new_file_scope(file));
+	Error e = Nothing;
+	while (e == Nothing)
+	{
+		e = do_instruction(&toFile(file)->header, S_, scope);
+		toScope(get_head(scope))->pc++;
+	}
+	clear_stack(S_);
+	clear_stack(scope);
+	clear_ref(file);
+	if (e == Exit)
+	{
+		return Nothing;
+	}
+	return e;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"+", add},
@@ -672,6 +703,7 @@ static CFunc stdlib[] = {
 	{"(print-depth)", print_depth},
 	{"input", input},
 	{"copy", copy},
+	{"use", use},
 	{NULL, NULL}
 };
 

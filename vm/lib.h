@@ -14,6 +14,7 @@
 #include "gc.h"
 #include "file.h"
 #include "func.h"
+#include "opcodes.h"
 
 typedef struct
 {
