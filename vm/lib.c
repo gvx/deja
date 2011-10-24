@@ -407,9 +407,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 			   less computation
 			   works even if the global "range" is overwritten
 			*/
-			V r = new_value(T_CFUNC);
-			r->data.object = range;
-			push(S, r);
+			push(S, new_cfunc(range));
 		}
 		return Nothing;
 	}
@@ -434,9 +432,7 @@ Error in(Header* h, Stack* S, Stack* scope_arr)
 		V item = pop(toStack(list));
 		push(S, item);
 		push(S, list);
-		V r = new_value(T_CFUNC);
-		r->data.object = in;
-		push(S, r);
+		push(S, new_cfunc(in));
 	}
 	else
 	{
@@ -665,14 +661,9 @@ static char* autonyms[] = {"(", ")", "]", NULL};
 void open_lib(CFunc lib[], HashMap* hm)
 {
 	int i = 0;
-	V s;
-	V v;
 	while (lib[i].name != NULL)
 	{
-		s = get_ident(lib[i].name); 
-		v = new_value(T_CFUNC);
-		v->data.object = lib[i].cfunc;
-		set_hashmap(hm, s, v);
+		set_hashmap(hm, get_ident(lib[i].name), new_cfunc(lib[i].cfunc));
 		i++;
 	}
 }
@@ -688,4 +679,12 @@ void open_std_lib(HashMap* hm)
 	}
 	set_hashmap(hm, get_ident("true"), int_to_value(1));
 	set_hashmap(hm, get_ident("false"), int_to_value(0));
+}
+
+V new_cfunc(func)
+{
+	V v = new_value(T_CFUNC);
+	v->data.object = func;
+	v->color = Green;
+	return v;
 }
