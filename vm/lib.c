@@ -666,6 +666,33 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 	return e;
 }
 
+Error call(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = get_head(S);
+	if (v == NULL)
+	{
+		return StackEmpty;
+	}
+	if (v->type == T_IDENT)
+	{
+		get(h, S, scope_arr);
+	}
+	v = pop(S);
+	if (v->type == T_FUNC)
+	{
+		push(scope_arr, new_function_scope(v));
+	}
+	else if (v->type == T_CFUNC)
+	{
+		return toCFunc(v)(h, S, scope_arr);
+	}
+	else
+	{
+		push(S, add_ref(v));
+	}
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"+", add},
@@ -704,6 +731,7 @@ static CFunc stdlib[] = {
 	{"input", input},
 	{"copy", copy},
 	{"use", use},
+	{"call", call},
 	{NULL, NULL}
 };
 
