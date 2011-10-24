@@ -45,7 +45,7 @@ double unpack754(uint64_t i)
 	    result /= 2.0;
 	}
 
-	if (i & (1LL >> 63))
+	if (i >> 63)
 	{
 		result = -result;
 	}
@@ -92,7 +92,7 @@ void read_literals(FILE* f, Header* h)
 		{
 			uint64_t d;
 			fread(&d, sizeof(d), 1, f);
-			t = double_to_value(unpack754(ntohll(d));
+			t = double_to_value(unpack754(ntohll(d)));
 		}
 		else //if (type == TYPE_STR || type == TYPE_IDENT)
 		{
