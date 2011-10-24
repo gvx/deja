@@ -83,7 +83,6 @@ void read_literals(FILE* f, Header* h)
 	}
 	V* arr = calloc(n, sizeof(V));
 	V t;
-	String* s;
 	fseek(f, startpos, SEEK_SET);
 	for (i = 0; i < n; i++)
 	{
@@ -97,13 +96,11 @@ void read_literals(FILE* f, Header* h)
 		else //if (type == TYPE_STR || type == TYPE_IDENT)
 		{
 			fread(&str_length, sizeof(str_length), 1, f);
-			s = malloc(sizeof(String));
-			s->length = ntohl(str_length);
-			s->data = malloc(s->length);
-			fread(s->data, s->length, 1, f);
-			t = new_value(type == TYPE_STR ? T_STR : T_IDENT);
-			t->data.object = s;
-			t->color = Green;
+			str_length = ntohl(str_length);
+			char data[str_length];
+			fread(data, str_length, 1, f);
+			t = str_to_value(str_length, data);
+			t->type = type == TYPE_STR ? T_STR : T_IDENT;
 		}
 		arr[i] = t;
 	}
