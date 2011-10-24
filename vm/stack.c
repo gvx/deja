@@ -12,6 +12,21 @@ Stack* new_stack()
 	return nstack;
 }
 
+void copy_stack(Stack *old, Stack *new)
+{
+	Node *cur = old->head;
+	Node **to = &new->head;
+	while (cur != NULL)
+	{
+		*to = malloc(sizeof(Node));
+		(*to)->data = cur->data;
+		cur = cur->next;
+		to = &(*to)->next;
+	}
+	*to = NULL;
+	new->size = old->size;
+}
+
 void push(Stack *stack, V v)
 {
 	Node *new_node = malloc(sizeof(Node));

@@ -18,6 +18,7 @@ typedef struct
 } Stack;
 
 Stack* new_stack();
+void copy_stack(Stack*, Stack*);
 void push(Stack*, V);
 V pop(Stack*);
 int stack_size(Stack*);

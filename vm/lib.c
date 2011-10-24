@@ -617,6 +617,24 @@ Error input(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error copy(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = pop(S);
+	if (v == NULL)
+	{
+		return StackEmpty;
+	}
+	if (v->type != T_STACK)
+	{
+		clear_ref(v);
+		return ValueError;
+	}
+	V new = new_list();
+	copy_stack(toStack(v), toStack(new));
+	push(S, new);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"+", add},
@@ -653,6 +671,7 @@ static CFunc stdlib[] = {
 	{"(print-stack)", print_stack},
 	{"(print-depth)", print_depth},
 	{"input", input},
+	{"copy", copy},
 	{NULL, NULL}
 };
 
