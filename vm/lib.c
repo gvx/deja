@@ -328,6 +328,46 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
+Error le(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type == T_NUM && v2->type == T_NUM)
+	{
+		V r = double_to_value(toNumber(v1) <= toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		push(S, r);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return ValueError;
+	}
+}
+
+Error ge(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type == T_NUM && v2->type == T_NUM)
+	{
+		V r = double_to_value(toNumber(v1) >= toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		push(S, r);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return ValueError;
+	}
+}
+
 Error eq(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v1 = pop(S);
@@ -350,6 +390,37 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 			if (s1->length == s2->length)
 			{
 				t = !memcmp(s1->data, s2->data, s1->length);
+			}
+		}
+	}
+	push(S, int_to_value(t));
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
+Error ne(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v1 = pop(S);
+	V v2 = pop(S);
+	int t = 1;
+	if (v1 == v2) //identical objects
+	{
+		t = 0;
+	}
+	else if (v1->type == v2->type)
+	{
+		if (v1->type == T_NUM)
+		{
+			t = toNumber(v1) != toNumber(v2);
+		}
+		else if (v1->type == T_IDENT || v1->type == T_STR)
+		{
+			String* s1 = toString(v1);
+			String* s2 = toString(v2);
+			if (s1->length == s2->length)
+			{
+				t = !!memcmp(s1->data, s2->data, s1->length);
 			}
 		}
 	}
@@ -716,6 +787,9 @@ static CFunc stdlib[] = {
 	{"<", lt},
 	{">", gt},
 	{"=", eq},
+	{"<=", le},
+	{">=", ge},
+	{"!=", ne},
 	{"not", not},
 	{"range", range},
 	{"in", in},
