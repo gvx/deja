@@ -35,6 +35,6 @@ void handle_error(Error e, Stack *scope_arr)
 			printf("%s:%d\n", toString(toFile(sc->file)->name)->data, sc->linenr);
 		}
 		n = n->next;
-		show_next = sc->is_func_scope || n == NULL;
+		show_next = sc->is_func_scope || (n && n->next == NULL);
 	}
 }
