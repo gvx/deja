@@ -201,6 +201,10 @@ Error type(Header* h, Stack* S, Stack* scope_arr)
 Error print(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = pop(S);
+	if (v == NULL)
+	{
+		return StackEmpty;
+	}
 	print_value(v);
 	clear_ref(v);
 	return Nothing;
@@ -208,7 +212,10 @@ Error print(Header* h, Stack* S, Stack* scope_arr)
 
 Error print_nl(Header* h, Stack* S, Stack* scope_arr)
 {
-	print(h, S, scope_arr);
+	if (print(h, S, scope_arr) == StackEmpty)
+	{
+		return StackEmpty;
+	}
 	printf("\n");
 	return Nothing;
 }
@@ -718,23 +725,9 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 		return ValueError;
 	}
 	V file = load_file(fname, toFile(toScope(get_head(scope_arr))->file)->global);
-	Stack *S_ = new_stack();
-	Stack *scope = new_stack();
-	push(scope, new_file_scope(file));
-	Error e = Nothing;
-	while (e == Nothing)
-	{
-		e = do_instruction(&toFile(file)->header, S_, scope);
-		toScope(get_head(scope))->pc++;
-	}
-	clear_stack(S_);
-	clear_stack(scope);
+	push(scope_arr, new_file_scope(file));
 	clear_ref(file);
-	if (e == Exit)
-	{
-		return Nothing;
-	}
-	return e;
+	return Nothing;
 }
 
 Error call(Header* h, Stack* S, Stack* scope_arr)

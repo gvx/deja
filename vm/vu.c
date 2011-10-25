@@ -22,11 +22,13 @@ Error run_file(V global, V file_name)
 	}
 	Stack *S = new_stack();
 	Stack *scope = new_stack();
+	Scope *sc;
 	push(scope, new_file_scope(file));
 	while (e == Nothing)
 	{
-		e = do_instruction(&toFile(file)->header, S, scope);
-		toScope(get_head(scope))->pc++;
+		sc = toScope(get_head(scope));
+		sc->pc++;
+		e = do_instruction(&toFile(sc->file)->header, S, scope);
 	}
 	if (e != Exit) //uh oh
 	{

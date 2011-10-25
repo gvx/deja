@@ -44,7 +44,7 @@ V new_file_scope(V file)
 	scope->parent = add_ref(toFile(file)->global);
 	scope->func = NULL;
 	scope->file = add_ref(file);
-	scope->pc = toFile(file)->code;
+	scope->pc = toFile(file)->code - 1;
 	sc->data.object = scope;
 	hashmap_from_scope(sc, 64);
 	return sc;
