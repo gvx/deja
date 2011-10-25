@@ -40,6 +40,8 @@ def flatten(tree, acc=None):
 	if acc is None:
 		acc = []
 	for branch in tree.children:
+		if isinstance(branch, Statement):
+			acc.append(SingleInstruction('LINE_NUMBER', branch.linenr))
 		if isinstance(branch, Word):
 			if acc and isinstance(acc[-1], Code):
 				acc[-1].words.append(branch)
