@@ -30,7 +30,7 @@ Error run_file(V global, V file_name)
 	}
 	if (e != Exit) //uh oh
 	{
-		printf("An error occurred.\n");
+		handle_error(e, scope);
 		//at this point we can use the scope stack to produce a traceback
 	}
 	//clean-up
