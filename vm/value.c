@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stdio.h>
+
 V int_to_value(int i)
 {
 	V t = new_value(T_NUM);
@@ -56,7 +58,7 @@ V get_ident(const char* name)
 	size_t l = strlen(name);
 	s->length = l;
 	char* name2 = malloc(l);
-	memcpy(name2, name, l);
+	memcpy(name2, name, l + 1);
 	s->data = name2;
 	t->data.object = s;
 	return t;
