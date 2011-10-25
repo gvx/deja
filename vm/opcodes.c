@@ -153,6 +153,11 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			v = sc->func;
 			if (v == NULL)
 			{
+				if (stack_size(scope_arr) > 1)
+				{ // we are in an included file
+					clear_ref(pop(scope_arr));
+					return Nothing;
+				}
 				return Exit;
 			}
 			v = NULL;
