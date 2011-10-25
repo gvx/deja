@@ -24,6 +24,7 @@ OPCODES = {
 	'NEW_LIST':			'00110000',
 	'DROP':				'01000000',
 	'DUP':				'01000001',
+	'LINE_NUMBER':		'01010000',
 }
 for k in OPCODES:
 	OPCODES[k] = int(OPCODES[k], 2) * 0x1000000
