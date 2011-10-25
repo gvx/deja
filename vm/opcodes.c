@@ -200,6 +200,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, add_ref(get_head(S)));
 			break;
 		case OP_LINE_NUMBER:
+			sc->linenr = argument;
 			break;
 		case OP_LINE_TEXT:
 			break;

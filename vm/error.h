@@ -3,6 +3,7 @@
 
 #include "stack.h"
 #include "scope.h"
+#include "file.h"
 
 #include <stdlib.h>
 #include <stdio.h>

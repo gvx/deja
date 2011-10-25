@@ -25,9 +25,16 @@ void handle_error(Error e, Stack *scope_arr)
 {
 	printf("%s:\n", error_name(e));
 	Node *n = scope_arr->head;
+	Scope *sc;
+	bool show_next = true;
 	while (n != NULL)
 	{
-		//printf("%d\n", toScope(n->data)->linenr);
+		sc = toScope(n->data);
+		if (show_next)
+		{
+			printf("%s:%d\n", toString(toFile(sc->file)->name)->data, sc->linenr);
+		}
 		n = n->next;
+		show_next = sc->is_func_scope || n == NULL;
 	}
 }
