@@ -14,5 +14,5 @@ bool header_correct(Header* h)
 	{
 		return false;
 	}
-	return VERSION == h->version;
+	return (VERSION & '\xf0') == (h->version & '\xf0') && (VERSION & '\x0f') >= (h->version & '\x0f');
 }
