@@ -67,11 +67,11 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			v = get_hashmap(&sc->hm, key);
 			while (v == NULL)
 			{
-				sc = toScope(sc->parent);
-				if (sc == NULL)
+				if (sc->parent == NULL)
 				{
 					return NameError;
 				}
+				sc = toScope(sc->parent);
 				v = get_hashmap(&sc->hm, key);
 			}
 			if (v->type == T_FUNC)
