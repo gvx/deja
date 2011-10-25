@@ -12,13 +12,16 @@
 #include "lib.h"
 //#include "env.h"
 
-Error run_file(V global, V file_name)
+void run(V file_name)
 {
+	V global = new_global_scope();
+	open_std_lib(&toScope(global)->hm);
 	Error e = Nothing;
 	V file = load_file(file_name, global);
 	if (file == NULL)
 	{
-		return IllegalFile;
+		handle_error(IllegalFile, NULL);
+		return;
 	}
 	Stack *S = new_stack();
 	Stack *scope = new_stack();
@@ -33,21 +36,11 @@ Error run_file(V global, V file_name)
 	if (e != Exit) //uh oh
 	{
 		handle_error(e, scope);
-		//at this point we can use the scope stack to produce a traceback
 	}
 	//clean-up
 	clear_stack(S);
 	clear_stack(scope);
 	clear_ref(file);
-	return e;
-}
-
-void run(V file_name)
-{
-	V global = new_global_scope();
-	open_std_lib(&toScope(global)->hm);
-	Error e = run_file(global, file_name);
-	//Do something with e
 }
 
 bool exists(char* fname)

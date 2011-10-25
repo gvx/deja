@@ -13,7 +13,7 @@ char* error_name(Error e)
 		case StackEmpty:
 			return "The stack is empty";
 		case IllegalFile:
-			return "File not found";
+			return "Not a valid program";
 		case UserError:
 			return "Error";
 		default:
@@ -23,7 +23,11 @@ char* error_name(Error e)
 
 void handle_error(Error e, Stack *scope_arr)
 {
-	printf("%s:\n", error_name(e));
+	printf("%s\n", error_name(e));
+	if (scope_arr == NULL)
+	{
+		return;
+	}
 	Node *n = scope_arr->head;
 	Scope *sc;
 	bool show_next = true;
