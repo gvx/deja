@@ -53,6 +53,8 @@ def make_line_00(i, x, literals):
 		arg = d_signed_int(x[1:])
 	elif op in POS_ARG:
 		arg = i + d_signed_int(x[1:])
+	elif op == 'LINE_NUMBER':
+		arg = d_unsigned_int(x[1:])
 	else:
 		arg = ''
 	return '%03d %s %s' % (i, op, arg)
