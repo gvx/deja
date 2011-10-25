@@ -35,7 +35,7 @@ Error get(Header* h, Stack* S, Stack* scope_arr)
 	V key = pop(S);
 	if (key->type != T_IDENT)
 	{
-		return ValueError;
+		return TypeError;
 	}
 	Scope *sc = toScope(get_head(scope_arr));
 	V v = get_hashmap(&sc->hm, key);
@@ -69,7 +69,7 @@ Error add(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -89,7 +89,7 @@ Error sub(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -109,7 +109,7 @@ Error mul(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -129,7 +129,7 @@ Error div_(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -149,7 +149,7 @@ Error mod_(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -311,7 +311,7 @@ Error lt(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -331,7 +331,7 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -351,7 +351,7 @@ Error le(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -371,7 +371,7 @@ Error ge(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -493,7 +493,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
-		return ValueError;
+		return TypeError;
 	}
 }
 
@@ -503,7 +503,7 @@ Error in(Header* h, Stack* S, Stack* scope_arr)
 	if (list->type != T_STACK)
 	{
 		clear_ref(list);
-		return ValueError;
+		return TypeError;
 	}
 	if (stack_size(toStack(list)) > 0)
 	{
@@ -525,7 +525,7 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 	if (list->type != T_STACK)
 	{
 		clear_ref(list);
-		return ValueError;
+		return TypeError;
 	}
 	V rev = new_list();
 	while (stack_size(toStack(list)) > 0)
@@ -573,7 +573,7 @@ Error push_to(Header* h, Stack* S, Stack* scope_arr)
 	if (list->type != T_STACK)
 	{
 		clear_ref(list);
-		return ValueError;
+		return TypeError;
 	}
 	V val = pop(S);
 	push(toStack(list), val);
@@ -591,7 +591,7 @@ Error push_through(Header* h, Stack* S, Stack* scope_arr)
 	if (list->type != T_STACK)
 	{
 		clear_ref(list);
-		return ValueError;
+		return TypeError;
 	}
 	V val = pop(S);
 	push(toStack(list), val);
@@ -609,7 +609,7 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 	if (list->type != T_STACK)
 	{
 		clear_ref(list);
-		return ValueError;
+		return TypeError;
 	}
 	V val = pop(toStack(list));
 	push(S, val);
@@ -626,7 +626,7 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 	V v = NULL;
 	if (get_head(S)->type != T_IDENT)
 	{
-		return ValueError;
+		return TypeError;
 	}
 	Error e = get(h, S, scope_arr);
 	if (e != Nothing)
@@ -705,7 +705,7 @@ Error copy(Header* h, Stack* S, Stack* scope_arr)
 	if (v->type != T_STACK)
 	{
 		clear_ref(v);
-		return ValueError;
+		return TypeError;
 	}
 	V new = new_list();
 	copy_stack(toStack(v), toStack(new));
@@ -722,7 +722,7 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 	V fname = pop(S);
 	if (fname->type != T_IDENT)
 	{
-		return ValueError;
+		return TypeError;
 	}
 	V file = load_file(fname, toFile(toScope(get_head(scope_arr))->file)->global);
 	push(scope_arr, new_file_scope(file));
