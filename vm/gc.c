@@ -85,49 +85,59 @@ void free_value(V t)
 	free(t);
 }
 
-void release_value(V t)
+void iter_children(V t, void (*iter)(V))
 {
-	V i;
 	Stack* s;
+	Node* c;
 	Scope* sc;
 	Bucket* b;
 	File* f;
-	int n;
+	V child;
+	int i;
 	switch (t->type)
 	{
 		case T_FUNC:
-			clear_ref(toFunc(t)->defscope);
+			child = toFunc(t)->defscope;
+			iter(child);
 			break;
 		case T_STACK:
 			s = toStack(t);
-			while ((i = pop(s)))
+			c = s->head;
+			for (i = 0; i < s->size; i++)
 			{
-				clear_ref(i);
+				child = c->data;
+				c = c->next;
+				iter(child);
 			}
 			break;
 		case T_SCOPE:
 			sc = toScope(t);
-			clear_ref(sc->parent);
-			clear_ref(sc->func);
-			for (n = 0; n < sc->hm.size; n++)
+			iter(sc->parent);
+			iter(sc->func);
+			for (i = 0; i < sc->hm.size; i++)
 			{
-				b = sc->hm.map[n];
+				b = sc->hm.map[i];
 				while(b != NULL)
 				{
-					clear_ref(b->value);
+					iter(b->value);
 					b = b->next;
 				}
 			}
 			break;
 		case T_FILE:
 			f = toFile(t);
-			for (n = 0; n < f->header.n_literals; n++)
+			for (i = 0; i < f->header.n_literals; i++)
 			{
-				clear_ref(f->header.literals[n]);
+				iter(f->header.literals[i]);
 			}
-			clear_ref(f->name);
+			iter(f->name);
 			break;
 	}
+}
+
+void release_value(V t)
+{
+	iter_children(t, clear_ref);
 	t->color = Black;
 	if (!t->buffered)
 	{
@@ -165,55 +175,10 @@ void mark_gray_child(V child)
 
 void mark_gray(V t)
 {
-	Stack* s;
-	Node* c;
-	Scope* sc;
-	Bucket* b;
-	File* f;
-	V child;
-	int i;
 	if (t->color != Gray)
 	{
 		t->color = Gray;
-		switch (t->type)
-		{
-			case T_FUNC:
-				child = toFunc(t)->defscope;
-				mark_gray_child(child);
-				break;
-			case T_STACK:
-				s = toStack(t);
-				c = s->head;
-				for (i = 0; i < s->size; i++)
-				{
-					child = c->data;
-					c = c->next;
-					mark_gray_child(child);
-				}
-				break;
-			case T_SCOPE:
-				sc = toScope(t);
-				mark_gray_child(sc->parent);
-				mark_gray_child(sc->func);
-				for (i = 0; i < sc->hm.size; i++)
-				{
-					b = sc->hm.map[i];
-					while(b != NULL)
-					{
-						mark_gray_child(b->value);
-						b = b->next;
-					}
-				}
-				break;
-			case T_FILE:
-				f = toFile(t);
-				for (i = 0; i < f->header.n_literals; i++)
-				{
-					mark_gray_child(f->header.literals[i]);
-				}
-				mark_gray_child(f->name);
-				break;
-		}
+		iter_children(t, mark_gray_child);
 	}
 }
 
@@ -256,67 +221,13 @@ void scan_black_child(V child)
 
 void scan_black(V t)
 {
-	Stack* s;
-	Node* c;
-	Scope* sc;
-	Bucket* b;
-	File* f;
-	V child;
-	int i;
-
 	t->color = Black;
 
-	switch (t->type)
-	{
-		case T_FUNC:
-			child = toFunc(t)->defscope;
-			scan_black_child(child);
-			break;
-		case T_STACK:
-			s = toStack(t);
-			c = s->head;
-			for (i = 0; i < s->size; i++)
-			{
-				child = c->data;
-				c = c->next;
-				scan_black_child(child);
-			}
-			break;
-		case T_SCOPE:
-			sc = toScope(t);
-			scan_black_child(sc->parent);
-			scan_black_child(sc->func);
-			for (i = 0; i < sc->hm.size; i++)
-			{
-				b = sc->hm.map[i];
-				while(b != NULL)
-				{
-					scan_black_child(b->value);
-					b = b->next;
-				}
-			}
-			break;
-		case T_FILE:
-			f = toFile(t);
-			for (i = 0; i < f->header.n_literals; i++)
-			{
-				scan_black_child(f->header.literals[i]);
-			}
-			scan_black_child(f->name);
-			break;
-	}
+	iter_children(t, scan_black_child);
 }
 
 void scan(V t)
 {
-	Stack* s;
-	Node* c;
-	Scope* sc;
-	Bucket* b;
-	File* f;
-	V child;
-	int i;
-
 	if (t->color == Gray)
 	{
 		if (t->refs > 0)
@@ -326,44 +237,7 @@ void scan(V t)
 		else
 		{
 			t->color = White;
-			switch (t->type)
-			{
-				case T_FUNC:
-					scan(toFunc(t)->defscope);
-					break;
-				case T_STACK:
-					s = toStack(t);
-					c = s->head;
-					for (i = 0; i < s->size; i++)
-					{
-						child = c->data;
-						scan(child);
-						c = c->next;
-					}
-					break;
-				case T_SCOPE:
-					sc = t->data.object;
-					scan(sc->parent);
-					scan(sc->func);
-					for (i = 0; i < sc->hm.size; i++)
-					{
-						b = sc->hm.map[i];
-						while(b != NULL)
-						{
-							scan(b->value);
-							b = b->next;
-						}
-					}
-					break;
-				case T_FILE:
-					f = toFile(t);
-					for (i = 0; i < f->header.n_literals; i++)
-					{
-						scan(f->header.literals[i]);
-					}
-					scan(f->name);
-					break;
-			}
+			iter_children(t, scan);
 		}
 	}
 }
@@ -382,55 +256,10 @@ void scan_roots(void)
 
 void collect_white(V t)
 {
-	Stack* s;
-	Node* c;
-	Scope* sc;
-	Bucket* b;
-	File* f;
-	V child;
-	int i;
-
 	if (t->color == White && !t->buffered)
 	{
 		t->color = Black;
-		switch (t->type)
-		{
-			case T_FUNC:
-				collect_white(toFunc(t)->defscope);
-				break;
-			case T_STACK:
-				s = toStack(t);
-				c = s->head;
-				for (i = 0; i < s->size; i++)
-				{
-					child = c->data;
-					collect_white(child);
-					c = c->next;
-				}
-				break;
-			case T_SCOPE:
-				sc = toScope(t);
-				collect_white(sc->parent);
-				collect_white(sc->func);
-				for (i = 0; i < sc->hm.size; i++)
-				{
-					b = sc->hm.map[i];
-					while(b != NULL)
-					{
-						collect_white(b->value);
-						b = b->next;
-					}
-				}
-				break;
-			case T_FILE:
-				f = toFile(t);
-				for (i = 0; i < f->header.n_literals; i++)
-				{
-					collect_white(f->header.literals[i]);
-				}
-				collect_white(f->name);
-				break;
-		}
+		iter_children(t, collect_white);
 		free_value(t);
 	}
 }
