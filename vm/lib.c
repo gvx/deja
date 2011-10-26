@@ -439,11 +439,58 @@ Error ne(Header* h, Stack* S, Stack* scope_arr)
 
 Error not(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
 	V v = pop(S);
 	push(S, int_to_value(truthy(v) ? 0 : 1));
 	clear_ref(v);
 	return Nothing;
 }
+
+Error and(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V v1 = pop(S);
+	V v2 = pop(S);
+	push(S, int_to_value(truthy(v1) && truthy(v2) ? 1 : 0));
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
+Error or(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V v1 = pop(S);
+	V v2 = pop(S);
+	push(S, int_to_value(truthy(v1) || truthy(v2) ? 1 : 0));
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
+Error xor(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V v1 = pop(S);
+	V v2 = pop(S);
+	push(S, int_to_value(truthy(v1) != truthy(v2) ? 1 : 0));
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
 
 Error range(Header* h, Stack* S, Stack* scope_arr)
 {
@@ -809,6 +856,9 @@ static CFunc stdlib[] = {
 	{">=", ge},
 	{"!=", ne},
 	{"not", not},
+	{"and", and},
+	{"or", or},
+	{"xor", xor},
 	{"range", range},
 	{"in", in},
 	{"reversed", reversed},
