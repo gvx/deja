@@ -757,6 +757,31 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error dup(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	push(S, add_ref(get_head(S)));
+	return Nothing;
+}
+
+Error drop(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	clear_ref(pop(S));
+	return Nothing;
+}
+
+Error error(Header* h, Stack* S, Stack* scope_arr)
+{
+	return UserError;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"+", add},
@@ -799,6 +824,9 @@ static CFunc stdlib[] = {
 	{"copy", copy},
 	{"use", use},
 	{"call", call},
+	{"dup", dup},
+	{"drop", drop},
+	{"error", error},
 	{NULL, NULL}
 };
 
