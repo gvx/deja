@@ -44,11 +44,104 @@ Error get(Header* h, Stack* S, Stack* scope_arr)
 		sc = toScope(sc->parent);
 		if (sc == NULL)
 		{
+			clear_ref(key);
 			return NameError;
 		}
 		v = get_hashmap(&sc->hm, key);
 	}
 	push(S, add_ref(v));
+	clear_ref(key);
+	return Nothing;
+}
+
+Error getglobal(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	V key = pop(S);
+	if (key->type != T_IDENT)
+	{
+		clear_ref(key);
+		return TypeError;
+	}
+	V r = get_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, key);
+	clear_ref(key);
+	if (r == NULL)
+	{
+		return NameError;
+	}
+	push(S, add_ref(r));
+	return Nothing;
+}
+
+Error set(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V key = pop(S);
+	if (key->type != T_IDENT)
+	{
+		clear_ref(key);
+		return TypeError;
+	}
+	V v = pop(S);
+	Scope *sc = toScope(get_head(scope_arr));
+	while (!change_hashmap(&sc->hm, key, v))
+	{
+		if (sc->parent == NULL)
+		{
+			//set in the global environment
+			set_hashmap(&sc->hm, key, v);
+			break;
+		}
+		else
+		{
+			sc = toScope(sc->parent);
+		}
+	}
+	clear_ref(v);
+	clear_ref(key);
+	return Nothing;
+}
+
+Error setglobal(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V key = pop(S);
+	if (key->type != T_IDENT)
+	{
+		clear_ref(key);
+		return TypeError;
+	}
+	V v = pop(S);
+	set_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, key, v);
+	clear_ref(v);
+	clear_ref(key);
+	return Nothing;
+}
+
+Error setlocal(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	V key = pop(S);
+	if (key->type != T_IDENT)
+	{
+		clear_ref(key);
+		return TypeError;
+	}
+	V v = pop(S);
+	set_hashmap(&toScope(get_head(scope_arr))->hm, key, v);
+	clear_ref(v);
 	clear_ref(key);
 	return Nothing;
 }
@@ -831,6 +924,10 @@ Error error(Header* h, Stack* S, Stack* scope_arr)
 
 static CFunc stdlib[] = {
 	{"get", get},
+	{"getglobal", getglobal},
+	{"set", set},
+	{"setglobal", setglobal},
+	{"local", setlocal},
 	{"+", add},
 	{"add", add},
 	{"-", sub},
