@@ -10,7 +10,7 @@
 #include "file.h"
 #include "scope.h"
 #include "lib.h"
-//#include "env.h"
+#include "module.h"
 
 void run(V file_name)
 {
@@ -43,25 +43,12 @@ void run(V file_name)
 	clear_ref(file);
 }
 
-bool exists(char* fname)
-{
-	FILE *f = fopen(fname, "r");
-	if (f == NULL)
-	{
-		return false;
-	}
-	else
-	{
-		fclose(f);
-		return true;
-	}
-}
-
 int main(int argc, char *argv[])
 {
-	if (argc > 1 && exists(argv[1]))
+	init_path();
+	if (argc > 1)
 	{
-		run(a_to_value(argv[1]));
+		run(find_file(a_to_value(argv[1])));
 	}
 	return 0;
 }

@@ -2,6 +2,10 @@
 
 V load_file(V file_name, V global)
 {
+	if (file_name == NULL)
+	{
+		return NULL;
+	}
 	V new_file = NULL;
 	FILE* f = fopen(toString(file_name)->data, "rb");
 	Header h = read_header(f);
