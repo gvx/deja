@@ -98,7 +98,10 @@ void iter_children(V t, void (*iter)(V))
 	{
 		case T_FUNC:
 			child = toFunc(t)->defscope;
-			iter(child);
+			if (child && toScope(child)->parent)
+			{ // do not iterate over the global scope, as it cannot be collected
+				iter(child);
+			}
 			break;
 		case T_STACK:
 			s = toStack(t);
@@ -112,7 +115,10 @@ void iter_children(V t, void (*iter)(V))
 			break;
 		case T_SCOPE:
 			sc = toScope(t);
-			iter(sc->parent);
+			if (sc->parent && toScope(sc->parent)->parent)
+			{ // do not iterate over the global scope, as it cannot be collected
+				iter(sc->parent);
+			}
 			iter(sc->func);
 			for (i = 0; i < sc->hm.size; i++)
 			{
