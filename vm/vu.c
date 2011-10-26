@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	init_path();
 	if (argc > 1)
 	{
-		run(find_file(a_to_value(argv[1])));
+		run(find_file(get_ident(argv[1])));
 	}
 	return 0;
 }

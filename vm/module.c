@@ -3,6 +3,7 @@
 #define SEARCH_PATH_SIZE 32
 
 static char *search_path[SEARCH_PATH_SIZE];
+static HashMap *loaded;
 
 bool exists(char* fname)
 {
@@ -20,6 +21,11 @@ bool exists(char* fname)
 
 V find_file(V module_name)
 {
+	V a = get_hashmap(loaded, module_name);
+	if (a)
+	{
+		return a;
+	}
 	char *mod_name = toString(module_name)->data;
 	int l = toString(module_name)->length;
 	int i;
@@ -34,6 +40,7 @@ V find_file(V module_name)
 		strncat(strcpy(fname, search_path[i]), mod_name, l);
 		if (exists(fname))
 		{
+			set_hashmap(loaded, module_name, int_to_value(1));
 			clear_ref(module_name);
 			return str_to_value(length, fname);
 			break;
@@ -46,6 +53,7 @@ V find_file(V module_name)
 
 void init_path()
 {
+	loaded = new_hashmap(32);
 	int i = 0;
 	char *env = getenv("DEJAVUPATH");
 	if (env == NULL)

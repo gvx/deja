@@ -864,8 +864,15 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 	{
 		return TypeError;
 	}
-	V file = load_file(fname, toFile(toScope(get_head(scope_arr))->file)->global);
-	push(scope_arr, new_file_scope(file));
+	V file = load_file(find_file(fname), toFile(toScope(get_head(scope_arr))->file)->global);
+	if (file == NULL)
+	{
+		return IllegalFile;
+	}
+	if (file->type == T_FILE)
+	{
+		push(scope_arr, new_file_scope(file));
+	}
 	clear_ref(file);
 	return Nothing;
 }

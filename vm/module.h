@@ -7,6 +7,7 @@
 
 #include "value.h"
 #include "gc.h"
+#include "hashmap.h"
 
 V find_file(V);
 void init_path();

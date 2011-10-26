@@ -15,6 +15,7 @@
 #include "file.h"
 #include "func.h"
 #include "opcodes.h"
+#include "module.h"
 
 typedef struct
 {

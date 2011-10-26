@@ -6,6 +6,10 @@ V load_file(V file_name, V global)
 	{
 		return NULL;
 	}
+	if (file_name->type != T_STR)
+	{
+		return file_name;
+	}
 	V new_file = NULL;
 	FILE* f = fopen(toString(file_name)->data, "rb");
 	Header h = read_header(f);
