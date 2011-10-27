@@ -102,9 +102,8 @@ bool set_to_bucket(Bucket* b, String* s, V value)
 
 void set_hashmap(HashMap* hm, V key, V value)
 {
-	assert(key->type == T_IDENT); //FIXME: replace with exception system
-	String* s = key->data.object;
-	uint32_t hash = string_hash(s->length, s->data) % hm->size;
+	String* s = toString(key);
+	uint32_t hash = string_hash(s->length, s->data) % hm->size; 
 	Bucket* b = hm->map[hash];
 	if (b == NULL)
 	{
@@ -147,10 +146,8 @@ bool change_bucket(Bucket* b, String* s, V value)
 
 bool change_hashmap(HashMap* hm, V key, V value)
 {
-	assert(key->type == T_IDENT); //FIXME: replace with exception system
-	String* s = key->data.object;
-	int hash = string_hash(s->length, s->data) % hm->size;
-	Bucket* b = hm->map[hash];
+	String* s = toString(key);
+	Bucket* b = hm->map[string_hash(s->length, s->data) % hm->size];
 	if (b == NULL)
 	{
 		return false;
