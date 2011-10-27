@@ -58,10 +58,8 @@ V get_from_bucket(Bucket* b, String* s)
 
 V get_hashmap(HashMap* hm, V key)
 {
-	assert(key->type == T_IDENT); //FIXME: replace with exception system
-	String* s = key->data.object;
-	int hash = string_hash(s->length, s->data) % hm->size;
-	Bucket* b = hm->map[hash];
+	String* s = toString(key);
+	Bucket* b = hm->map[string_hash(s->length, s->data) % hm->size];
 	if (b == NULL)
 	{
 		return NULL;
