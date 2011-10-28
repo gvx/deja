@@ -6,8 +6,6 @@
 #include "hashmap.h"
 #include "types.h"
 
-#include <assert.h> //FIXME
-
 HashMap* new_hashmap(int initialsize)
 {
 	HashMap* hm = malloc(sizeof(HashMap));
