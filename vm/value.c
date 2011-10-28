@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <stdio.h>
-
 V int_to_value(int i)
 {
 	V t = new_value(T_NUM);
@@ -23,6 +21,18 @@ V double_to_value(double d)
 	return t;
 }
 
+uint32_t string_hash(int length, const char *key)
+{
+	uint32_t hash = 2166136261;
+	int i;
+	for (i = 0; i < length; i++)
+	{
+        hash = (16777619 * hash) ^ (*key);
+        key++;
+	}
+	return hash;
+};
+
 V a_to_value(char* str)
 {
 	V t = new_value(T_STR);
@@ -32,6 +42,7 @@ V a_to_value(char* str)
 	s->length = l;
 	char* str2 = malloc(l);
 	memcpy(str2, str, l);
+	s->hash = string_hash(l, str2);
 	s->data = str2;
 	t->data.object = s;
 	return t;
@@ -45,6 +56,7 @@ V str_to_value(int max, char* str)
 	s->length = max;
 	char* str2 = malloc(max);
 	memcpy(str2, str, max);
+	s->hash = string_hash(max, str2);
 	s->data = str2;
 	t->data.object = s;
 	return t;
@@ -59,6 +71,7 @@ V get_ident(const char* name)
 	s->length = l;
 	char* name2 = malloc(l);
 	memcpy(name2, name, l + 1);
+	s->hash = string_hash(l, name2);
 	s->data = name2;
 	t->data.object = s;
 	return t;

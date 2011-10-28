@@ -41,8 +41,11 @@ typedef Value* V;
 typedef struct String
 {
 	uint32_t length;
+	uint32_t hash;
 	char* data;
 } String;
+
+uint32_t string_hash(int, const char*);
 
 V int_to_value(int);
 V double_to_value(double);

@@ -8,18 +8,6 @@
 
 #include <assert.h> //FIXME
 
-uint32_t string_hash(int length, const char *key)
-{
-	uint32_t hash = 2166136261;
-	int i;
-	for (i = 0; i < length; i++)
-	{
-        hash = (16777619 * hash) ^ (*key);
-        key++;
-	}
-	return hash;
-};
-
 HashMap* new_hashmap(int initialsize)
 {
 	HashMap* hm = malloc(sizeof(HashMap));
@@ -59,7 +47,7 @@ V get_from_bucket(Bucket* b, String* s)
 V get_hashmap(HashMap* hm, V key)
 {
 	String* s = toString(key);
-	Bucket* b = hm->map[string_hash(s->length, s->data) % hm->size];
+	Bucket* b = hm->map[s->hash % hm->size];
 	if (b == NULL)
 	{
 		return NULL;
@@ -103,7 +91,7 @@ bool set_to_bucket(Bucket* b, String* s, V value)
 void set_hashmap(HashMap* hm, V key, V value)
 {
 	String* s = toString(key);
-	uint32_t hash = string_hash(s->length, s->data) % hm->size; 
+	uint32_t hash = s->hash % hm->size; 
 	Bucket* b = hm->map[hash];
 	if (b == NULL)
 	{
@@ -147,7 +135,7 @@ bool change_bucket(Bucket* b, String* s, V value)
 bool change_hashmap(HashMap* hm, V key, V value)
 {
 	String* s = toString(key);
-	Bucket* b = hm->map[string_hash(s->length, s->data) % hm->size];
+	Bucket* b = hm->map[s->hash % hm->size];
 	if (b == NULL)
 	{
 		return false;
