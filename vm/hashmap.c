@@ -30,27 +30,22 @@ void hashmap_from_scope(V v_scope, int initialsize)
 	scope->hm.map = bl;
 }
 
-V get_from_bucket(Bucket* b, String* s)
-{
-	if (s->length == b->keysize)
-	{
-		if (!memcmp(b->key, s->data, s->length))
-		{
-			return b->value;
-		}
-	}
-	return b->next == NULL ? NULL : get_from_bucket(b->next, s);
-}
-
 V get_hashmap(HashMap* hm, V key)
 {
 	String* s = toString(key);
 	Bucket* b = hm->map[s->hash % hm->size];
-	if (b == NULL)
+	while (b != NULL)
 	{
-		return NULL;
+		if (s->length == b->keysize)
+		{
+			if (!memcmp(b->key, s->data, s->length))
+			{
+				return b->value;
+			}
+		}
+		b = b->next;
 	}
-	return get_from_bucket(b, s);
+	return NULL;
 }
 
 Bucket* new_bucket(String* s, V value)
