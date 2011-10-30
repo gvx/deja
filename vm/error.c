@@ -46,9 +46,11 @@ Error ident_to_error(V e)
 	{
 		if (toString(error_names[i])->length == s->length && !memcmp(toString(error_names[i])->data, s->data, s->length))
 		{
+			clear_ref(e);
 			return i;
 		}
 	}
+	clear_ref(e);
 	return UnknownError;
 }
 
