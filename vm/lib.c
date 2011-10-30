@@ -35,6 +35,7 @@ Error get(Header* h, Stack* S, Stack* scope_arr)
 	V key = pop(S);
 	if (key->type != T_IDENT)
 	{
+		clear_ref(key);
 		return TypeError;
 	}
 	Scope *sc = toScope(get_head(scope_arr));
@@ -886,7 +887,11 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 	}
 	if (v->type == T_IDENT)
 	{
-		get(h, S, scope_arr);
+		Error e = get(h, S, scope_arr);
+		if (e != Nothing)
+		{
+			return e;
+		}
 	}
 	v = pop(S);
 	if (v->type == T_FUNC)
