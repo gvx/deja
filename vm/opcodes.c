@@ -150,8 +150,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			break;
 		case OP_RETURN:
-			v = sc->func;
-			if (v == NULL)
+			if (sc->func == NULL)
 			{
 				if (stack_size(scope_arr) > 1)
 				{ // we are in an included file
@@ -171,6 +170,22 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				}
 			}
 			while (!toScope(v)->is_func_scope);
+			break;
+		case OP_RECURSE:
+			v = NULL;
+			do
+			{
+				clear_ref(v);
+				v = pop(scope_arr);
+				if (v == NULL)
+				{
+					return Exit;
+				}
+			}
+			while (!toScope(v)->is_func_scope);
+			push(scope_arr, v);
+			sc = toScope(v);
+			sc->pc = toFunc(sc->func)->start;
 			break;
 		case OP_LABDA:
 			v = new_value(T_FUNC);
@@ -202,9 +217,23 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 		case OP_LINE_NUMBER:
 			sc->linenr = argument;
 			break;
-		case OP_LINE_TEXT:
-			break;
 		case OP_SOURCE_FILE:
+			toFile(sc->file)->source = get_literal(h, argument);
+			//don't bother with refcounting: literals exist
+			//exactly as long as the file they belong to.
+			break;
+		case OP_ENTER_ERRHAND:
+			v = new_scope(scope);
+			push(scope_arr, v);
+			sc = toScope(v);
+			sc->is_error_handler = true;
+			sc->pc += argument - 1;
+			break;
+		case OP_LEAVE_ERRHAND:
+			pc = sc->pc;
+			clear_ref(pop(scope_arr));
+			sc = toScope(get_head(scope_arr));
+			sc->pc = pc;
 			break;
 	}
 	return Nothing;

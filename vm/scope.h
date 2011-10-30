@@ -12,6 +12,7 @@ typedef struct Scope
 	V func;
 	V parent;
 	bool is_func_scope;
+	bool is_error_handler;
 	uint32_t linenr;
 	uint32_t* pc;
 	struct HashMap hm;

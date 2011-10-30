@@ -19,6 +19,7 @@ V load_file(V file_name, V global)
 		new_file = new_value(T_FILE);
 		File* f_obj = malloc(sizeof(File));
 		f_obj->name = add_ref(file_name);
+		f_obj->source = NULL;
 		f_obj->header = h;
 		f_obj->global = global;
 		uint32_t *code = malloc(h.size * 4);

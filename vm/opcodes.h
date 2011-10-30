@@ -17,6 +17,7 @@
 #define OP_JMP            0x10
 #define OP_JMPZ           0x11
 #define OP_RETURN         0x12
+#define OP_RECURSE        0x13
 #define OP_LABDA          0x20
 #define OP_ENTER_SCOPE    0x21
 #define OP_LEAVE_SCOPE    0x22
@@ -24,8 +25,9 @@
 #define OP_DROP           0x40
 #define OP_DUP            0x41
 #define OP_LINE_NUMBER    0x50
-#define OP_LINE_TEXT      0x51
 #define OP_SOURCE_FILE    0x52
+#define OP_ENTER_ERRHAND  0x60
+#define OP_LEAVE_ERRHAND  0x61
 
 Error do_instruction(Header*, Stack*, Stack*);
 

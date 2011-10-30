@@ -13,6 +13,7 @@
 typedef struct
 {
 	V name;
+	V source;
 	V global;
 	Header header;
 	uint32_t *code;
