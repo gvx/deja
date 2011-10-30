@@ -32,6 +32,28 @@ void run(V file_name)
 		sc = toScope(get_head(scope));
 		sc->pc++;
 		e = do_instruction(&toFile(sc->file)->header, S, scope);
+		if (e != Nothing && e != Exit)
+		{
+			Stack *save_scopes = new_stack();
+			do
+			{
+				push(save_scopes, pop(scope));
+				sc = toScope(get_head(save_scopes));
+			}
+			while (stack_size(scope) > 0 && !sc->is_error_handler);
+			if (stack_size(scope) > 0)
+			{ //Let error be handled by code
+				push(S, add_ref(error_to_ident(e)));
+				e = Nothing;
+			}
+			else
+			{ //Error slips away, uncaught
+				while (stack_size(save_scopes) > 0)
+				{
+					push(scope, pop(save_scopes));
+				}
+			}
+		}
 	}
 	if (e != Exit) //uh oh
 	{
