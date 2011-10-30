@@ -40,8 +40,8 @@ V a_to_value(char* str)
 	String* s = malloc(sizeof(String));
 	size_t l = strlen(str);
 	s->length = l;
-	char* str2 = malloc(l);
-	memcpy(str2, str, l);
+	char* str2 = malloc(l + 1);
+	memcpy(str2, str, l + 1);
 	s->hash = string_hash(l, str2);
 	s->data = str2;
 	t->data.object = s;
@@ -54,8 +54,8 @@ V str_to_value(int max, char* str)
 	t->color = Green;
 	String* s = malloc(sizeof(String));
 	s->length = max;
-	char* str2 = malloc(max);
-	memcpy(str2, str, max);
+	char* str2 = malloc(max + 1);
+	memcpy(str2, str, max + 1);
 	s->hash = string_hash(max, str2);
 	s->data = str2;
 	t->data.object = s;
@@ -69,7 +69,7 @@ V get_ident(const char* name)
 	String* s = malloc(sizeof(String));
 	size_t l = strlen(name);
 	s->length = l;
-	char* name2 = malloc(l);
+	char* name2 = malloc(l + 1);
 	memcpy(name2, name, l + 1);
 	s->hash = string_hash(l, name2);
 	s->data = name2;

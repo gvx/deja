@@ -36,8 +36,8 @@ V find_file(V module_name)
 			break;
 		}
 		int length = strlen(search_path[i]) + l;
-		char *fname = malloc(length);
-		strncat(strcpy(fname, search_path[i]), mod_name, l);
+		char *fname = malloc(length + 1);
+		strncat(strcpy(fname, search_path[i]), mod_name, l + 1);
 		if (exists(fname))
 		{
 			set_hashmap(loaded, module_name, int_to_value(1));
