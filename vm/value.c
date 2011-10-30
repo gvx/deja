@@ -55,7 +55,8 @@ V str_to_value(int max, char* str)
 	String* s = malloc(sizeof(String));
 	s->length = max;
 	char* str2 = malloc(max + 1);
-	memcpy(str2, str, max + 1);
+	memcpy(str2, str, max);
+	str2[max] = '\0';
 	s->hash = string_hash(max, str2);
 	s->data = str2;
 	t->data.object = s;
