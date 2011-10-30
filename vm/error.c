@@ -67,7 +67,8 @@ void handle_error(Error e, Stack *scope_arr)
 		sc = toScope(n->data);
 		if (show_next)
 		{
-			printf("%s:%d\n", toString(toFile(sc->file)->name)->data, sc->linenr);
+			String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
+			printf("%s:%d\n", s->data, sc->linenr);
 		}
 		n = n->next;
 		show_next = sc->is_func_scope || (n && n->next == NULL);
