@@ -1,6 +1,6 @@
 #include "lib.h"
 
-void print_value(V v)
+void print_value(V v, int depth)
 {
 	String* s;
 	switch (v->type)
@@ -17,7 +17,23 @@ void print_value(V v)
 			printf("%g", toNumber(v));
 			break;
 		case T_STACK:
-			printf("<stack>");
+			if (depth < 4)
+			{
+				printf("[ ");
+				Stack *st = toStack(v);
+				Node *n = st->head;
+				while (n)
+				{
+					print_value(n->data, depth + 1);
+					printf(" ");
+					n = n->next;
+				}
+				printf("]");
+			}
+			else
+			{
+				printf("[...]");
+			}
 			break;
 		case T_CFUNC:
 		case T_FUNC:
@@ -299,7 +315,7 @@ Error print(Header* h, Stack* S, Stack* scope_arr)
 	{
 		return StackEmpty;
 	}
-	print_value(v);
+	print_value(v, 0);
 	clear_ref(v);
 	return Nothing;
 }
@@ -683,7 +699,7 @@ Error print_stack(Header* h, Stack* S, Stack* scope_arr)
 	printf("[ ");
 	while (n != NULL)
 	{
-		print_value(n->data);
+		print_value(n->data, 0);
 		printf(" ");
 		n = n->next;
 	}
