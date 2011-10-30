@@ -954,6 +954,40 @@ Error error(Header* h, Stack* S, Stack* scope_arr)
 	return UserError;
 }
 
+Error raise_(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	V v = pop(S);
+	if (v->type != T_IDENT)
+	{
+		return TypeError;
+	}
+	return ident_to_error(v);
+}
+
+Error catch_if(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	over(h, S, scope_arr);
+	V err = pop(S);
+	eq(h, S, scope_arr);
+	V res = pop(S);
+	if (truthy(res))
+	{
+		clear_ref(res);
+		push(S, err);
+		return Nothing;
+	}
+	clear_ref(res);
+	return ident_to_error(err);
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1008,6 +1042,8 @@ static CFunc stdlib[] = {
 	{"over", over},
 	{"rot", rotate},
 	{"error", error},
+	{"raise", raise_},
+	{"catch-if", catch_if},
 	{NULL, NULL}
 };
 
