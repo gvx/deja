@@ -924,6 +924,31 @@ Error drop(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error over(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
+	push(S, add_ref(S->head->next->data));
+	return Nothing;
+}
+
+Error rotate(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 3)
+	{
+		return StackEmpty;
+	}
+	Node *a = S->head;
+	Node *b = a->next;
+	Node *c = b->next;
+	a->next = c->next;
+	c->next = a;
+	S->head = b;
+	return Nothing;
+}
+
 Error error(Header* h, Stack* S, Stack* scope_arr)
 {
 	return UserError;
@@ -980,6 +1005,8 @@ static CFunc stdlib[] = {
 	{"call", call},
 	{"dup", dup},
 	{"drop", drop},
+	{"over", over},
+	{"rot", rotate},
 	{"error", error},
 	{NULL, NULL}
 };
