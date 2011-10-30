@@ -1,6 +1,6 @@
 from convert import *
 
-valued_opcodes = set('PUSH_WORD PUSH_LITERAL SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL'.split())
+valued_opcodes = set('PUSH_WORD PUSH_LITERAL SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL SOURCE_FILE'.split())
 
 class Contain(object):
 	def __init__(self, t, value):
