@@ -3,7 +3,7 @@ from collect import *
 import struct
 
 HEADER = '\x07DV'
-VERSION = (0, 0)
+VERSION = (0, 1)
 OP_SIZE = 5
 
 OPCODES = {
@@ -18,6 +18,7 @@ OPCODES = {
 	'JMP':				'00010000',
 	'JMPZ':				'00010001',
 	'RETURN':			'00010010',
+	'RECURSE':			'00010011',
 	'LABDA':			'00100000',
 	'ENTER_SCOPE':		'00100001',
 	'LEAVE_SCOPE':		'00100010',
@@ -25,6 +26,9 @@ OPCODES = {
 	'DROP':				'01000000',
 	'DUP':				'01000001',
 	'LINE_NUMBER':		'01010000',
+	'SOURCE_FILE':		'01010010',
+	'ENTER_ERRHAND':	'01100000',
+	'LEAVE_ERRHAND':	'01100001',
 }
 for k in OPCODES:
 	OPCODES[k] = int(OPCODES[k], 2) * 0x1000000

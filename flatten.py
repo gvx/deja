@@ -115,5 +115,14 @@ def flatten(tree, acc=None):
 				flatten(branch.elseclause, acc)
 			acc.append(m_end)
 			acc.append(SingleInstruction('LEAVE_SCOPE', 0))
-		#elif isinstance(branch, CatchStatement): # left purposefully unimplemented
+		elif isinstance(branch, CatchStatement):
+			m_body = Marker()
+			m_end = Marker()
+			acc.append(SingleInstruction('ENTER_ERRHAND', m_body))
+			flatten(branch.errorhandler, acc)
+			acc.append(GoTo(m_end))
+			acc.append(m_body)
+			flatten(branch.body, acc)
+			acc.append(SingleInstruction('LEAVE_ERRHAND', 0))
+			acc.append(m_end)
 	return acc

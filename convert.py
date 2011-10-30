@@ -11,13 +11,14 @@ OPTIMIZERS = {
 	'get': 'GET',
 	'getglobal': 'GET_GLOBAL',
 	'return': 'RETURN',
+	'recurse': 'RECURSE',
 	'drop': 'DROP',
 	'dup': 'DUP',
 	'[]': 'NEW_LIST',
 }
 ARGED_OPT = set('SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL'.split())
 
-positional_instructions = set('JMP JMPZ LABDA'.split())
+positional_instructions = set('JMP JMPZ LABDA ENTER_ERRHAND'.split())
 
 def convert(flat):
 	bytecode = []
