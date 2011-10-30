@@ -46,6 +46,7 @@ void run(V file_name)
 int main(int argc, char *argv[])
 {
 	init_path();
+	init_errors();
 	if (argc > 1)
 	{
 		run(find_file(get_ident(argv[1])));

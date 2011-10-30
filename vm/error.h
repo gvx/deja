@@ -17,8 +17,16 @@ typedef enum
 	TypeError,
 	StackEmpty,
 	IllegalFile,
-	UserError
+	UserError,
+	UnknownError,
 } Error;
+
+V error_names[UnknownError];
+
+void init_errors();
+
+V error_to_ident(Error e);
+Error ident_to_error(V e);
 
 void handle_error(Error, Stack*);
 
