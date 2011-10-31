@@ -1021,6 +1021,30 @@ Error catch_if(Header* h, Stack* S, Stack* scope_arr)
 	return ident_to_error(err);
 }
 
+Error len(Header* h, Stack* S, Stack* scope_arr)
+{
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
+	V v = pop(S);
+	switch (v->type)
+	{
+		case T_STR:
+		case T_IDENT:
+			push(S, int_to_value(toString(v)->length));
+			break;
+		case T_STACK:
+			push(S, int_to_value(stack_size(toStack(v))));
+			break;
+		default:
+			clear_ref(v);
+			return TypeError;
+	}
+	clear_ref(v);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1077,6 +1101,7 @@ static CFunc stdlib[] = {
 	{"error", error},
 	{"raise", raise_},
 	{"catch-if", catch_if},
+	{"len", len},
 	{NULL, NULL}
 };
 
