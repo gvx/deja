@@ -4,6 +4,7 @@
 #include "value.h"
 
 #define get_head(x) (x->head->data)
+#define stack_size(x) (x->size)
 
 typedef struct Node
 {
@@ -21,7 +22,6 @@ Stack* new_stack();
 void copy_stack(Stack*, Stack*);
 void push(Stack*, V);
 V pop(Stack*);
-int stack_size(Stack*);
 void clear_stack(Stack*);
 
 #endif
