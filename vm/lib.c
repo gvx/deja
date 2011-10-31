@@ -1,5 +1,7 @@
 #include "lib.h"
 
+#define require(x) if (stack_size(S) < (x)) return StackEmpty;
+
 void print_value(V v, int depth)
 {
 	String* s;
@@ -44,10 +46,7 @@ void print_value(V v, int depth)
 
 Error get(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V key = pop(S);
 	if (key->type != T_IDENT)
 	{
@@ -73,10 +72,7 @@ Error get(Header* h, Stack* S, Stack* scope_arr)
 
 Error getglobal(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V key = pop(S);
 	if (key->type != T_IDENT)
 	{
@@ -95,10 +91,7 @@ Error getglobal(Header* h, Stack* S, Stack* scope_arr)
 
 Error set(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V key = pop(S);
 	if (key->type != T_IDENT)
 	{
@@ -127,10 +120,7 @@ Error set(Header* h, Stack* S, Stack* scope_arr)
 
 Error setglobal(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V key = pop(S);
 	if (key->type != T_IDENT)
 	{
@@ -146,10 +136,7 @@ Error setglobal(Header* h, Stack* S, Stack* scope_arr)
 
 Error setlocal(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V key = pop(S);
 	if (key->type != T_IDENT)
 	{
@@ -165,6 +152,7 @@ Error setlocal(Header* h, Stack* S, Stack* scope_arr)
 
 Error add(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -185,6 +173,7 @@ Error add(Header* h, Stack* S, Stack* scope_arr)
 
 Error sub(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -205,6 +194,7 @@ Error sub(Header* h, Stack* S, Stack* scope_arr)
 
 Error mul(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -225,6 +215,7 @@ Error mul(Header* h, Stack* S, Stack* scope_arr)
 
 Error div_(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -251,6 +242,7 @@ Error div_(Header* h, Stack* S, Stack* scope_arr)
 
 Error mod_(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -298,10 +290,7 @@ const char* gettype(V r)
 
 Error type(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V v = pop(S);
 	if (v->type != T_IDENT)
 	{
@@ -326,11 +315,8 @@ Error type(Header* h, Stack* S, Stack* scope_arr)
 
 Error print(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(1);
 	V v = pop(S);
-	if (v == NULL)
-	{
-		return StackEmpty;
-	}
 	print_value(v, 0);
 	clear_ref(v);
 	return Nothing;
@@ -338,10 +324,8 @@ Error print(Header* h, Stack* S, Stack* scope_arr)
 
 Error print_nl(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (print(h, S, scope_arr) == StackEmpty)
-	{
-		return StackEmpty;
-	}
+	require(1);
+	print(h, S, scope_arr);
 	printf("\n");
 	return Nothing;
 }
@@ -378,10 +362,7 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 
 Error if_(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 3)
-	{
-		return StackEmpty;
-	}
+	require(3);
 	V v0 = pop(S);
 	V v1 = pop(S);
 	V v2 = pop(S);
@@ -427,10 +408,7 @@ Error exit_(Header* h, Stack* S, Stack* scope_arr)
 
 Error lt(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -451,10 +429,7 @@ Error lt(Header* h, Stack* S, Stack* scope_arr)
 
 Error gt(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -475,10 +450,7 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 
 Error le(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -499,10 +471,7 @@ Error le(Header* h, Stack* S, Stack* scope_arr)
 
 Error ge(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
@@ -523,10 +492,7 @@ Error ge(Header* h, Stack* S, Stack* scope_arr)
 
 Error eq(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	int t = 0;
@@ -558,6 +524,7 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 
 Error ne(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	int t = 1;
@@ -589,10 +556,7 @@ Error ne(Header* h, Stack* S, Stack* scope_arr)
 
 Error not(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V v = pop(S);
 	push(S, add_ref(truthy(v) ? v_false : v_true));
 	clear_ref(v);
@@ -601,10 +565,7 @@ Error not(Header* h, Stack* S, Stack* scope_arr)
 
 Error and(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	push(S, add_ref(truthy(v1) && truthy(v2) ? v_true : v_false));
@@ -615,10 +576,7 @@ Error and(Header* h, Stack* S, Stack* scope_arr)
 
 Error or(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	push(S, add_ref(truthy(v1) || truthy(v2) ? v_true : v_false));
@@ -629,10 +587,7 @@ Error or(Header* h, Stack* S, Stack* scope_arr)
 
 Error xor(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	push(S, add_ref(truthy(v1) != truthy(v2) ? v_true : v_false));
@@ -644,10 +599,7 @@ Error xor(Header* h, Stack* S, Stack* scope_arr)
 
 Error range(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V v1;
 	V v2;
 	V v = pop(S);
@@ -659,10 +611,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	}
 	else
 	{
-		if (stack_size(S) < 2)
-		{
-			return StackEmpty;
-		}
+		require(2);
 		v1 = v;
 		v2 = pop(S);
 	}
@@ -704,10 +653,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 
 Error in(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V list = pop(S);
 	if (list->type != T_STACK)
 	{
@@ -730,6 +676,7 @@ Error in(Header* h, Stack* S, Stack* scope_arr)
 
 Error reversed(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(1);
 	V list = pop(S);
 	if (list->type != T_STACK)
 	{
@@ -761,10 +708,7 @@ Error print_stack(Header* h, Stack* S, Stack* scope_arr)
 
 Error swap(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	push(S, v1);
@@ -774,10 +718,7 @@ Error swap(Header* h, Stack* S, Stack* scope_arr)
 
 Error push_to(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V list = pop(S);
 	if (list->type != T_STACK)
 	{
@@ -792,10 +733,7 @@ Error push_to(Header* h, Stack* S, Stack* scope_arr)
 
 Error push_through(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	V list = pop(S);
 	if (list->type != T_STACK)
 	{
@@ -810,10 +748,7 @@ Error push_through(Header* h, Stack* S, Stack* scope_arr)
 
 Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V list = pop(S);
 	if (list->type != T_STACK)
 	{
@@ -828,10 +763,7 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 
 Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V v = NULL;
 	if (get_head(S)->type != T_IDENT)
 	{
@@ -906,11 +838,8 @@ Error input(Header* h, Stack* S, Stack* scope_arr)
 
 Error copy(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(1);
 	V v = pop(S);
-	if (v == NULL)
-	{
-		return StackEmpty;
-	}
 	if (v->type != T_STACK)
 	{
 		clear_ref(v);
@@ -924,10 +853,7 @@ Error copy(Header* h, Stack* S, Stack* scope_arr)
 
 Error use(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V fname = pop(S);
 	if (fname->type != T_IDENT)
 	{
@@ -948,11 +874,8 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 
 Error call(Header* h, Stack* S, Stack* scope_arr)
 {
+	require(1);
 	V v = get_head(S);
-	if (v == NULL)
-	{
-		return StackEmpty;
-	}
 	if (v->type == T_IDENT)
 	{
 		Error e = get(h, S, scope_arr);
@@ -979,40 +902,28 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 
 Error dup(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	push(S, add_ref(get_head(S)));
 	return Nothing;
 }
 
 Error drop(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	clear_ref(pop(S));
 	return Nothing;
 }
 
 Error over(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	push(S, add_ref(S->head->next->data));
 	return Nothing;
 }
 
 Error rotate(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 3)
-	{
-		return StackEmpty;
-	}
+	require(3);
 	Node *a = S->head;
 	Node *b = a->next;
 	Node *c = b->next;
@@ -1029,10 +940,7 @@ Error error(Header* h, Stack* S, Stack* scope_arr)
 
 Error raise_(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V v = pop(S);
 	if (v->type != T_IDENT)
 	{
@@ -1043,10 +951,7 @@ Error raise_(Header* h, Stack* S, Stack* scope_arr)
 
 Error catch_if(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 2)
-	{
-		return StackEmpty;
-	}
+	require(2);
 	over(h, S, scope_arr);
 	V err = pop(S);
 	eq(h, S, scope_arr);
@@ -1063,10 +968,7 @@ Error catch_if(Header* h, Stack* S, Stack* scope_arr)
 
 Error len(Header* h, Stack* S, Stack* scope_arr)
 {
-	if (stack_size(S) < 1)
-	{
-		return StackEmpty;
-	}
+	require(1);
 	V v = pop(S);
 	switch (v->type)
 	{
