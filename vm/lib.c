@@ -229,6 +229,12 @@ Error div_(Header* h, Stack* S, Stack* scope_arr)
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
 	{
+		if (toNumber(v2) == 0.0)
+		{
+			clear_ref(v1);
+			clear_ref(v2);
+			return ValueError;
+		}
 		V r = double_to_value(toNumber(v1) / toNumber(v2));
 		clear_ref(v1);
 		clear_ref(v2);
@@ -249,6 +255,12 @@ Error mod_(Header* h, Stack* S, Stack* scope_arr)
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
 	{
+		if (toNumber(v2) == 0.0)
+		{
+			clear_ref(v1);
+			clear_ref(v2);
+			return ValueError;
+		}
 		V r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
 		clear_ref(v1);
 		clear_ref(v2);
