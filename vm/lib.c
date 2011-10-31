@@ -419,11 +419,15 @@ Error exit_(Header* h, Stack* S, Stack* scope_arr)
 
 Error lt(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
 	{
-		V r = double_to_value(toNumber(v1) < toNumber(v2));
+		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		push(S, r);
@@ -439,11 +443,15 @@ Error lt(Header* h, Stack* S, Stack* scope_arr)
 
 Error gt(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
 	{
-		V r = double_to_value(toNumber(v1) > toNumber(v2));
+		V r = toNumber(v1) > toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		push(S, r);
@@ -459,11 +467,15 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 
 Error le(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
 	{
-		V r = double_to_value(toNumber(v1) <= toNumber(v2));
+		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		push(S, r);
@@ -479,11 +491,15 @@ Error le(Header* h, Stack* S, Stack* scope_arr)
 
 Error ge(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (v1->type == T_NUM && v2->type == T_NUM)
 	{
-		V r = double_to_value(toNumber(v1) >= toNumber(v2));
+		V r = toNumber(v1) >= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		push(S, r);
@@ -499,6 +515,10 @@ Error ge(Header* h, Stack* S, Stack* scope_arr)
 
 Error eq(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 2)
+	{
+		return StackEmpty;
+	}
 	V v1 = pop(S);
 	V v2 = pop(S);
 	int t = 0;
@@ -522,7 +542,7 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 			}
 		}
 	}
-	push(S, int_to_value(t));
+	push(S, add_ref(t ? v_true : v_false));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
@@ -566,7 +586,7 @@ Error not(Header* h, Stack* S, Stack* scope_arr)
 		return StackEmpty;
 	}
 	V v = pop(S);
-	push(S, int_to_value(truthy(v) ? 0 : 1));
+	push(S, add_ref(truthy(v) ? v_false : v_true));
 	clear_ref(v);
 	return Nothing;
 }
@@ -579,7 +599,7 @@ Error and(Header* h, Stack* S, Stack* scope_arr)
 	}
 	V v1 = pop(S);
 	V v2 = pop(S);
-	push(S, int_to_value(truthy(v1) && truthy(v2) ? 1 : 0));
+	push(S, add_ref(truthy(v1) && truthy(v2) ? v_true : v_false));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
@@ -593,7 +613,7 @@ Error or(Header* h, Stack* S, Stack* scope_arr)
 	}
 	V v1 = pop(S);
 	V v2 = pop(S);
-	push(S, int_to_value(truthy(v1) || truthy(v2) ? 1 : 0));
+	push(S, add_ref(truthy(v1) || truthy(v2) v_true : v_false));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
@@ -607,7 +627,7 @@ Error xor(Header* h, Stack* S, Stack* scope_arr)
 	}
 	V v1 = pop(S);
 	V v2 = pop(S);
-	push(S, int_to_value(truthy(v1) != truthy(v2) ? 1 : 0));
+	push(S, add_ref(truthy(v1) != truthy(v2) ? v_true : v_false));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
@@ -616,6 +636,10 @@ Error xor(Header* h, Stack* S, Stack* scope_arr)
 
 Error range(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
 	V v1;
 	V v2;
 	V v = pop(S);
@@ -627,6 +651,10 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	}
 	else
 	{
+		if (stack_size(S) < 2)
+		{
+			return StackEmpty;
+		}
 		v1 = v;
 		v2 = pop(S);
 	}
@@ -668,6 +696,10 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 
 Error in(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
 	V list = pop(S);
 	if (list->type != T_STACK)
 	{
@@ -1126,8 +1158,10 @@ void open_std_lib(HashMap* hm)
 		V j = get_ident(*k);
 		set_hashmap(hm, j, j);
 	}
-	set_hashmap(hm, get_ident("true"), int_to_value(1));
-	set_hashmap(hm, get_ident("false"), int_to_value(0));
+	v_true = int_to_value(1);
+	v_false = int_to_value(0);
+	set_hashmap(hm, get_ident("true"), v_true);
+	set_hashmap(hm, get_ident("false"), v_false);
 }
 
 V new_cfunc(Error (*func)(Header*, Stack*, Stack*))

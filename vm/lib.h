@@ -24,6 +24,8 @@ typedef struct
 } CFunc;
 
 V new_cfunc(Error (*)(Header*, Stack*, Stack*));
+V v_true;
+V v_false;
 void open_lib(CFunc[], HashMap*);
 void open_std_lib(HashMap*);
 
