@@ -58,12 +58,12 @@ Error get(Header* h, Stack* S, Stack* scope_arr)
 	V v = get_hashmap(&sc->hm, key);
 	while (v == NULL)
 	{
-		sc = toScope(sc->parent);
-		if (sc == NULL)
+		if (sc->parent == NULL)
 		{
 			clear_ref(key);
 			return NameError;
 		}
+		sc = toScope(sc->parent);
 		v = get_hashmap(&sc->hm, key);
 	}
 	push(S, add_ref(v));
