@@ -298,6 +298,10 @@ const char* gettype(V r)
 
 Error type(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 1)
+	{
+		return StackEmpty;
+	}
 	V v = pop(S);
 	if (v->type != T_IDENT)
 	{
@@ -374,20 +378,24 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 
 Error if_(Header* h, Stack* S, Stack* scope_arr)
 {
+	if (stack_size(S) < 3)
+	{
+		return StackEmpty;
+	}
 	V v0 = pop(S);
 	V v1 = pop(S);
 	V v2 = pop(S);
 	if (truthy(v0))
 	{
+		clear_ref(v2);
 		push(S, v1);
 	}
 	else
 	{
+		clear_ref(v1);
 		push(S, v2);
 	}
 	clear_ref(v0);
-	clear_ref(v1);
-	clear_ref(v2);
 	return Nothing;
 }
 
@@ -613,7 +621,7 @@ Error or(Header* h, Stack* S, Stack* scope_arr)
 	}
 	V v1 = pop(S);
 	V v2 = pop(S);
-	push(S, add_ref(truthy(v1) || truthy(v2) v_true : v_false));
+	push(S, add_ref(truthy(v1) || truthy(v2) ? v_true : v_false));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
