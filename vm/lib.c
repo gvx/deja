@@ -987,6 +987,32 @@ Error len(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+void open_lib(CFunc[], HashMap*);
+
+Error loadlib(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V name = pop(S);
+	if (name->type != T_STR)
+	{
+		return TypeError;
+	}
+	void* lib_handle = dlopen(toString(name)->data, RTLD_NOW);
+	if (lib_handle == NULL)
+	{
+		printf("lib_handle == NULL\n");
+		return UnknownError;
+	}
+	CFunc *lib = dlsym(lib_handle, "deja_vu");
+	if (lib == NULL)
+	{
+		printf("lib == NULL\n");
+		return UnknownError;
+	}
+	open_lib(lib, &toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1044,6 +1070,7 @@ static CFunc stdlib[] = {
 	{"raise", raise_},
 	{"catch-if", catch_if},
 	{"len", len},
+	{"loadlib", loadlib},
 	{NULL, NULL}
 };
 

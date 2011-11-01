@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <dlfcn.h>
 
 #include "scope.h"
 #include "header.h"
