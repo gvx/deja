@@ -1000,13 +1000,13 @@ Error loadlib(Header* h, Stack* S, Stack* scope_arr)
 	void* lib_handle = dlopen(toString(name)->data, RTLD_NOW);
 	if (lib_handle == NULL)
 	{
-		printf("lib_handle == NULL\n");
+		fprintf(stderr, "%s\n", dlerror());
 		return UnknownError;
 	}
 	CFunc *lib = dlsym(lib_handle, "deja_vu");
 	if (lib == NULL)
 	{
-		printf("lib == NULL\n");
+		fprintf(stderr, "%s\n", dlerror());
 		return UnknownError;
 	}
 	open_lib(lib, &toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm);
