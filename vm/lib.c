@@ -1,7 +1,5 @@
 #include "lib.h"
 
-#define require(x) if (stack_size(S) < (x)) return StackEmpty;
-
 void print_value(V v, int depth)
 {
 	String* s;
@@ -611,7 +609,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	}
 	else
 	{
-		require(2);
+		require(1);
 		v1 = v;
 		v2 = pop(S);
 	}

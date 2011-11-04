@@ -30,4 +30,6 @@ V v_false;
 void open_lib(CFunc[], HashMap*);
 void open_std_lib(HashMap*);
 
+#define require(x) if (stack_size(S) < (x)) return StackEmpty;
+
 #endif
