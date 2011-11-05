@@ -150,16 +150,8 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			break;
 		case OP_RETURN:
-			if (sc->func == NULL)
-			{
-				if (stack_size(scope_arr) > 1)
-				{ // we are in an included file
-					clear_ref(pop(scope_arr));
-					return Nothing;
-				}
-				return Exit;
-			}
 			v = NULL;
+			File *file = toFile(sc->file);
 			do
 			{
 				clear_ref(v);
@@ -169,7 +161,8 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 					return Exit;
 				}
 			}
-			while (!toScope(v)->is_func_scope);
+			while (!toScope(v)->is_func_scope && toFile(toScope(v)->file) == file);
+			clear_ref(v);
 			break;
 		case OP_RECURSE:
 			v = NULL;
