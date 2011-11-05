@@ -763,7 +763,6 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
-	V v = NULL;
 	if (get_head(S)->type != T_IDENT)
 	{
 		return TypeError;
@@ -773,6 +772,8 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 	{
 		return e;
 	}
+	V v = NULL;
+	V file = sc->file;
 	do
 	{
 		clear_ref(v);
@@ -782,7 +783,7 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 			return Exit;
 		}
 	}
-	while (!toScope(v)->is_func_scope);
+	while (!toScope(v)->is_func_scope && toScope(v)->file == file);
 	v = pop(S);
 	if (v->type == T_FUNC)
 	{
@@ -888,14 +889,17 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 	if (v->type == T_FUNC)
 	{
 		push(scope_arr, new_function_scope(v));
+		clear_ref(v);
 	}
 	else if (v->type == T_CFUNC)
 	{
-		return toCFunc(v)(h, S, scope_arr);
+		Error e = toCFunc(v)(h, S, scope_arr);
+		clear_ref(v);
+		return e;
 	}
 	else
 	{
-		push(S, add_ref(v));
+		push(S, v);
 	}
 	return Nothing;
 }
