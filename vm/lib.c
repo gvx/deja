@@ -414,7 +414,7 @@ Error lt(Header* h, Stack* S, Stack* scope_arr)
 		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
-		push(S, r);
+		push(S, add_ref(r));
 		return Nothing;
 	}
 	else
@@ -435,7 +435,7 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 		V r = toNumber(v1) > toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
-		push(S, r);
+		push(S, add_ref(r));
 		return Nothing;
 	}
 	else
@@ -456,7 +456,7 @@ Error le(Header* h, Stack* S, Stack* scope_arr)
 		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
-		push(S, r);
+		push(S, add_ref(r));
 		return Nothing;
 	}
 	else
@@ -477,7 +477,7 @@ Error ge(Header* h, Stack* S, Stack* scope_arr)
 		V r = toNumber(v1) >= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
-		push(S, r);
+		push(S, add_ref(r));
 		return Nothing;
 	}
 	else
@@ -546,7 +546,7 @@ Error ne(Header* h, Stack* S, Stack* scope_arr)
 			}
 		}
 	}
-	push(S, int_to_value(t));
+	push(S, add_ref(t ? v_true : v_false));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;

@@ -51,6 +51,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	V scope = get_head(scope_arr);
 	Scope *sc = toScope(scope);
 	Func* f;
+	File *file;
 	uint32_t *pc;
 	int opcode, argument;
 	decode(ntohl(*sc->pc), &opcode, &argument);
@@ -151,7 +152,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_RETURN:
 			v = NULL;
-			File *file = toFile(sc->file);
+			file = toFile(sc->file);
 			do
 			{
 				clear_ref(v);
@@ -166,6 +167,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_RECURSE:
 			v = NULL;
+			file = toFile(sc->file);
 			do
 			{
 				clear_ref(v);
@@ -175,7 +177,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 					return Exit;
 				}
 			}
-			while (!toScope(v)->is_func_scope);
+			while (!toScope(v)->is_func_scope && toFile(toScope(v)->file) == file);
 			push(scope_arr, v);
 			sc = toScope(v);
 			sc->pc = toFunc(sc->func)->start;
