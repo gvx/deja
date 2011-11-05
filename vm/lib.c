@@ -27,7 +27,7 @@ void print_value(V v, int depth)
 					print_value(n->data, depth + 1);
 					printf(" ");
 					n = n->next;
-				}
+			}
 				printf("]");
 			}
 			else
@@ -381,11 +381,7 @@ Error if_(Header* h, Stack* S, Stack* scope_arr)
 Error return_(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = NULL;
-	V scope = get_head(scope_arr);
-	if (toScope(v)->func == NULL)
-	{
-		return Exit;
-	}
+	V file = sc->file;
 	do
 	{
 		clear_ref(v);
@@ -395,7 +391,12 @@ Error return_(Header* h, Stack* S, Stack* scope_arr)
 			return Exit;
 		}
 	}
-	while (!toScope(scope)->is_func_scope);
+	while (!toScope(v)->is_func_scope && toScope(v)->file == file);
+	clear_ref(v);
+	if (stack_size(scope_arr) == 0)
+	{
+		return Exit;
+	}
 	return Nothing;
 }
 
@@ -804,6 +805,7 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 Error self_tail(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = NULL;
+	V file = sc->file;
 	do
 	{
 		clear_ref(v);
@@ -813,9 +815,9 @@ Error self_tail(Header* h, Stack* S, Stack* scope_arr)
 			return Exit;
 		}
 	}
-	while (!toScope(v)->is_func_scope);
+	while (!toScope(v)->is_func_scope && toScope(v)->file == file);
 	push(scope_arr, v);
-	Scope* sc = toScope(v);
+	sc = toScope(v);
 	sc->pc = toFunc(sc->func)->start;
 	return Nothing;
 }
