@@ -14,7 +14,7 @@ void print_value(V v, int depth)
 			printf("%*s", s->length, s->data);
 			break;
 		case T_NUM:
-			printf("%g", toNumber(v));
+			printf("%.15g", toNumber(v));
 			break;
 		case T_STACK:
 			if (depth < 4)
