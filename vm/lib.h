@@ -32,4 +32,6 @@ void open_std_lib(HashMap*);
 
 #define require(x) if (stack_size(S) < (x)) return StackEmpty;
 
+Error return_(Header*, Stack*, Stack*);
+
 #endif
