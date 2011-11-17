@@ -991,6 +991,12 @@ Error len(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error yield(Header* h, Stack* S, Stack* scope_arr)
+{
+	push(S, toScope(get_head(scope_arr))->func);
+	return return_(h, S, scope_arr);
+}
+
 void open_lib(CFunc[], HashMap*);
 
 Error loadlib(Header* h, Stack* S, Stack* scope_arr)
@@ -1074,6 +1080,7 @@ static CFunc stdlib[] = {
 	{"raise", raise_},
 	{"catch-if", catch_if},
 	{"len", len},
+	{"yield", yield},
 	{"loadlib", loadlib},
 	{NULL, NULL}
 };
