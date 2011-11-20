@@ -18,6 +18,8 @@
 #include "opcodes.h"
 #include "module.h"
 
+#include "strlib.h"
+
 typedef struct
 {
 	char *name;

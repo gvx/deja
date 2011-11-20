@@ -1082,6 +1082,8 @@ static CFunc stdlib[] = {
 	{"len", len},
 	{"yield", yield},
 	{"loadlib", loadlib},
+	//strlib
+	{"concat", concat},
 	{NULL, NULL}
 };
 
