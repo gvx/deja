@@ -1084,6 +1084,7 @@ static CFunc stdlib[] = {
 	{"loadlib", loadlib},
 	//strlib
 	{"concat", concat},
+	{"contains", contains},
 	{NULL, NULL}
 };
 
