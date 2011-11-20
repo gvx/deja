@@ -1085,6 +1085,8 @@ static CFunc stdlib[] = {
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
+	{"starts-with", starts_with},
+	{"ends-with", ends_with},
 	{NULL, NULL}
 };
 
