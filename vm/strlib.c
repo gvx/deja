@@ -208,5 +208,37 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 
 Error split(Header* h, Stack* S, Stack* scope_arr)
 {
-	return Nothing;
+	String *s1;
+	String *s2;
+	require(2);
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type == T_STR && v2->type == T_STR)
+	{
+		s1 = toString(v1);
+		s2 = toString(v2);
+		V r = new_list();
+		Stack *rs = toStack(r);
+		int start, laststart = 0;
+		for (start = 0; start <= s2->length - s1->length; start++)
+		{
+			if (!memcmp(s1->data, s2->data + start, s1->length))
+			{
+				V new = str_to_value(start - laststart, s2->data + laststart);
+				laststart = start + s1->length;
+				push(rs, new);
+			}
+		}
+		push(rs, str_to_value(s2->length - laststart, s2->data + laststart));
+		push(S, r);
+		clear_ref(v1);
+		clear_ref(v2);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
 }
