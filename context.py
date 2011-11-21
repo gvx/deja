@@ -53,7 +53,7 @@ class LineContext(Context):
 
 	def statementize(self):
 		self.statement = None
-		if self.tokens and self.tokens[-1].endswith(':'):
+		if self.tokens and not self.tokens[-1].startswith('"') and self.tokens[-1].endswith(':'):
 			self.tokens[-1] = self.tokens[-1][:-1]
 			if not self.tokens[-1]: #remove last word if empty
 				self.tokens.pop()
