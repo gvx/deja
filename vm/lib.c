@@ -1087,6 +1087,8 @@ static CFunc stdlib[] = {
 	{"contains", contains},
 	{"starts-with", starts_with},
 	{"ends-with", ends_with},
+	{"split", split},
+	{"join", join},
 	{NULL, NULL}
 };
 

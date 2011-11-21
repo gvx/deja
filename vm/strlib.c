@@ -150,3 +150,63 @@ Error ends_with(Header* h, Stack* S, Stack* scope_arr)
 	clear_ref(v2);
 	return Nothing;
 }
+
+Error join(Header* h, Stack* S, Stack* scope_arr)
+{
+	String *s1;
+	String *s2;
+	require(2);
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type == T_STR && v2->type == T_STACK)
+	{
+		s1 = toString(v1);
+		int len = stack_size(toStack(v2));
+		int newlength = s1->length * (len > 0 ? len - 1 : 0);
+		Node *n = toStack(v2)->head;
+		while (n != NULL)
+		{
+			if (n->data->type != T_STR)
+			{
+				clear_ref(v1);
+				clear_ref(v2);
+				return TypeError;
+			}
+			newlength += toString(n->data)->length;
+			n = n->next;
+		}
+
+		char *new = malloc(newlength + 1);
+		char *currpoint = new;
+
+		n = toStack(v2)->head;
+		while (n != NULL)
+		{
+			s2 = toString(n->data);
+			memcpy(currpoint, s2->data, s2->length);
+			currpoint += s2->length;
+			n = n->next;
+			if (n != NULL)
+			{
+				memcpy(currpoint, s1->data, s1->length);
+				currpoint += s1->length;
+			}
+		}
+		*currpoint = '\0';
+		push(S, str_to_value(newlength, new));
+		clear_ref(v1);
+		clear_ref(v2);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+}
+
+Error split(Header* h, Stack* S, Stack* scope_arr)
+{
+	return Nothing;
+}
