@@ -48,7 +48,12 @@ class LineContext(Context):
 			if i % 2:
 				self.tokens.append('"' + s)
 			else:
-				self.tokens.extend(s.split())
+				tokens = s.split()
+				for i, token in enumerate(tokens):
+					if token.startswith(':') and len(token) > 1:
+						tokens[i] = "'%s'" % token[1:]
+						tokens.insert(i, 'get')
+				self.tokens.extend(tokens)
 		return self
 
 	def statementize(self):
