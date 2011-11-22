@@ -15,6 +15,16 @@ OPTIMIZERS = {
 	'drop': 'DROP',
 	'dup': 'DUP',
 	'[]': 'NEW_LIST',
+	'{}': 'NEW_DICT',
+	'swap': 'SWAP',
+	'rot': 'ROT',
+	'over': 'OVER',
+	'pop-from': 'POP_FROM',
+	'push-to': 'PUSH_TO',
+	'push-through': 'PUSH_THROUGH',
+	'has': 'HAS_DICT',
+	'get-from': 'GET_DICT',
+	'set-to': 'SET_DICT',
 }
 ARGED_OPT = set('SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL'.split())
 
