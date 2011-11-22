@@ -147,15 +147,15 @@ void grow_hashmap(HashMap* hm)
 	Bucket* bb;
 	for (i = 0; i < hm->size; i++)
 	{ //rehash!
-		Bucket* b = hm->map[i];
-		do
+		Bucket *b = hm->map[i];
+		while (b)
 		{
 			h = string_hash(b->keysize, b->key);
 			bb = b->next;
 			b->next = bl[h];
 			bl[h] = b;
+			b = bb;
 		}
-		while((b = bb));
 	}
 	free(hm->map);
 	hm->map = bl;
