@@ -317,29 +317,31 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_HAS_DICT:
 			container = pop(S);
-			if (container == NULL)
+			key = pop(S);
+			if (key == NULL)
 			{
 				return StackEmpty;
 			}
-			if (container->type != T_DICT)
+			if (container->type != T_DICT || key->type != T_IDENT)
 			{
 				return TypeError;
 			}
-			v = get_hashmap(toHashMap(container), get_literal(h, argument));
+			v = get_hashmap(toHashMap(container), key);
 			push(S, v == NULL ? v_true : v_false);
 			clear_ref(container);
 			break;
 		case OP_GET_DICT:
 			container = pop(S);
-			if (container == NULL)
+			key = pop(S);
+			if (key == NULL)
 			{
 				return StackEmpty;
 			}
-			if (container->type != T_DICT)
+			if (container->type != T_DICT || key->type != T_IDENT)
 			{
 				return TypeError;
 			}
-			v = get_hashmap(toHashMap(container), get_literal(h, argument));
+			v = get_hashmap(toHashMap(container), key);
 			if (v == NULL)
 			{
 				return ValueError;
@@ -349,11 +351,12 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_SET_DICT:
 			container = pop(S);
-			if (container == NULL)
+			key = pop(S);
+			if (key == NULL)
 			{
 				return StackEmpty;
 			}
-			if (container->type != T_DICT)
+			if (container->type != T_DICT || key->type != T_IDENT)
 			{
 				return TypeError;
 			}
@@ -363,7 +366,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				clear_ref(container);
 				return StackEmpty;
 			}
-			set_hashmap(toHashMap(container), get_literal(h, argument), v);
+			set_hashmap(toHashMap(container), key, v);
 			clear_ref(v);
 			clear_ref(container);
 			break;
