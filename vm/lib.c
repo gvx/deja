@@ -553,6 +553,10 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 				t = !memcmp(s1->data, s2->data, s1->length);
 			}
 		}
+		else
+		{
+			t = v1->data.object == v2->data.object;
+		}
 	}
 	push(S, add_ref(t ? v_true : v_false));
 	clear_ref(v1);
