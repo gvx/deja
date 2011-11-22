@@ -13,6 +13,7 @@
 #include "func.h"
 #include "hashmap.h"
 #include "header.h"
+#include "lib.h"
 
 int signed_opcode(int opcode)
 {
@@ -46,7 +47,7 @@ void decode(int instruction, int *opcode, int *argument)
 
 Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
-	V list;
+	V container;
 	V v;
 	V key;
 	V scope = get_head(scope_arr);
@@ -209,51 +210,51 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, new_list());
 			break;
 		case OP_POP_FROM:
-			list = pop(S);
-			if (list == NULL)
+			container = pop(S);
+			if (container == NULL)
 			{
 				return StackEmpty;
 			}
-			if (list->type != T_STACK)
+			if (container->type != T_STACK)
 			{
-				clear_ref(list);
+				clear_ref(container);
 				return TypeError;
 			}
-			v = pop(toStack(list));
+			v = pop(toStack(container));
 			if (v == NULL)
 			{
 				return StackEmpty;
 			}
 			push(S, v);
-			clear_ref(list);
+			clear_ref(container);
 			break;
 		case OP_PUSH_TO:
 			if (stack_size(S) < 2)
 			{
 				return StackEmpty;
 			}
-			list = pop(S);
-			if (list->type != T_STACK)
+			container = pop(S);
+			if (container->type != T_STACK)
 			{
-				clear_ref(list);
+				clear_ref(container);
 				return TypeError;
 			}
-			push(toStack(list), pop(S));
-			clear_ref(list);
+			push(toStack(container), pop(S));
+			clear_ref(container);
 			break;
 		case OP_PUSH_THROUGH:
 			if (stack_size(S) < 2)
 			{
 				return StackEmpty;
 			}
-			list = pop(S);
-			if (list->type != T_STACK)
+			container = pop(S);
+			if (container->type != T_STACK)
 			{
-				clear_ref(list);
+				clear_ref(container);
 				return TypeError;
 			}
-			push(toStack(list), pop(S));
-			push(S, list);
+			push(toStack(container), pop(S));
+			push(S, container);
 			break;
 		case OP_DROP:
 			clear_ref(pop(S));
@@ -310,6 +311,61 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(pop(scope_arr));
 			sc = toScope(get_head(scope_arr));
 			sc->pc = pc;
+			break;
+		case OP_NEW_DICT:
+			push(S, new_dict());
+			break;
+		case OP_HAS_DICT:
+			container = pop(S);
+			if (container == NULL)
+			{
+				return StackEmpty;
+			}
+			if (container->type != T_DICT)
+			{
+				return TypeError;
+			}
+			v = get_hashmap(toHashMap(container), get_literal(h, argument));
+			push(S, v == NULL ? v_true : v_false);
+			clear_ref(container);
+			break;
+		case OP_GET_DICT:
+			container = pop(S);
+			if (container == NULL)
+			{
+				return StackEmpty;
+			}
+			if (container->type != T_DICT)
+			{
+				return TypeError;
+			}
+			v = get_hashmap(toHashMap(container), get_literal(h, argument));
+			if (v == NULL)
+			{
+				return ValueError;
+			}
+			push(S, v);
+			clear_ref(container);
+			break;
+		case OP_SET_DICT:
+			container = pop(S);
+			if (container == NULL)
+			{
+				return StackEmpty;
+			}
+			if (container->type != T_DICT)
+			{
+				return TypeError;
+			}
+			v = pop(S);
+			if (v == NULL)
+			{
+				clear_ref(container);
+				return StackEmpty;
+			}
+			set_hashmap(toHashMap(container), get_literal(h, argument), v);
+			clear_ref(v);
+			clear_ref(container);
 			break;
 	}
 	return Nothing;
