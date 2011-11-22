@@ -277,6 +277,8 @@ const char* gettype(V r)
 			return "num";
 		case T_STACK:
 			return "list";
+		case T_DICT:
+			return "dict";
 		case T_FUNC:
 		case T_CFUNC:
 			return "func";
@@ -330,8 +332,13 @@ Error print_nl(Header* h, Stack* S, Stack* scope_arr)
 
 Error make_new_list(Header* h, Stack* S, Stack* scope_arr)
 {
-	V v = new_list();
-	push(S, v);
+	push(S, new_list());
+	return Nothing;
+}
+
+Error make_new_dict(Header* h, Stack* S, Stack* scope_arr)
+{
+	push(S, new_dict());
 	return Nothing;
 }
 
@@ -357,6 +364,38 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 	}
 	return StackEmpty;
 }
+
+Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
+{
+	V v = new_dict();
+	V key;
+	V val;
+	String *s;
+	while (stack_size(S) > 0)
+	{
+		key = pop(S);
+		if (key->type != T_IDENT)
+		{
+			clear_ref(key);
+			return TypeError;
+		}
+		s = toString(key);
+		if (s->length == 1 && s->data[0] == '}')
+		{
+			clear_ref(key);
+			push(S, v);
+			return Nothing;
+		}
+		val = pop(S);
+		if (val == NULL)
+		{
+			return StackEmpty;
+		}
+		set_hashmap(toHashMap(v), key, val);
+	}
+	return StackEmpty;
+}
+
 
 Error if_(Header* h, Stack* S, Stack* scope_arr)
 {
@@ -1082,6 +1121,8 @@ static CFunc stdlib[] = {
 	{"len", len},
 	{"yield", yield},
 	{"loadlib", loadlib},
+	{"{}", make_new_dict},
+	{"{", produce_dict},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
@@ -1092,7 +1133,7 @@ static CFunc stdlib[] = {
 	{NULL, NULL}
 };
 
-static char* autonyms[] = {"(", ")", "]", NULL};
+static char* autonyms[] = {"(", ")", "]", "}", NULL};
 
 void open_lib(CFunc lib[], HashMap* hm)
 {
