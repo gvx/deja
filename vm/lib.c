@@ -35,6 +35,29 @@ void print_value(V v, int depth)
 				printf("[...]");
 			}
 			break;
+		case T_DICT:
+			if (depth < 4)
+			{
+				printf("{");
+				int i;
+				HashMap *hm = toHashMap(v);
+				for (i = 0; i < hm->size; i++)
+				{
+					Bucket *b = hm->map[i];
+					while (b)
+					{
+						printf(" '%*s' ", b->keysize, b->key);
+						print_value(b->value, depth + 1);
+						b = b->next;
+					}
+				}
+				printf(" }");
+			}
+			else
+			{
+				printf("{...}");
+			}
+			break;
 		case T_CFUNC:
 		case T_FUNC:
 			printf("<func>");
