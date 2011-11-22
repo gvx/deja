@@ -1089,6 +1089,68 @@ Error loadlib(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error has(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V container = pop(S);
+	V key = pop(S);
+	if (container->type != T_DICT)
+	{
+		clear_ref(container);
+		clear_ref(key);
+		return TypeError;
+	}
+	V v = get_hashmap(toHashMap(container), key);
+	push(S, v == NULL ? v_true : v_false);
+	clear_ref(container);
+	clear_ref(key);
+	return Nothing;
+}
+
+Error get_from(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V container = pop(S);
+	V key = pop(S);
+	if (container->type != T_DICT)
+	{
+		clear_ref(container);
+		clear_ref(key);
+		return TypeError;
+	}
+	V v = get_hashmap(toHashMap(container), key);
+	if (v == NULL)
+	{
+		clear_ref(container);
+		clear_ref(key);
+		return ValueError;
+	}
+	push(S, add_ref(v));
+	clear_ref(container);
+	clear_ref(key);
+	return Nothing;
+}
+
+Error set_to(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(3);
+	V container = pop(S);
+	V key = pop(S);
+	V value = pop(S);
+	if (container->type != T_DICT || key->type != T_IDENT)
+	{
+		clear_ref(key);
+		clear_ref(value);
+		clear_ref(container);
+		return TypeError;
+	}
+	set_hashmap(toHashMap(container), key, value);
+	clear_ref(key);
+	clear_ref(value);
+	clear_ref(container);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1150,6 +1212,9 @@ static CFunc stdlib[] = {
 	{"loadlib", loadlib},
 	{"{}", make_new_dict},
 	{"{", produce_dict},
+	{"has", has},
+	{"get-from", get_from},
+	{"set-to", set_to},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},

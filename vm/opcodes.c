@@ -344,7 +344,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return ValueError;
 			}
-			push(S, v);
+			push(S, add_ref(v));
 			clear_ref(container);
 			break;
 		case OP_SET_DICT:
