@@ -22,12 +22,22 @@
 #define OP_ENTER_SCOPE    0x21
 #define OP_LEAVE_SCOPE    0x22
 #define OP_NEW_LIST       0x30
+#define OP_POP_FROM       0x31
+#define OP_PUSH_TO        0x32
+#define OP_PUSH_THROUGH   0x33
 #define OP_DROP           0x40
 #define OP_DUP            0x41
+#define OP_SWAP           0x42
+#define OP_ROT            0x43
+#define OP_OVER           0x44
 #define OP_LINE_NUMBER    0x50
 #define OP_SOURCE_FILE    0x52
 #define OP_ENTER_ERRHAND  0x60
 #define OP_LEAVE_ERRHAND  0x61
+#define OP_NEW_DICT       0x70
+#define OP_HAS_DICT       0x71
+#define OP_GET_DICT       0x72
+#define OP_SET_DICT       0x73
 
 Error do_instruction(Header*, Stack*, Stack*);
 

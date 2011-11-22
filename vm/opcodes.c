@@ -46,6 +46,7 @@ void decode(int instruction, int *opcode, int *argument)
 
 Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
+	V list;
 	V v;
 	V key;
 	V scope = get_head(scope_arr);
@@ -207,11 +208,87 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 		case OP_NEW_LIST:
 			push(S, new_list());
 			break;
+		case OP_POP_FROM:
+			list = pop(S);
+			if (list == NULL)
+			{
+				return StackEmpty;
+			}
+			if (list->type != T_STACK)
+			{
+				clear_ref(list);
+				return TypeError;
+			}
+			v = pop(toStack(list));
+			if (v == NULL)
+			{
+				return StackEmpty;
+			}
+			push(S, v);
+			clear_ref(list);
+			break;
+		case OP_PUSH_TO:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
+			list = pop(S);
+			if (list->type != T_STACK)
+			{
+				clear_ref(list);
+				return TypeError;
+			}
+			push(toStack(list), pop(S));
+			clear_ref(list);
+			break;
+		case OP_PUSH_THROUGH:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
+			list = pop(S);
+			if (list->type != T_STACK)
+			{
+				clear_ref(list);
+				return TypeError;
+			}
+			push(toStack(list), pop(S));
+			push(S, list);
+			break;
 		case OP_DROP:
 			clear_ref(pop(S));
 			break;
 		case OP_DUP:
 			push(S, add_ref(get_head(S)));
+			break;
+		case OP_SWAP:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
+			V v1 = pop(S);
+			V v2 = pop(S);
+			push(S, v1);
+			push(S, v2);
+			break;
+		case OP_ROT:
+			if (stack_size(S) < 3)
+			{
+				return StackEmpty;
+			}
+			Node *a = S->head;
+			Node *b = a->next;
+			Node *c = b->next;
+			a->next = c->next;
+			c->next = a;
+			S->head = b;
+			break;
+		case OP_OVER:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
+			push(S, add_ref(S->head->next->data));
 			break;
 		case OP_LINE_NUMBER:
 			sc->linenr = argument;
