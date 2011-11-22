@@ -2,7 +2,7 @@
 #define HEADER_DEF
 
 #define MAGIC "\aDV"
-#define VERSION '\x01'
+#define VERSION '\x02'
 
 #include <netinet/in.h>
 #include <stdint.h>
