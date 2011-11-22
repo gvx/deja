@@ -52,8 +52,8 @@ Bucket* new_bucket(String* s, V value)
 {
 	Bucket* b = malloc(sizeof(Bucket));
 	b->keysize = s->length;
-	b->key = malloc(s->length);
-	memcpy(b->key, s->data, s->length);
+	b->key = malloc(s->length + 1);
+	memcpy(b->key, s->data, s->length + 1);
 	b->value = add_ref(value);
 	b->next = NULL;
 	return b;
