@@ -2,6 +2,7 @@
 #include "value.h"
 #include "gc.h"
 #include "stack.h"
+#include "hashmap.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -83,6 +84,14 @@ V new_list(void)
 	V t = new_value(T_STACK);
 	Stack* s = new_stack();
 	t->data.object = s;
+	return t;
+}
+
+V new_dict(void)
+{
+	V t = new_value(T_DICT);
+	HashMap *h = new_hashmap(16);
+	t->data.object = h;
 	return t;
 }
 

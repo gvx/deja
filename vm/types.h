@@ -7,6 +7,7 @@
 #define T_NUM 0x02
 #define T_STACK 0x03
 #define T_FUNC 0x04
+#define T_DICT 0x05
 // Section 0x1*: internal types
 #define T_SCOPE 0x10
 #define T_FILE 0x11
