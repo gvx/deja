@@ -69,18 +69,14 @@ def dis_00(text):
 	return '\n'.join(make_line_00(i, x, literals) for i, x in enumerate(code))
 
 def dis_01(text):
-	if len(text) < 4:
-		raise Exception("Code file to short")
 	POS_ARG.add('ENTER_ERRHAND')
-	size = unsigned_int(text[:4])
-	text = text[4:]
-	code = [text[j * 4:j * 4 + 4] for j in range(size)]
-	literals = Literals(text[size * 4:])
-	return '\n'.join(make_line_00(i, x, literals) for i, x in enumerate(code))
+	return dis_00(text)
 
 def dis(text):
 	if not text.startswith('\x07DV'):
 		raise Exception("Not a Deja Vu byte code file.")
+	elif text[3] == '\x02':
+		return dis_01(text[4:])
 	if text[3] == '\x01':
 		return dis_01(text[4:])
 	elif text[3] == '\x00':
