@@ -6,3 +6,4 @@ Error starts_with(Header*, Stack*, Stack*);
 Error ends_with(Header*, Stack*, Stack*);
 Error split(Header*, Stack*, Stack*);
 Error join(Header*, Stack*, Stack*);
+Error slice(Header*, Stack*, Stack*);

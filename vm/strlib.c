@@ -242,3 +242,39 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 }
+
+Error slice(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(3);
+	V str = pop(S);
+	V start = pop(S);
+	V end = pop(S);
+	if (str->type != T_STR || start->type != T_NUM || end->type != T_NUM)
+	{
+		clear_ref(str);
+		clear_ref(start);
+		clear_ref(end);
+		return TypeError;
+	}
+	int s = toNumber(start);
+	int e = toNumber(end);
+	String *string = toString(str);
+	int len = string->length;
+	if (s < -len)
+		s = 0;
+	else if (s < 0)
+		s = len + s;
+	else if (s > len)
+		s = len;
+	if (e <= 0)
+		e = len - e;
+	if (e < s)
+		e = s;
+	else if (e > len)
+		e = len;
+	push(S, str_to_value(e - s, string->data + s));
+	clear_ref(str);
+	clear_ref(start);
+	clear_ref(end);
+	return Nothing;
+}

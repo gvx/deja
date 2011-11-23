@@ -1222,6 +1222,7 @@ static CFunc stdlib[] = {
 	{"ends-with", ends_with},
 	{"split", split},
 	{"join", join},
+	{"slice", slice},
 	{NULL, NULL}
 };
 
