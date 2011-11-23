@@ -1223,6 +1223,8 @@ static CFunc stdlib[] = {
 	{"split", split},
 	{"join", join},
 	{"slice", slice},
+	{"ord", ord},
+	{"chr", chr},
 	{NULL, NULL}
 };
 

@@ -278,3 +278,37 @@ Error slice(Header* h, Stack* S, Stack* scope_arr)
 	clear_ref(end);
 	return Nothing;
 }
+
+Error ord(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (v->type != T_STR)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	String *s = toString(v);
+	if (s->length == 0)
+	{
+		clear_ref(v);
+		return ValueError;
+	}
+	push(S, int_to_value((int)s->data[0]));
+	return Nothing;
+}
+
+Error chr(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (v->type != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	char x = toNumber(v);
+	push(S, str_to_value(1, &x));
+	return Nothing;
+}
+

@@ -7,3 +7,5 @@ Error ends_with(Header*, Stack*, Stack*);
 Error split(Header*, Stack*, Stack*);
 Error join(Header*, Stack*, Stack*);
 Error slice(Header*, Stack*, Stack*);
+Error ord(Header*, Stack*, Stack*);
+Error chr(Header*, Stack*, Stack*);
