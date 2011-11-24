@@ -32,7 +32,7 @@ uint32_t string_hash(int length, const char *key)
         key++;
 	}
 	return hash;
-};
+}
 
 V a_to_value(char* str)
 {
