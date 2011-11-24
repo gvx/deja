@@ -312,3 +312,40 @@ Error chr(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error find(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (v1->type != T_STR || v2->type != T_STR)
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+	String *s1 = toString(v1);
+	String *s2 = toString(v2);
+	if (s1->length > s2->length)
+	{
+		push(S, int_to_value(-1));
+	}
+	else
+	{
+		int i;
+		for (i = 0; i <= s2->length - s1->length; i++)
+		{
+			if (!memcmp(s2->data + i, s1->data, s1->length))
+			{
+				push(S, int_to_value(i));
+				clear_ref(v1);
+				clear_ref(v2);
+				return Nothing;
+			}
+		}
+		push(S, int_to_value(-1));
+	}
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
