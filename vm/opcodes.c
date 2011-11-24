@@ -191,7 +191,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 		case OP_LABDA:
 			v = new_value(T_FUNC);
 			f = malloc(sizeof(Func));
-			f->defscope = scope;
+			f->defscope = add_ref(scope);
 			f->start = sc->pc;
 			v->data.object = f;
 			push(S, v);
