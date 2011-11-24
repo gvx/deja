@@ -150,7 +150,7 @@ void grow_hashmap(HashMap* hm)
 		Bucket *b = hm->map[i];
 		while (b)
 		{
-			h = string_hash(b->keysize, b->key);
+			h = string_hash(b->keysize, b->key) % (hm->size * 2);
 			bb = b->next;
 			b->next = bl[h];
 			bl[h] = b;
