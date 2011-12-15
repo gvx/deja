@@ -1151,6 +1151,26 @@ Error set_to(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error rep(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V num = pop(S);
+	if (num->type != T_NUM)
+	{
+		clear_ref(num);
+		return TypeError;
+	}
+	V val = pop(S);
+	int i;
+	for (i = toNumber(num); i > 0; i--)
+	{
+		push(S, add_ref(val));
+	}
+	clear_ref(val);
+	clear_ref(num);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1215,6 +1235,7 @@ static CFunc stdlib[] = {
 	{"has", has},
 	{"get-from", get_from},
 	{"set-to", set_to},
+	{"rep", rep},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
