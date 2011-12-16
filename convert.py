@@ -48,6 +48,18 @@ def convert(filename, flat):
 						else:
 							s = 0
 						bytecode.append(SingleInstruction(OPTIMIZERS[w.value], s))
+					elif w.value == 'for:':
+						mstart = Marker()
+						mend = Marker()
+						bytecode.extend([
+							mstart,
+							SingleInstruction('DUP', 0),
+							SingleInstruction('JMPZ', mend),
+							SingleInstruction('PUSH_WORD', 'call'),
+							SingleInstruction('JMP', mstart),
+							mend,
+							SingleInstruction('DROP', 0)
+						])
 					else:
 						bytecode.append(SingleInstruction('PUSH_WORD', w))
 				elif isinstance(w, Number) and w.value.is_integer() and w.value <= POS_SIZE and w.value >= NEG_SIZE:
