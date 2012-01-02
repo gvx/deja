@@ -277,19 +277,18 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			Node *a = S->head;
-			Node *b = a->next;
-			Node *c = b->next;
-			a->next = c->next;
-			c->next = a;
-			S->head = b;
+			V *items = S->head->items;
+			V tmp = items[0];
+			items[0] = items[1];
+			items[1] = items[2];
+			items[2] = tmp;
 			break;
 		case OP_OVER:
 			if (stack_size(S) < 2)
 			{
 				return StackEmpty;
 			}
-			push(S, add_ref(S->head->next->data));
+			push(S, add_ref(S->head->items[1]));
 			break;
 		case OP_LINE_NUMBER:
 			sc->linenr = argument;

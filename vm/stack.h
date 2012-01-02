@@ -3,19 +3,20 @@
 
 #include "value.h"
 
-#define get_head(x) (x->head->data)
+#define get_head(x) (x->head->items[0])
 #define stack_size(x) (x->size)
 
-typedef struct Node
-{
-	struct Value *data;
-	struct Node *next;
-} Node;
+#define STACKSIZE 1024
 
-typedef struct
-{
+typedef struct StackArray {
+	struct StackArray *next;
+	int numitems;
+	V items[STACKSIZE];
+} StackArray;
+
+typedef struct Stack {
+	StackArray *head;
 	int size;
-	Node *head;
 } Stack;
 
 Stack* new_stack();
