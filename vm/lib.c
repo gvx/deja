@@ -21,17 +21,13 @@ void print_value(V v, int depth)
 			{
 				printf("[ ");
 				Stack *st = toStack(v);
-				StackArray *n = st->head;
-				int i;
+				Node *n = st->head;
 				while (n)
 				{
-					for (i = 0; i < n->numitems; i++)
-					{
-						print_value(n->items[i], depth + 1);
-						printf(" ");
-					}
+					print_value(n->data, depth + 1);
+					printf(" ");
 					n = n->next;
-				}
+			}
 				printf("]");
 			}
 			else
@@ -763,16 +759,12 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 
 Error print_stack(Header* h, Stack* S, Stack* scope_arr)
 {
-	int i;
-	StackArray* n = S->head;
+	Node* n = S->head;
 	printf("[ ");
 	while (n != NULL)
 	{
-		for (i = 0; i < n->numitems; i++)
-		{
-			print_value(n->items[i], 0);
-			printf(" ");
-		}
+		print_value(n->data, 0);
+		printf(" ");
 		n = n->next;
 	}
 	printf("]\n");
@@ -995,18 +987,19 @@ Error drop(Header* h, Stack* S, Stack* scope_arr)
 Error over(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
-	push(S, add_ref(S->head->items[1]));
+	push(S, add_ref(S->head->next->data));
 	return Nothing;
 }
 
 Error rotate(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(3);
-	V *items = S->head->items;
-	V tmp = items[0];
-	items[0] = items[1];
-	items[1] = items[2];
-	items[2] = tmp;
+	Node *a = S->head;
+	Node *b = a->next;
+	Node *c = b->next;
+	a->next = c->next;
+	c->next = a;
+	S->head = b;
 	return Nothing;
 }
 

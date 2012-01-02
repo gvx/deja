@@ -88,7 +88,7 @@ void free_value(V t)
 void iter_children(V t, void (*iter)(V))
 {
 	Stack* s;
-	StackArray* c;
+	Node* c;
 	Scope* sc;
 	Bucket* b;
 	File* f;
@@ -106,14 +106,11 @@ void iter_children(V t, void (*iter)(V))
 		case T_STACK:
 			s = toStack(t);
 			c = s->head;
-			while (c)
+			for (i = 0; i < s->size; i++)
 			{
-				for (i = 0; i < c->numitems; i++)
-				{
-					child = c->items[i];
-					iter(child);
-				}
+				child = c->data;
 				c = c->next;
+				iter(child);
 			}
 			break;
 		case T_SCOPE:

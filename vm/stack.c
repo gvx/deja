@@ -14,47 +14,42 @@ Stack* new_stack()
 
 void copy_stack(Stack *old, Stack *new)
 {
-	StackArray *cur = old->head, **to = &(new->head);
+	Node *cur = old->head;
+	Node **to = &new->head;
 	while (cur != NULL)
 	{
-		*to = calloc(1, sizeof(StackArray));
-		int i;
-		for (i = 0; i < cur->numitems; i++)
-		{
-			(*to)->items[i] = add_ref(cur->items[i]);
-		}
+		*to = malloc(sizeof(Node));
+		(*to)->data = cur->data;
 		cur = cur->next;
 		to = &(*to)->next;
 	}
+	*to = NULL;
 	new->size = old->size;
 }
 
 void push(Stack *stack, V v)
 {
-	StackArray *head = stack->head;
-	if (!head || head->numitems == STACKSIZE - 1)
+	Node *new_node = malloc(sizeof(Node));
+	if (new_node != NULL)
 	{
-		stack->head = calloc(1, sizeof(StackArray));
-		stack->head->next = head;
-		head = stack->head;
+		new_node->data = v;
+		new_node->next = (stack->size++ > 0) ? stack->head : NULL;
+		stack->head = new_node;
 	}
-	head->items[head->numitems++] = v;
-	stack->size++;
 }
 
 V pop(Stack *stack)
 {
-	if (!stack->size)
-		return NULL;
-	StackArray *head = stack->head;
-	V v = head->items[--head->numitems];
-	stack->size--;
-	if (!head->numitems && stack->size)
+	if (stack->size > 0)
 	{
-		stack->head = head->next;
-		free(head);
+		Node *top = stack->head;
+		V v = top->data;
+		stack->size--;
+		stack->head = top->next;
+		free(top);
+		return v;
 	}
-	return v;
+	return NULL;
 }
 
 void clear_stack(Stack *stack)

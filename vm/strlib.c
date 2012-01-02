@@ -27,19 +27,15 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 	else if (v1->type == T_STACK)
 	{
 		int newlength = 0;
-		int i;
-		StackArray *n = toStack(v1)->head;
+		Node *n = toStack(v1)->head;
 		while (n != NULL)
 		{
-			for (i = 0; i < n->numitems; i++)
+			if (n->data->type != T_STR)
 			{
-				if (n->items[i]->type != T_STR)
-				{
-					clear_ref(v1);
-					return TypeError;
-				}
-				newlength += toString(n->items[i])->length;
+				clear_ref(v1);
+				return TypeError;
 			}
+			newlength += toString(n->data)->length;
 			n = n->next;
 		}
 
@@ -49,12 +45,9 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		n = toStack(v1)->head;
 		while (n != NULL)
 		{
-			for (i = 0; i < n->numitems; i++)
-			{
-				s1 = toString(n->items[i]);
-				memcpy(currpoint, s1->data, s1->length);
-				currpoint += s1->length;
-			}
+			s1 = toString(n->data);
+			memcpy(currpoint, s1->data, s1->length);
+			currpoint += s1->length;
 			n = n->next;
 		}
 		*currpoint = '\0';
@@ -170,20 +163,16 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 		s1 = toString(v1);
 		int len = stack_size(toStack(v2));
 		int newlength = s1->length * (len > 0 ? len - 1 : 0);
-		int i;
-		StackArray *n = toStack(v1)->head;
+		Node *n = toStack(v2)->head;
 		while (n != NULL)
 		{
-			for (i = 0; i < n->numitems; i++)
+			if (n->data->type != T_STR)
 			{
-				if (n->items[i]->type != T_STR)
-				{
-					clear_ref(v1);
-					clear_ref(v2);
-					return TypeError;
-				}
-				newlength += toString(n->items[i])->length;
+				clear_ref(v1);
+				clear_ref(v2);
+				return TypeError;
 			}
+			newlength += toString(n->data)->length;
 			n = n->next;
 		}
 
@@ -193,18 +182,15 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 		n = toStack(v2)->head;
 		while (n != NULL)
 		{
-			for (i = 0; i < n->numitems; i++)
-			{
-				s2 = toString(n->items[i]);
-				memcpy(currpoint, s2->data, s2->length);
-				currpoint += s2->length;
-				if (i < n->numitems - 1 || n->next != NULL)
-				{
-					memcpy(currpoint, s1->data, s1->length);
-					currpoint += s1->length;
-				}
-			}
+			s2 = toString(n->data);
+			memcpy(currpoint, s2->data, s2->length);
+			currpoint += s2->length;
 			n = n->next;
+			if (n != NULL)
+			{
+				memcpy(currpoint, s1->data, s1->length);
+				currpoint += s1->length;
+			}
 		}
 		*currpoint = '\0';
 		push(S, str_to_value(newlength, new));

@@ -61,24 +61,18 @@ void handle_error(Error e, Stack *scope_arr)
 	{
 		return;
 	}
-	StackArray *sa = scope_arr->head;
+	Node *n = scope_arr->head;
 	Scope *sc;
 	bool show_next = true;
-	int itotal = 1;
-	while (sa != NULL)
+	while (n != NULL)
 	{
-		int i;
-		for (i = 0; i < sa->numitems; i++)
+		sc = toScope(n->data);
+		if (show_next)
 		{
-			sc = toScope(sa->items[i]);
-			if (show_next)
-			{
-				String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
-				printf("%s:%d\n", s->data, sc->linenr);
-			}
-			itotal++;
-			show_next = sc->is_func_scope || (itotal == stack_size(scope_arr));
+			String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
+			printf("%s:%d\n", s->data, sc->linenr);
 		}
-		sa = sa->next;
+		n = n->next;
+		show_next = sc->is_func_scope || (n && n->next == NULL);
 	}
 }
