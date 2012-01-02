@@ -39,7 +39,16 @@ class SingleInstruction(object):
 def flatten(tree, acc=None):
 	if acc is None:
 		acc = []
+
+	if isinstance(tree, list):
+		for branch in tree:
+			flatten(branch, acc)
+		return acc
+
 	for branch in tree.children:
+		if isinstance(branch, list):
+			for b in branch:
+				flatten(b, acc)
 		if isinstance(branch, Statement):
 			acc.append(SingleInstruction('LINE_NUMBER', branch.linenr))
 		if isinstance(branch, Word):
