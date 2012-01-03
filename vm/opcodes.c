@@ -15,36 +15,6 @@
 #include "header.h"
 #include "lib.h"
 
-int signed_opcode(int opcode)
-{
-	switch (opcode)
-	{
-		case OP_PUSH_INTEGER:
-		case OP_JMP:
-		case OP_JMPZ:
-			return true;
-		default:
-			return false;
-	}
-}
-
-void decode(int instruction, int *opcode, int *argument)
-{
-	*opcode = instruction >> 24;
-	if (signed_opcode(*opcode))
-	{
-		*argument = instruction & 8388607;
-		if (instruction & (1 << 23))
-		{
-			*argument = -(~*argument & 8388607) - 1;
-		}
-	}
-	else
-	{
-		*argument = instruction & 16777215;
-	}
-}
-
 Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
 	V container;
@@ -55,8 +25,23 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	Func* f;
 	V file;
 	uint32_t *pc;
-	int opcode, argument;
-	decode(ntohl(*sc->pc), &opcode, &argument);
+	int argument;
+	int instruction = ntohl(*sc->pc);
+	int opcode = instruction >> 24;
+	switch (opcode)
+	{
+		case OP_PUSH_INTEGER:
+		case OP_JMP:
+		case OP_JMPZ:
+			argument = instruction & 8388607;
+			if (instruction & (1 << 23))
+			{
+				argument = -(~argument & 8388607) - 1;
+			}
+			break;
+		default:
+			argument = instruction & 16777215;
+	}
 	switch (opcode)
 	{
 		case OP_PUSH_LITERAL:
