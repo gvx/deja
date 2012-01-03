@@ -91,6 +91,10 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			break;
 		case OP_SET:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
 			v = pop(S);
 			V key = get_literal(h, argument);
 			while (!change_hashmap(&sc->hm, key, v))
@@ -109,11 +113,19 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(v);
 			break;
 		case OP_SET_LOCAL:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
 			v = pop(S);
 			set_hashmap(&sc->hm, get_literal(h, argument), v);
 			clear_ref(v);
 			break;
 		case OP_SET_GLOBAL:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
 			v = pop(S);
 			set_hashmap(&toScope(toFile(sc->file)->global)->hm, get_literal(h, argument), v);
 			clear_ref(v);
@@ -144,6 +156,10 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc += argument - 1;
 			break;
 		case OP_JMPZ:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
 			v = pop(S);
 			bool t = truthy(v);
 			clear_ref(v);
@@ -210,21 +226,17 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, new_list());
 			break;
 		case OP_POP_FROM:
-			container = pop(S);
-			if (container == NULL)
+			if (stack_size(S) < 2)
 			{
 				return StackEmpty;
 			}
+			container = pop(S);
 			if (container->type != T_STACK)
 			{
 				clear_ref(container);
 				return TypeError;
 			}
 			v = pop(toStack(container));
-			if (v == NULL)
-			{
-				return StackEmpty;
-			}
 			push(S, v);
 			clear_ref(container);
 			break;
@@ -257,9 +269,17 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, container);
 			break;
 		case OP_DROP:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
 			clear_ref(pop(S));
 			break;
 		case OP_DUP:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
 			push(S, add_ref(get_head(S)));
 			break;
 		case OP_SWAP:
@@ -316,6 +336,10 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, new_dict());
 			break;
 		case OP_HAS_DICT:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
 			container = pop(S);
 			key = pop(S);
 			if (key == NULL)
@@ -331,12 +355,12 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(container);
 			break;
 		case OP_GET_DICT:
-			container = pop(S);
-			key = pop(S);
-			if (key == NULL)
+			if (stack_size(S) < 2)
 			{
 				return StackEmpty;
 			}
+			container = pop(S);
+			key = pop(S);
 			if (container->type != T_DICT || key->type != T_IDENT)
 			{
 				return TypeError;
@@ -350,12 +374,12 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(container);
 			break;
 		case OP_SET_DICT:
-			container = pop(S);
-			key = pop(S);
-			if (key == NULL)
+			if (stack_size(S) < 3)
 			{
 				return StackEmpty;
 			}
+			container = pop(S);
+			key = pop(S);
 			if (container->type != T_DICT || key->type != T_IDENT)
 			{
 				return TypeError;
