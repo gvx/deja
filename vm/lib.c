@@ -670,6 +670,11 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	V v = pop(S);
 	if (v->type == T_STACK)
 	{
+		if (stack_size(toStack(v)) < 2)
+		{
+			clear_ref(v);
+			return StackEmpty;
+		}
 		v1 = pop(toStack(v));
 		v2 = pop(toStack(v));
 		clear_ref(v);
