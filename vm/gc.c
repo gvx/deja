@@ -29,6 +29,9 @@ V new_value(int type)
 
 V add_ref(V t)
 {
+	if isInt(t)
+		return t;
+
 	t->refs++;
 	if (t->color != Green)
 	{
@@ -87,6 +90,9 @@ void free_value(V t)
 
 void iter_children(V t, void (*iter)(V))
 {
+	if (isInt(t))
+		return;
+
 	Stack* s;
 	Node* c;
 	Scope* sc;
@@ -172,6 +178,9 @@ void mark_gray(V);
 
 void mark_gray_child(V child)
 {
+	if (isInt(child))
+		return;
+
 	if (child != NULL)
 	{
 		child->refs--;
@@ -215,6 +224,9 @@ void scan_black(V);
 
 void scan_black_child(V child)
 {
+	if (isInt(child))
+		return;
+
 	if (child != NULL)
 	{
 		child->refs++;
@@ -234,6 +246,9 @@ void scan_black(V t)
 
 void scan(V t)
 {
+	if (isInt(t))
+		return;
+
 	if (t->color == Gray)
 	{
 		if (t->refs > 0)
@@ -262,6 +277,9 @@ void scan_roots(void)
 
 void collect_white(V t)
 {
+	if (isInt(t))
+		return;
+
 	if (t->color == White && !t->buffered)
 	{
 		t->color = Black;
@@ -296,6 +314,9 @@ void collect_cycles(void)
 
 void clear_ref(V t)
 {
+	if (isInt(t))
+		return;
+
 	if (t != NULL)
 	{
 		if (--t->refs == 0)

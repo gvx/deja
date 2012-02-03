@@ -5,9 +5,15 @@
 #include "hashmap.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include <math.h>
 
-V int_to_value(int i)
+V int_to_value(long int i)
 {
+	if (canBeInt(i))
+	{
+		return intToV(i);
+	}
 	V t = new_value(T_NUM);
 	t->color = Green;
 	t->data.number = (double)i;
@@ -16,6 +22,10 @@ V int_to_value(int i)
 
 V double_to_value(double d)
 {
+	if (!fmod(d, 1.0) && canBeInt(d))
+	{
+		return intToV((long int)d);
+	}
 	V t = new_value(T_NUM);
 	t->color = Green;
 	t->data.number = d;
