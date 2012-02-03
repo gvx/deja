@@ -97,7 +97,7 @@ V new_dict(void)
 
 bool truthy(V t)
 {
-	switch(t->type)
+	switch(getType(t))
 	{
 		case T_NIL:
 			return false;

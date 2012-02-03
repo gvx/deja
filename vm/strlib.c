@@ -6,11 +6,11 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 	String *s2;
 	require(1);
 	V v1 = pop(S);
-	if (v1->type == T_STR)
+	if (getType(v1) == T_STR)
 	{
 		require(1);
 		V v2 = pop(S);
-		if (v2->type != T_STR)
+		if (getType(v2) != T_STR)
 		{
 			return TypeError;
 		}
@@ -24,13 +24,13 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return Nothing;
 	}
-	else if (v1->type == T_STACK)
+	else if (getType(v1) == T_STACK)
 	{
 		int newlength = 0;
 		Node *n = toStack(v1)->head;
 		while (n != NULL)
 		{
-			if (n->data->type != T_STR)
+			if (getType(n->data) != T_STR)
 			{
 				clear_ref(v1);
 				return TypeError;
@@ -67,7 +67,7 @@ Error contains(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type != T_STR || v2->type != T_STR)
+	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
@@ -104,7 +104,7 @@ Error starts_with(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type != T_STR || v2->type != T_STR)
+	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
@@ -130,7 +130,7 @@ Error ends_with(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type != T_STR || v2->type != T_STR)
+	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
 		clear_ref(v2);
@@ -158,7 +158,7 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_STR && v2->type == T_STACK)
+	if (getType(v1) == T_STR && getType(v2) == T_STACK)
 	{
 		s1 = toString(v1);
 		int len = stack_size(toStack(v2));
@@ -166,7 +166,7 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 		Node *n = toStack(v2)->head;
 		while (n != NULL)
 		{
-			if (n->data->type != T_STR)
+			if (getType(n->data) != T_STR)
 			{
 				clear_ref(v1);
 				clear_ref(v2);
@@ -213,7 +213,7 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_STR && v2->type == T_STR)
+	if (getType(v1) == T_STR && getType(v2) == T_STR)
 	{
 		s1 = toString(v1);
 		s2 = toString(v2);
@@ -249,7 +249,7 @@ Error slice(Header* h, Stack* S, Stack* scope_arr)
 	V str = pop(S);
 	V start = pop(S);
 	V end = pop(S);
-	if (str->type != T_STR || start->type != T_NUM || end->type != T_NUM)
+	if (getType(str) != T_STR || getType(start) != T_NUM || getType(end) != T_NUM)
 	{
 		clear_ref(str);
 		clear_ref(start);
@@ -283,7 +283,7 @@ Error ord(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = pop(S);
-	if (v->type != T_STR)
+	if (getType(v) != T_STR)
 	{
 		clear_ref(v);
 		return TypeError;
@@ -302,7 +302,7 @@ Error chr(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = pop(S);
-	if (v->type != T_NUM)
+	if (getType(v) != T_NUM)
 	{
 		clear_ref(v);
 		return TypeError;
@@ -317,7 +317,7 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type != T_STR || v2->type != T_STR)
+	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
 		clear_ref(v2);

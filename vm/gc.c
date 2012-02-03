@@ -45,7 +45,7 @@ void free_value(V t)
 	Bucket* bb;
 	File* f;
 	int n;
-	switch (t->type)
+	switch (getType(t))
 	{
 		case T_STR:
 		case T_IDENT:
@@ -94,7 +94,7 @@ void iter_children(V t, void (*iter)(V))
 	File* f;
 	V child;
 	int i;
-	switch (t->type)
+	switch (getType(t))
 	{
 		case T_FUNC:
 			child = toFunc(t)->defscope;

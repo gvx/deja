@@ -62,11 +62,11 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				sc = toScope(sc->parent);
 				v = get_hashmap(&sc->hm, key);
 			}
-			if (v->type == T_FUNC)
+			if (getType(v) == T_FUNC)
 			{
 				push(scope_arr, new_function_scope(v));
 			}
-			else if (v->type == T_CFUNC)
+			else if (getType(v) == T_CFUNC)
 			{
 				return toCFunc(v)(h, S, scope_arr);
 			}
@@ -216,7 +216,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			container = pop(S);
-			if (container->type != T_STACK)
+			if (getType(container) != T_STACK)
 			{
 				clear_ref(container);
 				return TypeError;
@@ -231,7 +231,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			container = pop(S);
-			if (container->type != T_STACK)
+			if (getType(container) != T_STACK)
 			{
 				clear_ref(container);
 				return TypeError;
@@ -245,7 +245,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			container = pop(S);
-			if (container->type != T_STACK)
+			if (getType(container) != T_STACK)
 			{
 				clear_ref(container);
 				return TypeError;
@@ -331,7 +331,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			if (container->type != T_DICT || key->type != T_IDENT)
+			if (getType(container) != T_DICT || getType(key) != T_IDENT)
 			{
 				return TypeError;
 			}
@@ -346,7 +346,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			container = pop(S);
 			key = pop(S);
-			if (container->type != T_DICT || key->type != T_IDENT)
+			if (getType(container) != T_DICT || getType(key) != T_IDENT)
 			{
 				return TypeError;
 			}
@@ -365,7 +365,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			container = pop(S);
 			key = pop(S);
-			if (container->type != T_DICT || key->type != T_IDENT)
+			if (getType(container) != T_DICT || getType(key) != T_IDENT)
 			{
 				return TypeError;
 			}

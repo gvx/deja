@@ -6,7 +6,7 @@ V load_file(V file_name, V global)
 	{
 		return NULL;
 	}
-	if (file_name->type != T_STR)
+	if (getType(file_name) != T_STR)
 	{
 		return file_name;
 	}

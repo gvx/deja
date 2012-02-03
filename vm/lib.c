@@ -3,7 +3,7 @@
 void print_value(V v, int depth)
 {
 	String* s;
-	switch (v->type)
+	switch (getType(v))
 	{
 		case T_IDENT:
 			s = toString(v);
@@ -69,7 +69,7 @@ Error get(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V key = pop(S);
-	if (key->type != T_IDENT)
+	if (getType(key) != T_IDENT)
 	{
 		clear_ref(key);
 		return TypeError;
@@ -95,7 +95,7 @@ Error getglobal(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V key = pop(S);
-	if (key->type != T_IDENT)
+	if (getType(key) != T_IDENT)
 	{
 		clear_ref(key);
 		return TypeError;
@@ -114,7 +114,7 @@ Error set(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V key = pop(S);
-	if (key->type != T_IDENT)
+	if (getType(key) != T_IDENT)
 	{
 		clear_ref(key);
 		return TypeError;
@@ -143,7 +143,7 @@ Error setglobal(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V key = pop(S);
-	if (key->type != T_IDENT)
+	if (getType(key) != T_IDENT)
 	{
 		clear_ref(key);
 		return TypeError;
@@ -159,7 +159,7 @@ Error setlocal(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V key = pop(S);
-	if (key->type != T_IDENT)
+	if (getType(key) != T_IDENT)
 	{
 		clear_ref(key);
 		return TypeError;
@@ -176,7 +176,7 @@ Error add(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		V r = double_to_value(toNumber(v1) + toNumber(v2));
 		clear_ref(v1);
@@ -197,7 +197,7 @@ Error sub(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		V r = double_to_value(toNumber(v1) - toNumber(v2));
 		clear_ref(v1);
@@ -218,7 +218,7 @@ Error mul(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		V r = double_to_value(toNumber(v1) * toNumber(v2));
 		clear_ref(v1);
@@ -239,7 +239,7 @@ Error div_(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		if (toNumber(v2) == 0.0)
 		{
@@ -266,7 +266,7 @@ Error mod_(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		if (toNumber(v2) == 0.0)
 		{
@@ -290,7 +290,7 @@ Error mod_(Header* h, Stack* S, Stack* scope_arr)
 
 const char* gettype(V r)
 {
-	switch (r->type)
+	switch (getType(r))
 	{
 		case T_IDENT:
 			return "ident";
@@ -315,7 +315,7 @@ Error type(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = pop(S);
-	if (v->type != T_IDENT)
+	if (getType(v) != T_IDENT)
 	{
 		clear_ref(v);
 		return TypeError;
@@ -373,7 +373,7 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 	while (stack_size(S) > 0)
 	{
 		p = pop(S);
-		if (p->type == T_IDENT)
+		if (getType(p) == T_IDENT)
 		{
 			s = toString(p);
 			if (s->length == 1 && s->data[0] == ']')
@@ -397,7 +397,7 @@ Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
 	while (stack_size(S) > 0)
 	{
 		key = pop(S);
-		if (key->type != T_IDENT)
+		if (getType(key) != T_IDENT)
 		{
 			clear_ref(key);
 			return TypeError;
@@ -472,7 +472,7 @@ Error lt(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
@@ -493,7 +493,7 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		V r = toNumber(v1) > toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
@@ -514,7 +514,7 @@ Error le(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
@@ -535,7 +535,7 @@ Error ge(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		V r = toNumber(v1) >= toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
@@ -561,13 +561,13 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 	{
 		t = 1;
 	}
-	else if (v1->type == v2->type)
+	else if (getType(v1) == getType(v2))
 	{
-		if (v1->type == T_NUM)
+		if (getType(v1) == T_NUM)
 		{
 			t = toNumber(v1) == toNumber(v2);
 		}
-		else if (v1->type == T_IDENT || v1->type == T_STR)
+		else if (getType(v1) == T_IDENT || getType(v1) == T_STR)
 		{
 			String* s1 = toString(v1);
 			String* s2 = toString(v2);
@@ -597,13 +597,13 @@ Error ne(Header* h, Stack* S, Stack* scope_arr)
 	{
 		t = 0;
 	}
-	else if (v1->type == v2->type)
+	else if (getType(v1) == getType(v2))
 	{
-		if (v1->type == T_NUM)
+		if (getType(v1) == T_NUM)
 		{
 			t = toNumber(v1) != toNumber(v2);
 		}
-		else if (v1->type == T_IDENT || v1->type == T_STR)
+		else if (getType(v1) == T_IDENT || getType(v1) == T_STR)
 		{
 			String* s1 = toString(v1);
 			String* s2 = toString(v2);
@@ -668,7 +668,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	V v1;
 	V v2;
 	V v = pop(S);
-	if (v->type == T_STACK)
+	if (getType(v) == T_STACK)
 	{
 		if (stack_size(toStack(v)) < 2)
 		{
@@ -685,7 +685,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 		v1 = v;
 		v2 = pop(S);
 	}
-	if (v1->type == T_NUM && v2->type == T_NUM)
+	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		if (toNumber(v1) > toNumber(v2))
 		{
@@ -725,7 +725,7 @@ Error in(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = pop(S);
-	if (list->type != T_STACK)
+	if (getType(list) != T_STACK)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -748,7 +748,7 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = pop(S);
-	if (list->type != T_STACK)
+	if (getType(list) != T_STACK)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -790,7 +790,7 @@ Error push_to(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V list = pop(S);
-	if (list->type != T_STACK)
+	if (getType(list) != T_STACK)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -805,7 +805,7 @@ Error push_through(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V list = pop(S);
-	if (list->type != T_STACK)
+	if (getType(list) != T_STACK)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -820,7 +820,7 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = pop(S);
-	if (list->type != T_STACK)
+	if (getType(list) != T_STACK)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -834,7 +834,7 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
-	if (get_head(S)->type != T_IDENT)
+	if (getType(get_head(S)) != T_IDENT)
 	{
 		return TypeError;
 	}
@@ -856,12 +856,12 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 	}
 	while (!toScope(v)->is_func_scope && toScope(v)->file == file);
 	v = pop(S);
-	if (v->type == T_FUNC)
+	if (getType(v) == T_FUNC)
 	{
 		push(scope_arr, new_function_scope(v));
 		clear_ref(v);
 	}
-	else if (v->type == T_CFUNC)
+	else if (getType(v) == T_CFUNC)
 	{
 		e = toCFunc(v)(h, S, scope_arr);
 		clear_ref(v);
@@ -912,7 +912,7 @@ Error copy(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = pop(S);
-	if (v->type != T_STACK)
+	if (getType(v) != T_STACK)
 	{
 		clear_ref(v);
 		return TypeError;
@@ -927,7 +927,7 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V fname = pop(S);
-	if (fname->type != T_IDENT)
+	if (getType(fname) != T_IDENT)
 	{
 		return TypeError;
 	}
@@ -936,7 +936,7 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 	{
 		return IllegalFile;
 	}
-	if (file->type == T_FILE)
+	if (getType(file) == T_FILE)
 	{
 		push(scope_arr, new_file_scope(file));
 	}
@@ -948,7 +948,7 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = get_head(S);
-	if (v->type == T_IDENT)
+	if (getType(v) == T_IDENT)
 	{
 		Error e = get(h, S, scope_arr);
 		if (e != Nothing)
@@ -957,12 +957,12 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 		}
 	}
 	v = pop(S);
-	if (v->type == T_FUNC)
+	if (getType(v) == T_FUNC)
 	{
 		push(scope_arr, new_function_scope(v));
 		clear_ref(v);
 	}
-	else if (v->type == T_CFUNC)
+	else if (getType(v) == T_CFUNC)
 	{
 		Error e = toCFunc(v)(h, S, scope_arr);
 		clear_ref(v);
@@ -1017,7 +1017,7 @@ Error raise_(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = pop(S);
-	if (v->type != T_IDENT)
+	if (getType(v) != T_IDENT)
 	{
 		return TypeError;
 	}
@@ -1045,7 +1045,7 @@ Error len(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = pop(S);
-	switch (v->type)
+	switch (getType(v))
 	{
 		case T_STR:
 		case T_IDENT:
@@ -1074,7 +1074,7 @@ Error loadlib(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V name = pop(S);
-	if (name->type != T_STR)
+	if (getType(name) != T_STR)
 	{
 		return TypeError;
 	}
@@ -1099,7 +1099,7 @@ Error has(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V container = pop(S);
 	V key = pop(S);
-	if (container->type != T_DICT)
+	if (getType(container) != T_DICT)
 	{
 		clear_ref(container);
 		clear_ref(key);
@@ -1117,7 +1117,7 @@ Error get_from(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V container = pop(S);
 	V key = pop(S);
-	if (container->type != T_DICT)
+	if (getType(container) != T_DICT)
 	{
 		clear_ref(container);
 		clear_ref(key);
@@ -1142,7 +1142,7 @@ Error set_to(Header* h, Stack* S, Stack* scope_arr)
 	V container = pop(S);
 	V key = pop(S);
 	V value = pop(S);
-	if (container->type != T_DICT || key->type != T_IDENT)
+	if (getType(container) != T_DICT || getType(key) != T_IDENT)
 	{
 		clear_ref(key);
 		clear_ref(value);
@@ -1160,7 +1160,7 @@ Error rep(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V num = pop(S);
-	if (num->type != T_NUM)
+	if (getType(num) != T_NUM)
 	{
 		clear_ref(num);
 		return TypeError;
