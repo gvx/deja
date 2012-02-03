@@ -13,7 +13,9 @@
 #define toScope(x) ((Scope*)x->data.object)
 #define toFunc(x) ((Func*)x->data.object)
 #define toStack(x) ((Stack*)x->data.object)
-#define toString(x) ((String*)x->data.object)
+#define toString(x) ((String*)(x + 1))
+#define toCharArr(x) ((char*)(x + 1))
+#define getChars(x) (toCharArr(toString(x)))
 #define toNumber(x) (isInt(x) ? (double)toInt(x) : x->data.number)
 #define toCFunc(x) ((Error (*)(Header*, Stack*, Stack*))x->data.object)
 #define toHashMap(x) ((HashMap*)x->data.object)
@@ -49,8 +51,13 @@ typedef struct String
 {
 	uint32_t length;
 	uint32_t hash;
-	char* data;
 } String;
+
+typedef struct
+{
+	Value v;
+	String s;
+} StrValue;
 
 uint32_t string_hash(int, const char*);
 

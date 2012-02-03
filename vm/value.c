@@ -46,46 +46,34 @@ uint32_t string_hash(int length, const char *key)
 
 V a_to_value(char* str)
 {
-	V t = new_value(T_STR);
-	t->color = Green;
-	String* s = malloc(sizeof(String));
 	size_t l = strlen(str);
+	V t = make_new_value(T_STR, true, sizeof(String) + l + 1);
+	String *s = &((StrValue*)t)->s;
 	s->length = l;
-	char* str2 = malloc(l + 1);
-	memcpy(str2, str, l + 1);
-	s->hash = string_hash(l, str2);
-	s->data = str2;
-	t->data.object = s;
+	memcpy((char*)t + sizeof(StrValue), str, l + 1);
+	s->hash = string_hash(l, str);
 	return t;
 }
 
 V str_to_value(int max, char* str)
 {
-	V t = new_value(T_STR);
-	t->color = Green;
-	String* s = malloc(sizeof(String));
+	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
+	String *s = &((StrValue*)t)->s;
 	s->length = max;
-	char* str2 = malloc(max + 1);
-	memcpy(str2, str, max);
-	str2[max] = '\0';
-	s->hash = string_hash(max, str2);
-	s->data = str2;
-	t->data.object = s;
+	memcpy((char*)t + sizeof(StrValue), str, max + 1);
+	max[(char*)t + sizeof(StrValue)] = '\0';
+	s->hash = string_hash(max, str);
 	return t;
 }
 
 V get_ident(const char* name)
 {
-	V t = new_value(T_IDENT);
-	t->color = Green;
-	String* s = malloc(sizeof(String));
 	size_t l = strlen(name);
+	V t = make_new_value(T_IDENT, true, sizeof(String) + l + 1);
+	String *s = &((StrValue*)t)->s;
 	s->length = l;
-	char* name2 = malloc(l + 1);
-	memcpy(name2, name, l + 1);
-	s->hash = string_hash(l, name2);
-	s->data = name2;
-	t->data.object = s;
+	memcpy((char*)t + sizeof(StrValue), name, l + 1);
+	s->hash = string_hash(l, name);
 	return t;
 }
 

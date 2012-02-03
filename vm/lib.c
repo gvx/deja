@@ -7,11 +7,11 @@ void print_value(V v, int depth)
 	{
 		case T_IDENT:
 			s = toString(v);
-			printf("'%*s'", s->length, s->data);
+			printf("'%*s'", s->length, toCharArr(s));
 			break;
 		case T_STR:
 			s = toString(v);
-			printf("%*s", s->length, s->data);
+			printf("%*s", s->length, toCharArr(s));
 			break;
 		case T_NUM:
 			printf("%.15g", toNumber(v));
@@ -376,7 +376,7 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 		if (getType(p) == T_IDENT)
 		{
 			s = toString(p);
-			if (s->length == 1 && s->data[0] == ']')
+			if (s->length == 1 && toCharArr(s)[0] == ']')
 			{
 				clear_ref(p);
 				push(S, v);
@@ -403,7 +403,7 @@ Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
 			return TypeError;
 		}
 		s = toString(key);
-		if (s->length == 1 && s->data[0] == '}')
+		if (s->length == 1 && toCharArr(s)[0] == '}')
 		{
 			clear_ref(key);
 			push(S, v);
@@ -573,7 +573,7 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 			String* s2 = toString(v2);
 			if (s1->length == s2->length)
 			{
-				t = !memcmp(s1->data, s2->data, s1->length);
+				t = !memcmp(toCharArr(s1), toCharArr(s2), s1->length);
 			}
 		}
 		else
@@ -609,7 +609,7 @@ Error ne(Header* h, Stack* S, Stack* scope_arr)
 			String* s2 = toString(v2);
 			if (s1->length == s2->length)
 			{
-				t = !!memcmp(s1->data, s2->data, s1->length);
+				t = !!memcmp(toCharArr(s1), toCharArr(s2), s1->length);
 			}
 		}
 	}
@@ -1078,7 +1078,7 @@ Error loadlib(Header* h, Stack* S, Stack* scope_arr)
 	{
 		return TypeError;
 	}
-	void* lib_handle = dlopen(toString(name)->data, RTLD_NOW);
+	void* lib_handle = dlopen(getChars(name), RTLD_NOW);
 	if (lib_handle == NULL)
 	{
 		fprintf(stderr, "%s\n", dlerror());

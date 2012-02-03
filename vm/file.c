@@ -11,7 +11,7 @@ V load_file(V file_name, V global)
 		return file_name;
 	}
 	V new_file = NULL;
-	FILE* f = fopen(toString(file_name)->data, "rb");
+	FILE* f = fopen(getChars(file_name), "rb");
 	Header h = read_header(f);
 	if (header_correct(&h))
 	{

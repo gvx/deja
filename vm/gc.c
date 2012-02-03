@@ -17,13 +17,13 @@ static V roots[MAX_ROOTS];
 
 void collect_cycles(void);
 
-V new_value(int type)
+V make_new_value(int type, bool simple, int size)
 {
-	V t = malloc(sizeof(Value));
+	V t = malloc(sizeof(Value) + size);
 	t->buffered = false;
 	t->type = type;
 	t->refs = 1;
-	t->color = Black;
+	t->color = simple ? Green : Black;
 	return t;
 }
 
@@ -52,8 +52,6 @@ void free_value(V t)
 	{
 		case T_STR:
 		case T_IDENT:
-			free(toString(t)->data);
-			free(toString(t));
 			break;
 		case T_FUNC:
 			free(toFunc(t));

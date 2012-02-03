@@ -17,8 +17,8 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		s1 = toString(v1);
 		s2 = toString(v2);
 		char *new = malloc(s1->length + s2->length + 1);
-		memcpy(new, s1->data, s1->length);
-		memcpy(new + s1->length, s2->data, s2->length + 1);
+		memcpy(new, toCharArr(s1), s1->length);
+		memcpy(new + s1->length, toCharArr(s2), s2->length + 1);
 		push(S, str_to_value(s1->length + s2->length, new));
 		clear_ref(v1);
 		clear_ref(v2);
@@ -46,7 +46,7 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		while (n != NULL)
 		{
 			s1 = toString(n->data);
-			memcpy(currpoint, s1->data, s1->length);
+			memcpy(currpoint, toCharArr(s1), s1->length);
 			currpoint += s1->length;
 			n = n->next;
 		}
@@ -84,7 +84,7 @@ Error contains(Header* h, Stack* S, Stack* scope_arr)
 		int i;
 		for (i = 0; i <= s2->length - s1->length; i++)
 		{
-			if (!memcmp(s2->data + i, s1->data, s1->length))
+			if (!memcmp(toCharArr(s2) + i, toCharArr(s1), s1->length))
 			{
 				push(S, add_ref(v_true));
 				clear_ref(v1);
@@ -112,7 +112,7 @@ Error starts_with(Header* h, Stack* S, Stack* scope_arr)
 	}
 	String *s1 = toString(v1);
 	String *s2 = toString(v2);
-	if (s1->length > s2->length || memcmp(s2->data, s1->data, s1->length))
+	if (s1->length > s2->length || memcmp(toCharArr(s2), toCharArr(s1), s1->length))
 	{
 		push(S, add_ref(v_false));
 	}
@@ -138,7 +138,7 @@ Error ends_with(Header* h, Stack* S, Stack* scope_arr)
 	}
 	String *s1 = toString(v1);
 	String *s2 = toString(v2);
-	if (s1->length > s2->length || memcmp(s2->data + s2->length - s1->length, s1->data, s1->length))
+	if (s1->length > s2->length || memcmp(toCharArr(s2) + s2->length - s1->length, toCharArr(s1), s1->length))
 	{
 		push(S, add_ref(v_false));
 	}
@@ -183,12 +183,12 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 		while (n != NULL)
 		{
 			s2 = toString(n->data);
-			memcpy(currpoint, s2->data, s2->length);
+			memcpy(currpoint, toCharArr(s2), s2->length);
 			currpoint += s2->length;
 			n = n->next;
 			if (n != NULL)
 			{
-				memcpy(currpoint, s1->data, s1->length);
+				memcpy(currpoint, toCharArr(s1), s1->length);
 				currpoint += s1->length;
 			}
 		}
@@ -222,14 +222,14 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 		int start, laststart = 0;
 		for (start = 0; start <= s2->length - s1->length; start++)
 		{
-			if (!memcmp(s1->data, s2->data + start, s1->length))
+			if (!memcmp(toCharArr(s1), toCharArr(s2) + start, s1->length))
 			{
-				V new = str_to_value(start - laststart, s2->data + laststart);
+				V new = str_to_value(start - laststart, toCharArr(s2) + laststart);
 				laststart = start + s1->length;
 				push(rs, new);
 			}
 		}
-		push(rs, str_to_value(s2->length - laststart, s2->data + laststart));
+		push(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
 		push(S, r);
 		clear_ref(v1);
 		clear_ref(v2);
@@ -272,7 +272,7 @@ Error slice(Header* h, Stack* S, Stack* scope_arr)
 		e = s;
 	else if (e > len)
 		e = len;
-	push(S, str_to_value(e - s, string->data + s));
+	push(S, str_to_value(e - s, toCharArr(string) + s));
 	clear_ref(str);
 	clear_ref(start);
 	clear_ref(end);
@@ -294,7 +294,7 @@ Error ord(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(v);
 		return ValueError;
 	}
-	push(S, int_to_value((int)s->data[0]));
+	push(S, int_to_value((int)toCharArr(s)[0]));
 	return Nothing;
 }
 
@@ -334,7 +334,7 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 		int i;
 		for (i = 0; i <= s2->length - s1->length; i++)
 		{
-			if (!memcmp(s2->data + i, s1->data, s1->length))
+			if (!memcmp(toCharArr(s2) + i, toCharArr(s1), s1->length))
 			{
 				push(S, int_to_value(i));
 				clear_ref(v1);

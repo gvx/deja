@@ -38,7 +38,7 @@ V get_hashmap(HashMap* hm, V key)
 	{
 		if (s->length == b->keysize)
 		{
-			if (!memcmp(b->key, s->data, s->length))
+			if (!memcmp(b->key, toCharArr(s), s->length))
 			{
 				return b->value;
 			}
@@ -53,7 +53,7 @@ Bucket* new_bucket(String* s, V value)
 	Bucket* b = malloc(sizeof(Bucket));
 	b->keysize = s->length;
 	b->key = malloc(s->length + 1);
-	memcpy(b->key, s->data, s->length + 1);
+	memcpy(b->key, toCharArr(s), s->length + 1);
 	b->value = add_ref(value);
 	b->next = NULL;
 	return b;
@@ -63,7 +63,7 @@ bool set_to_bucket(Bucket* b, String* s, V value)
 {
 	if (s->length == b->keysize)
 	{
-		if (!memcmp(b->key, s->data, s->length))
+		if (!memcmp(b->key, toCharArr(s), s->length))
 		{
 			clear_ref(b->value);
 			b->value = add_ref(value);
@@ -108,7 +108,7 @@ bool change_bucket(Bucket* b, String* s, V value)
 {
 	if (s->length == b->keysize)
 	{
-		if (!memcmp(b->key, s->data, s->length))
+		if (!memcmp(b->key, toCharArr(s), s->length))
 		{
 			clear_ref(b->value);
 			b->value = add_ref(value);

@@ -44,7 +44,7 @@ Error ident_to_error(V e)
 	String *s = toString(e);
 	for (i = 0; i < UnknownError; i++)
 	{
-		if (toString(error_names[i])->length == s->length && !memcmp(toString(error_names[i])->data, s->data, s->length))
+		if (toString(error_names[i])->length == s->length && !memcmp(getChars(error_names[i]), toCharArr(s), s->length))
 		{
 			clear_ref(e);
 			return i;
@@ -70,7 +70,7 @@ void handle_error(Error e, Stack *scope_arr)
 		if (show_next)
 		{
 			String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
-			printf("%s:%d\n", s->data, sc->linenr);
+			printf("%s:%d\n", toCharArr(s), sc->linenr);
 		}
 		n = n->next;
 		show_next = sc->is_func_scope || (n && n->next == NULL);
