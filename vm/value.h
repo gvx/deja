@@ -7,7 +7,7 @@
 #define isInt(x) ((long int)x & 1)
 #define canBeInt(x) (x > INTPTR_MIN >> 1 && x < INTPTR_MAX >> 1)
 #define toInt(x) ((long int)x>>1)
-#define intToV(x) ((x << 1) + 1)
+#define intToV(x) ((V)((x << 1) + 1))
 
 #define toFile(x) ((File*)x->data.object)
 #define toScope(x) ((Scope*)x->data.object)
