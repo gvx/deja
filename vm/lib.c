@@ -1254,7 +1254,7 @@ Error quote(Header* h, Stack* S, Stack* scope_arr)
 	memcpy(buff + 1, toCharArr(s), s->length + 1); 
 	V r = get_ident(buff);
 	free(buff);
-	push(S, r);
+	push(S, add_ref(r));
 	V tmp = get_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, r);
 	if (tmp != v)
 	{
