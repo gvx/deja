@@ -66,6 +66,17 @@ V str_to_value(int max, char* str)
 	return t;
 }
 
+V empty_str_to_value(int max, char **adr)
+{
+	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
+	String *s = &((StrValue*)t)->s;
+	s->length = max;
+	*adr = ((char*)t + sizeof(StrValue));
+	max[(char*)t + sizeof(StrValue)] = '\0';
+	s->hash = 0;
+	return t;
+}
+
 V get_ident(const char* name)
 {
 	size_t l = strlen(name);
@@ -85,10 +96,10 @@ V new_list(void)
 	return t;
 }
 
-V new_dict(void)
+V new_sized_dict(int size)
 {
 	V t = new_value(T_DICT);
-	HashMap *h = new_hashmap(16);
+	HashMap *h = new_hashmap(size);
 	t->data.object = h;
 	return t;
 }
