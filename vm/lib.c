@@ -1239,6 +1239,35 @@ Error export(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error quote(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = get_head(S);
+	if (getType(v) != T_IDENT)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	String *s = toString(v);
+	char *buff = malloc(s->length + 2);
+	buff[0] = '"';
+	memcpy(buff + 1, toCharArr(s), s->length + 1); 
+	V r = get_ident(buff);
+	free(buff);
+	push(S, r);
+	V tmp = get_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, r);
+	if (tmp != v)
+	{
+		Error e = setglobal(h, S, scope_arr);
+		if (e != Nothing)
+		{
+			return e;
+		}
+		push(S, add_ref(r));
+	}
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1305,6 +1334,7 @@ static CFunc stdlib[] = {
 	{"set-to", set_to},
 	{"rep", rep},
 	{"export", export},
+	{"quote", quote},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
