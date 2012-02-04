@@ -1,8 +1,17 @@
 all: vu
+debug: vu-dbg
 
-vu: *.c *.h
-   #vu.c opcodes.c opcodes.h stack.c stack.h value.c value.h types.h hashmap.c hashmap.h
+clean:
+	rm *.o
+
+CFILES = $(wildcard *.c)
+OFILES = $(patsubst %.c, %.o, $(CFILES))
+
+vu: $(OFILES)
 	$(CC) -Wall -ldl -lm $^ -o $@
 
-vu-dbg: *.c *.h
+vu-dbg: $(OFILES)
 	$(CC) -ggdb -Wall -ldl -lm $^ -o $@
+
+%.o: %.c %.h
+		$(CC) -c -o $@ $< $(CFLAGS)
