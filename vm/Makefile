@@ -14,4 +14,4 @@ vu-dbg: $(OFILES)
 	$(CC) -ggdb -Wall -ldl -lm $^ -o $@
 
 %.o: %.c %.h
-		$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
