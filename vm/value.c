@@ -71,7 +71,7 @@ V empty_str_to_value(int max, char **adr)
 	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
 	String *s = &((StrValue*)t)->s;
 	s->length = max;
-	*adr = ((char*)t + sizeof(StrValue));
+	*adr = (char*)(s + 1);
 	max[(char*)t + sizeof(StrValue)] = '\0';
 	s->hash = 0;
 	return t;
