@@ -1292,6 +1292,32 @@ Error print_var_nl(Header *h, Stack *S, Stack *scope_arr)
 	return e;
 }
 
+Error to_num(Header *h, Stack *S, Stack *scope_arr)
+{
+	char *end;
+	double r;
+	require(1);
+	V v = pop(S);
+	int type = getType(v);
+	if (type == T_NUM)
+	{
+		push(S, v);
+		return Nothing;
+	}
+	else if (type != T_STR)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	r = strtod(getChars(v), &end);
+	clear_ref(v);
+	if (end[0] != '\0')
+	{
+		return ValueError;
+	}
+	push(S, double_to_value(r));
+	return Nothing;
+}
 
 static CFunc stdlib[] = {
 	{"get", get},
@@ -1362,6 +1388,7 @@ static CFunc stdlib[] = {
 	{"rep", rep},
 	{"export", export},
 	{"quote", quote},
+	{"to-num", to_num},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
