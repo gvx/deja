@@ -1097,6 +1097,11 @@ Error loadlib(Header* h, Stack* S, Stack* scope_arr)
 		return UnknownError;
 	}
 	open_lib(lib, &toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm);
+	Error (*initfunc)(Header*, Stack*, Stack*) = dlsym(lib_handle, "deja_vu_init");
+	if (initfunc != NULL)
+	{
+		return initfunc(h, S, scope_arr);
+	}
 	return Nothing;
 }
 
