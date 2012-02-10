@@ -47,6 +47,7 @@ void free_value(V t)
 	Bucket* b;
 	Bucket* bb;
 	File* f;
+	HashMap* hm;
 	int n;
 	switch (getType(t))
 	{
@@ -60,6 +61,24 @@ void free_value(V t)
 			s = toStack(t);
 			while (pop(s));
 			free(s);
+			break;
+		case T_DICT:
+			hm = toHashMap(t);
+			if (hm->map != NULL)
+			{
+				for (n = 0; n < hm->size; n++)
+				{
+					b = hm->map[n];
+					while(b != NULL)
+					{
+						bb = b;
+						b = b->next;
+						free(bb);
+					}
+				}
+				free(hm->map);
+			}
+			free(hm);
 			break;
 		case T_SCOPE:
 			sc = toScope(t);
@@ -99,6 +118,7 @@ void iter_children(V t, void (*iter)(V))
 	Scope* sc;
 	Bucket* b;
 	File* f;
+	HashMap* hm;
 	V child;
 	int i;
 	switch (getType(t))
@@ -120,6 +140,20 @@ void iter_children(V t, void (*iter)(V))
 				iter(child);
 			}
 			break;
+		case T_DICT:
+			hm = toHashMap(t);
+			if (hm->map != NULL)
+			{
+				for (i = 0; i < hm->size; i++)
+				{
+					b = hm->map[i];
+					while(b != NULL)
+					{
+						iter(b->value);
+						b = b->next;
+					}
+				}
+			}
 		case T_SCOPE:
 			sc = toScope(t);
 			if (sc->parent && toScope(sc->parent)->parent)
