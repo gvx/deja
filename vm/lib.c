@@ -19,26 +19,26 @@ void print_value(V v, int depth)
 		case T_STACK:
 			if (depth < 4)
 			{
-				printf("[ ");
+				fputs("[ ", stdout);
 				Stack *st = toStack(v);
 				Node *n = st->head;
 				while (n)
 				{
 					print_value(n->data, depth + 1);
-					printf(" ");
+					fputs(" ", stdout);
 					n = n->next;
 			}
-				printf("]");
+				fputs("]", stdout);
 			}
 			else
 			{
-				printf("[...]");
+				fputs("[...]", stdout);
 			}
 			break;
 		case T_DICT:
 			if (depth < 4)
 			{
-				printf("{");
+				fputs("{", stdout);
 				int i;
 				HashMap *hm = toHashMap(v);
 				for (i = 0; i < hm->size; i++)
@@ -51,11 +51,11 @@ void print_value(V v, int depth)
 						b = b->next;
 					}
 				}
-				printf(" }");
+				fputs(" }", stdout);
 			}
 			else
 			{
-				printf("{...}");
+				fputs("{...}", stdout);
 			}
 			break;
 		case T_CFUNC:
@@ -351,7 +351,7 @@ Error print_nl(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	print(h, S, scope_arr);
-	printf("\n");
+	putchar('\n');
 	return Nothing;
 }
 
@@ -767,14 +767,14 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 Error print_stack(Header* h, Stack* S, Stack* scope_arr)
 {
 	Node* n = S->head;
-	printf("[ ");
+	fputs("[ ", stdout);
 	while (n != NULL)
 	{
 		print_value(n->data, 0);
-		printf(" ");
+		putchar(' ');
 		n = n->next;
 	}
-	printf("]\n");
+	puts("]");
 	return Nothing;
 }
 
@@ -1289,7 +1289,7 @@ Error print_var_nl(Header *h, Stack *S, Stack *scope_arr)
 	Error e = print_var(h, S, scope_arr);
 	if (e == Nothing)
 	{
-		printf("\n");
+		putchar('\n');
 	}
 	return e;
 }

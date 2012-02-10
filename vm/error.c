@@ -56,7 +56,7 @@ Error ident_to_error(V e)
 
 void handle_error(Error e, Stack *scope_arr)
 {
-	printf("%s\n", error_name(e));
+	puts(error_name(e));
 	if (scope_arr == NULL)
 	{
 		return;
