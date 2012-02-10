@@ -59,8 +59,10 @@ void print_value(V v, int depth)
 			}
 			break;
 		case T_CFUNC:
+			printf("<func:%p>", toCFunc(v));
+			break;
 		case T_FUNC:
-			printf("<func>");
+			printf("<func:%p>", toFunc(v));
 			break;
 	};
 }
