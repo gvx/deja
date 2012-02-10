@@ -41,14 +41,17 @@ void print_value(V v, int depth)
 				fputs("{", stdout);
 				int i;
 				HashMap *hm = toHashMap(v);
-				for (i = 0; i < hm->size; i++)
+				if (hm->map != NULL)
 				{
-					Bucket *b = hm->map[i];
-					while (b)
+					for (i = 0; i < hm->size; i++)
 					{
-						printf(" '%*s' ", b->keysize, b->key);
-						print_value(b->value, depth + 1);
-						b = b->next;
+						Bucket *b = hm->map[i];
+						while (b)
+						{
+							printf(" '%*s' ", b->keysize, b->key);
+							print_value(b->value, depth + 1);
+							b = b->next;
+						}
 					}
 				}
 				fputs(" }", stdout);

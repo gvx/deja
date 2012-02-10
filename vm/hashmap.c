@@ -11,13 +11,7 @@ HashMap* new_hashmap(int initialsize)
 	HashMap* hm = malloc(sizeof(HashMap));
 	hm->used = 0;
 	hm->size = initialsize;
-	Bucket** bl = malloc(sizeof(Bucket*) * initialsize);
-	int i;
-	for (i = 0; i < hm->size; i++)
-	{
-		bl[i] = NULL;
-	}
-	hm->map = bl;
+	hm->map = NULL;
 	return hm;
 }
 
@@ -26,12 +20,15 @@ void hashmap_from_scope(V v_scope, int initialsize)
 	Scope* scope = toScope(v_scope);
 	scope->hm.used = 0;
 	scope->hm.size = initialsize;
-	Bucket** bl = calloc(initialsize, sizeof(Bucket*));
-	scope->hm.map = bl;
+	scope->hm.map = NULL;
 }
 
 V get_hashmap(HashMap* hm, V key)
 {
+	if (hm->map == NULL)
+	{
+		return NULL;
+	}
 	String* s = toString(key);
 	Bucket* b = hm->map[s->hash % hm->size];
 	while (b != NULL)
@@ -83,6 +80,11 @@ bool set_to_bucket(Bucket* b, String* s, V value)
 
 void set_hashmap(HashMap* hm, V key, V value)
 {
+	if (hm->map == NULL)
+	{
+		Bucket **bl = calloc(hm->size, sizeof(Bucket*));
+		hm->map = bl;
+	}
 	String* s = toString(key);
 	uint32_t hash = s->hash % hm->size; 
 	Bucket* b = hm->map[hash];
@@ -127,6 +129,10 @@ bool change_bucket(Bucket* b, String* s, V value)
 
 bool change_hashmap(HashMap* hm, V key, V value)
 {
+	if (hm->map == NULL)
+	{
+		return false;
+	}
 	String* s = toString(key);
 	Bucket* b = hm->map[s->hash % hm->size];
 	if (b == NULL)
@@ -141,7 +147,7 @@ bool change_hashmap(HashMap* hm, V key, V value)
 
 void grow_hashmap(HashMap* hm)
 {
-	Bucket** bl = calloc(sizeof(Bucket*), hm->size * 2);
+	Bucket** bl = calloc(hm->size * 2, sizeof(Bucket*));
 	int i;
 	int h;
 	Bucket* bb;

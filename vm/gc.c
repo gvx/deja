@@ -63,17 +63,20 @@ void free_value(V t)
 			break;
 		case T_SCOPE:
 			sc = toScope(t);
-			for (n = 0; n < sc->hm.size; n++)
+			if (sc->hm.map != NULL)
 			{
-				b = sc->hm.map[n];
-				while(b != NULL)
+				for (n = 0; n < sc->hm.size; n++)
 				{
-					bb = b;
-					b = b->next;
-					free(bb);
+					b = sc->hm.map[n];
+					while(b != NULL)
+					{
+						bb = b;
+						b = b->next;
+						free(bb);
+					}
 				}
+				free(sc->hm.map);
 			}
-			free(sc->hm.map);
 			free(sc);
 			break;
 		case T_FILE:
@@ -124,13 +127,16 @@ void iter_children(V t, void (*iter)(V))
 				iter(sc->parent);
 			}
 			iter(sc->func);
-			for (i = 0; i < sc->hm.size; i++)
+			if (sc->hm.map != NULL)
 			{
-				b = sc->hm.map[i];
-				while(b != NULL)
+				for (i = 0; i < sc->hm.size; i++)
 				{
-					iter(b->value);
-					b = b->next;
+					b = sc->hm.map[i];
+					while(b != NULL)
+					{
+						iter(b->value);
+						b = b->next;
+					}
 				}
 			}
 			break;
