@@ -1321,6 +1321,31 @@ Error to_num(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error to_str(Header *h, Stack *S, Stack *scope_arr)
+{
+	V v = pop(S);
+	int type = getType(v);
+	if (type == T_STR)
+	{
+		push(S, v);
+		return Nothing;
+	}
+	else if (type != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	// allocate a reasonable amount
+	// need to take scientific notation etc. in account
+	// also numbers near 0, which are long and have a negative log10
+	// and negative numbers
+	char *buff = malloc(fmin(5 + abs(log10(fabs(toNumber(v)))), 30));
+	sprintf(buff, "%.15g", toNumber(v));
+	push(S, a_to_value(buff));
+	free(buff);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1391,6 +1416,7 @@ static CFunc stdlib[] = {
 	{"export", export},
 	{"quote", quote},
 	{"to-num", to_num},
+	{"to-str", to_str},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
