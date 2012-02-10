@@ -1268,6 +1268,31 @@ Error quote(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error print_var(Header *h, Stack *S, Stack *scope_arr)
+{
+	while (true)
+	{
+		require(1);
+		V head = get_head(S);
+		if (getType(head) == T_IDENT && toString(head)->length == 1 && getChars(head)[0] == ')')
+		{
+			return Nothing;
+		}
+		print(h, S, scope_arr);
+	}
+}
+
+Error print_var_nl(Header *h, Stack *S, Stack *scope_arr)
+{
+	Error e = print_var(h, S, scope_arr);
+	if (e == Nothing)
+	{
+		printf("\n");
+	}
+	return e;
+}
+
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1286,6 +1311,8 @@ static CFunc stdlib[] = {
 	{"mod", mod_},
 	{".", print_nl},
 	{".\\", print},
+	{".\\(", print_var},
+	{".(", print_var_nl},
 	{"type", type},
 	{"[]", make_new_list},
 	{"[", produce_list},
