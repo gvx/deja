@@ -211,7 +211,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(S, new_list());
 			break;
 		case OP_POP_FROM:
-			if (stack_size(S) < 2)
+			if (stack_size(S) < 1)
 			{
 				return StackEmpty;
 			}
