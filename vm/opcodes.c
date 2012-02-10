@@ -336,7 +336,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return TypeError;
 			}
 			v = get_hashmap(toHashMap(container), key);
-			push(S, v == NULL ? v_true : v_false);
+			push(S, v != NULL ? v_true : v_false);
 			clear_ref(container);
 			break;
 		case OP_GET_DICT:
