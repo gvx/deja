@@ -1355,6 +1355,11 @@ Error to_str(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error pass(Header *h, Stack *S, Stack *scope_arr)
+{
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1426,6 +1431,7 @@ static CFunc stdlib[] = {
 	{"quote", quote},
 	{"to-num", to_num},
 	{"to-str", to_str},
+	{"pass", pass},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
