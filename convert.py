@@ -60,6 +60,16 @@ def convert(filename, flat):
 							mend,
 							SingleInstruction('DROP', 0)
 						])
+					elif w.value == '(:split:)':
+						mparent = Marker()
+						mchild = Marker()
+						bytecode.extend([
+							SingleInstruction('LABDA', mparent),
+							SingleInstruction('JMP', mchild),
+							mparent,
+							SingleInstruction('RETURN', 0),
+							mchild,
+						])
 					else:
 						bytecode.append(SingleInstruction('PUSH_WORD', w))
 				elif isinstance(w, Number) and w.value.is_integer() and w.value <= POS_SIZE and w.value >= NEG_SIZE:
