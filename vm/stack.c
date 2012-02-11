@@ -19,7 +19,7 @@ void copy_stack(Stack *old, Stack *new)
 	while (cur != NULL)
 	{
 		*to = malloc(sizeof(Node));
-		(*to)->data = cur->data;
+		(*to)->data = add_ref(cur->data);
 		cur = cur->next;
 		to = &(*to)->next;
 	}
