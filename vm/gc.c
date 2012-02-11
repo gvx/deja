@@ -160,7 +160,10 @@ void iter_children(V t, void (*iter)(V))
 			{ // do not iterate over the global scope, as it cannot be collected
 				iter(sc->parent);
 			}
-			iter(sc->func);
+			if (sc->func)
+			{
+				iter(sc->func);
+			}
 			if (sc->hm.map != NULL)
 			{
 				for (i = 0; i < sc->hm.size; i++)
