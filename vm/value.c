@@ -8,16 +8,18 @@
 #include <stdint.h>
 #include <math.h>
 
+#define make_value_from_double(d) \
+	V t = make_new_value(T_NUM, true, sizeof(double)); \
+	toDouble(t) = d; \
+	return t;
+
 V int_to_value(long int i)
 {
 	if (canBeInt(i))
 	{
 		return intToV(i);
 	}
-	V t = new_value(T_NUM);
-	t->color = Green;
-	t->data.number = (double)i;
-	return t;
+	make_value_from_double((double)i);
 }
 
 V double_to_value(double d)
@@ -26,9 +28,7 @@ V double_to_value(double d)
 	{
 		return intToV((long int)d);
 	}
-	V t = make_new_value(T_NUM, true, sizeof(double));
-	toDouble(t) = d;
-	return t;
+	make_value_from_double(d);
 }
 
 uint32_t string_hash(int length, const char *key)

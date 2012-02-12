@@ -41,11 +41,6 @@ typedef struct Value
 	GCColor color;
 	bool buffered;
 	unsigned int refs;
-	union
-	{
-		double number;
-		void* object;
-	} data;
 } Value;
 
 typedef Value* V;
