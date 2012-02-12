@@ -1356,6 +1356,24 @@ Error pass(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error rand_(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V v_min = pop(S);
+	V v_max = pop(S);
+	if (getType(v_min) != T_NUM || getType(v_max) != T_NUM)
+	{
+		clear_ref(v_min);
+		clear_ref(v_max);
+		return TypeError;
+	}
+	double min = toNumber(v_min);
+	double max = toNumber(v_max);
+	double ans = min + rand() / (RAND_MAX + 1.0) * (max - min);
+	push(S, double_to_value(ans));
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1428,6 +1446,7 @@ static CFunc stdlib[] = {
 	{"to-num", to_num},
 	{"to-str", to_str},
 	{"pass", pass},
+	{"rand", rand_},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
