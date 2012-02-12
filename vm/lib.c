@@ -1370,6 +1370,8 @@ Error rand_(Header* h, Stack* S, Stack* scope_arr)
 	double min = toNumber(v_min);
 	double max = toNumber(v_max);
 	double ans = min + rand() / (RAND_MAX + 1.0) * (max - min);
+	clear_ref(v_min);
+	clear_ref(v_max);
 	push(S, double_to_value(ans));
 	return Nothing;
 }

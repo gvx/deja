@@ -295,6 +295,7 @@ Error ord(Header* h, Stack* S, Stack* scope_arr)
 		return ValueError;
 	}
 	push(S, int_to_value((int)toCharArr(s)[0]));
+	clear_ref(v);
 	return Nothing;
 }
 
@@ -309,6 +310,7 @@ Error chr(Header* h, Stack* S, Stack* scope_arr)
 	}
 	char x = toNumber(v);
 	push(S, str_to_value(1, &x));
+	clear_ref(v);
 	return Nothing;
 }
 
