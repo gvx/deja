@@ -58,7 +58,6 @@ void free_value(V t)
 		case T_STACK:
 			s = toStack(t);
 			while (pop(s));
-			free(s);
 			break;
 		case T_DICT:
 			hm = toHashMap(t);

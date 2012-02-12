@@ -90,9 +90,9 @@ V get_ident(const char* name)
 
 V new_list(void)
 {
-	V t = new_value(T_STACK);
-	Stack* s = new_stack();
-	t->data.object = s;
+	V t = make_new_value(T_STACK, false, sizeof(Stack));
+	toStack(t)->size = 0;
+	toStack(t)->head = NULL;
 	return t;
 }
 

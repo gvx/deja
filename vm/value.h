@@ -12,7 +12,7 @@
 #define toFile(x) ((File*)x->data.object)
 #define toScope(x) ((Scope*)(x + 1))
 #define toFunc(x) ((Func*)(x + 1))
-#define toStack(x) ((Stack*)x->data.object)
+#define toStack(x) ((Stack*)(x + 1))
 #define toString(x) ((String*)(x + 1))
 #define toCharArr(x) ((char*)(x + 1))
 #define getChars(x) (toCharArr(toString(x)))
