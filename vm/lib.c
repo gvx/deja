@@ -662,6 +662,7 @@ Error xor(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+V v_range;
 
 Error range(Header* h, Stack* S, Stack* scope_arr)
 {
@@ -710,7 +711,10 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 			   less computation
 			   works even if the global "range" is overwritten
 			*/
-			push(S, new_cfunc(range));
+			//push(S, new_cfunc(range));
+			/* METHOD 3: just use a global value
+			*/
+			push(S, add_ref(v_range));
 		}
 		return Nothing;
 	}
@@ -1486,6 +1490,7 @@ void open_std_lib(HashMap* hm)
 	}
 	v_true = int_to_value(1);
 	v_false = int_to_value(0);
+	v_range = new_cfunc(range);
 	set_hashmap(hm, get_ident("true"), v_true);
 	set_hashmap(hm, get_ident("false"), v_false);
 }
