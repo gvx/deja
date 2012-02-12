@@ -7,11 +7,31 @@
 #include "types.h"
 #include "file.h"
 
+V create_scope()
+{
+	if (MAXSCOPE < MAXCACHE)
+	{
+		ValueScope *sc = &SCOPECACHE[MAXSCOPE];
+		sc->v.buffered = false;
+		sc->v.type = T_SCOPE;
+		sc->v.refs = 1;
+		sc->v.color = Black;
+		sc->sc.index = ++MAXSCOPE;
+		return (V)sc;
+	}
+	else
+	{
+		V val = make_new_value(T_SCOPE, false, sizeof(Scope));
+		toScope(val)->index = 0;
+		return val;
+	}
+}
+
 V new_scope(V parent)
 {
-	V sc = new_value(T_SCOPE);
+	V sc = create_scope();
 	Scope* pscope = toScope(parent);
-	Scope* scope = malloc(sizeof(Scope));
+	Scope* scope = toScope(sc);
 	scope->is_func_scope = false;
 	scope->is_error_handler = false;
 	scope->parent = add_ref(parent);
@@ -25,8 +45,8 @@ V new_scope(V parent)
 
 V new_function_scope(V function)
 {
-	V sc = new_value(T_SCOPE);
-	Scope* scope = malloc(sizeof(Scope));
+	V sc = create_scope();
+	Scope* scope = toScope(sc);
 	scope->is_func_scope = true;
 	scope->is_error_handler = false;
 	scope->parent = add_ref(toFunc(function)->defscope);
@@ -40,8 +60,8 @@ V new_function_scope(V function)
 
 V new_file_scope(V file)
 {
-	V sc = new_value(T_SCOPE);
-	Scope* scope = malloc(sizeof(Scope));
+	V sc = create_scope();
+	Scope* scope = toScope(sc);
 	scope->is_func_scope = true;
 	scope->is_error_handler = false;
 	scope->parent = add_ref(toFile(file)->global);
@@ -55,8 +75,8 @@ V new_file_scope(V file)
 
 V new_global_scope(void)
 {
-	V sc = new_value(T_SCOPE);
-	Scope* scope = malloc(sizeof(Scope));
+	V sc = create_scope();
+	Scope* scope = toScope(sc);
 	scope->is_func_scope = false;
 	scope->parent = NULL;
 	scope->func = NULL;

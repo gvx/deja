@@ -96,7 +96,23 @@ void free_value(V t)
 				}
 				free(sc->hm.map);
 			}
-			free(sc);
+			if (sc->index > 0)
+			{
+				if (MAXSCOPE == sc->index)
+				{
+					while (SCOPECACHE[--MAXSCOPE].sc.index == 0)
+					{
+						if (MAXSCOPE == 0)
+						{
+							MAXSCOPE--;
+							break;
+						}
+					}
+					MAXSCOPE++;
+				}
+				sc->index = 0;
+				return;
+			}
 			break;
 		case T_FILE:
 			f = toFile(t);
