@@ -26,9 +26,8 @@ V double_to_value(double d)
 	{
 		return intToV((long int)d);
 	}
-	V t = new_value(T_NUM);
-	t->color = Green;
-	t->data.number = d;
+	V t = make_new_value(T_NUM, true, sizeof(double));
+	toDouble(t) = d;
 	return t;
 }
 
