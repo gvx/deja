@@ -17,7 +17,7 @@
 #define toCharArr(x) ((char*)(x + 1))
 #define getChars(x) (toCharArr(toString(x)))
 #define toNumber(x) (isInt(x) ? (double)toInt(x) : x->data.number)
-#define toCFunc(x) ((Error (*)(Header*, Stack*, Stack*))x->data.object)
+#define toCFunc(x) (((ValueCFunc*)(x))->f)
 #define toHashMap(x) ((HashMap*)x->data.object)
 #define getType(x) (isInt(x) ? T_NUM : x->type)
 

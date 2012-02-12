@@ -20,13 +20,21 @@
 
 #include "strlib.h"
 
+typedef Error (*CFuncP)(Header*, Stack*, Stack*);
+
 typedef struct
 {
 	char *name;
-	Error (*cfunc)(Header*, Stack*, Stack*);
+	CFuncP cfunc;
 } CFunc;
 
-V new_cfunc(Error (*)(Header*, Stack*, Stack*));
+typedef struct
+{
+	Value v;
+	CFuncP f;
+} ValueCFunc;
+
+V new_cfunc(CFuncP);
 V v_true;
 V v_false;
 void open_lib(CFunc[], HashMap*);

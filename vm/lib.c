@@ -1097,7 +1097,7 @@ Error loadlib(Header* h, Stack* S, Stack* scope_arr)
 		return UnknownError;
 	}
 	open_lib(lib, &toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm);
-	Error (*initfunc)(Header*, Stack*, Stack*) = dlsym(lib_handle, "deja_vu_init");
+	CFuncP initfunc = dlsym(lib_handle, "deja_vu_init");
 	if (initfunc != NULL)
 	{
 		return initfunc(h, S, scope_arr);
@@ -1473,10 +1473,9 @@ void open_std_lib(HashMap* hm)
 	set_hashmap(hm, get_ident("false"), v_false);
 }
 
-V new_cfunc(Error (*func)(Header*, Stack*, Stack*))
+V new_cfunc(CFuncP func)
 {
-	V v = new_value(T_CFUNC);
-	v->data.object = func;
-	v->color = Green;
+	V v = make_new_value(T_CFUNC, true, sizeof(CFuncP));
+	toCFunc(v) = func;
 	return v;
 }
