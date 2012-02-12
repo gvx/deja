@@ -16,8 +16,8 @@ V load_file(V file_name, V global)
 	if (header_correct(&h))
 	{
 		read_literals(f, &h);
-		new_file = new_value(T_FILE);
-		File* f_obj = malloc(sizeof(File));
+		new_file = make_new_value(T_FILE, false, sizeof(File));
+		File* f_obj = toFile(new_file);
 		f_obj->name = add_ref(file_name);
 		f_obj->source = NULL;
 		f_obj->header = h;
@@ -25,7 +25,6 @@ V load_file(V file_name, V global)
 		uint32_t *code = malloc(h.size * 4);
 		fread(code, 4, h.size, f);
 		f_obj->code = code;
-		new_file->data.object = f_obj;
 	}
 	fclose(f);
 	return new_file;

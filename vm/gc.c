@@ -114,7 +114,6 @@ void free_value(V t)
 			f = toFile(t);
 			free(f->header.literals);
 			free(f->code);
-			free(f);
 			break;
 	}
 	free(t);

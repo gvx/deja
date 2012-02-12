@@ -9,7 +9,7 @@
 #define toInt(x) ((long int)x>>1)
 #define intToV(x) ((V)((x << 1) + 1))
 
-#define toFile(x) ((File*)x->data.object)
+#define toFile(x) ((File*)(x + 1))
 #define toScope(x) ((Scope*)(x + 1))
 #define toFunc(x) ((Func*)(x + 1))
 #define toStack(x) ((Stack*)(x + 1))
