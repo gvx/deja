@@ -53,9 +53,7 @@ void free_value(V t)
 	{
 		case T_STR:
 		case T_IDENT:
-			break;
 		case T_FUNC:
-			free(toFunc(t));
 			break;
 		case T_STACK:
 			s = toStack(t);

@@ -14,6 +14,7 @@
 #include "hashmap.h"
 #include "header.h"
 #include "lib.h"
+#include "func.h"
 
 Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
@@ -190,12 +191,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc = toFunc(sc->func)->start;
 			break;
 		case OP_LABDA:
-			v = new_value(T_FUNC);
-			f = malloc(sizeof(Func));
-			f->defscope = add_ref(scope);
-			f->start = sc->pc;
-			v->data.object = f;
-			push(S, v);
+			push(S, new_func(scope, sc->pc));
 			sc->pc += argument - 1;
 			break;
 		case OP_ENTER_SCOPE:
