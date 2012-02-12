@@ -98,9 +98,8 @@ V new_list(void)
 
 V new_sized_dict(int size)
 {
-	V t = new_value(T_DICT);
-	HashMap *h = new_hashmap(size);
-	t->data.object = h;
+	V t = make_new_value(T_DICT, false, sizeof(HashMap));
+	hashmap_from_value(t, size);
 	return t;
 }
 

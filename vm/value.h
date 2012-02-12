@@ -18,7 +18,7 @@
 #define getChars(x) (toCharArr(toString(x)))
 #define toNumber(x) (isInt(x) ? (double)toInt(x) : x->data.number)
 #define toCFunc(x) (((ValueCFunc*)(x))->f)
-#define toHashMap(x) ((HashMap*)x->data.object)
+#define toHashMap(x) ((HashMap*)(x + 1))
 #define getType(x) (isInt(x) ? T_NUM : x->type)
 
 #define new_dict() new_sized_dict(16)

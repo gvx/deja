@@ -15,6 +15,14 @@ HashMap* new_hashmap(int initialsize)
 	return hm;
 }
 
+void hashmap_from_value(V v, int initialsize)
+{
+	HashMap* hm = toHashMap(v);
+	hm->used = 0;
+	hm->size = initialsize;
+	hm->map = NULL;
+}
+
 void hashmap_from_scope(V v_scope, int initialsize)
 {
 	Scope* scope = toScope(v_scope);

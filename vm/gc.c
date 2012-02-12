@@ -76,7 +76,6 @@ void free_value(V t)
 				}
 				free(hm->map);
 			}
-			free(hm);
 			break;
 		case T_SCOPE:
 			sc = toScope(t);
