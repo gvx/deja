@@ -1353,7 +1353,7 @@ Error keys(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error exists(Header* h, Stack* S, Stack* scope_arr)
+Error exists_(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V key = pop(S);
@@ -1456,7 +1456,8 @@ static CFunc stdlib[] = {
 	{"pass", pass},
 	{"rand", rand_},
 	{"keys", keys},
-	{"?", exists},
+	{"?", exists_},
+	{"exists?", exists_},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
