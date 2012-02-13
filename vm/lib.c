@@ -561,28 +561,7 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	int t = 0;
-	if (v1 == v2) //identical objects
-	{
-		t = 1;
-	}
-	else if (getType(v1) == getType(v2))
-	{
-		if (getType(v1) == T_NUM)
-		{
-			t = toNumber(v1) == toNumber(v2);
-		}
-		else if (getType(v1) == T_IDENT || getType(v1) == T_STR)
-		{
-			String* s1 = toString(v1);
-			String* s2 = toString(v2);
-			if (s1->length == s2->length)
-			{
-				t = !memcmp(toCharArr(s1), toCharArr(s2), s1->length);
-			}
-		}
-	}
-	push(S, add_ref(t ? v_true : v_false));
+	push(S, add_ref(equal(v1, v2) ? v_true : v_false));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
@@ -593,28 +572,7 @@ Error ne(Header* h, Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = pop(S);
 	V v2 = pop(S);
-	int t = 1;
-	if (v1 == v2) //identical objects
-	{
-		t = 0;
-	}
-	else if (getType(v1) == getType(v2))
-	{
-		if (getType(v1) == T_NUM)
-		{
-			t = toNumber(v1) != toNumber(v2);
-		}
-		else if (getType(v1) == T_IDENT || getType(v1) == T_STR)
-		{
-			String* s1 = toString(v1);
-			String* s2 = toString(v2);
-			if (s1->length == s2->length)
-			{
-				t = !!memcmp(toCharArr(s1), toCharArr(s2), s1->length);
-			}
-		}
-	}
-	push(S, add_ref(t ? v_true : v_false));
+	push(S, add_ref(equal(v1, v2) ? v_false : v_true));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;

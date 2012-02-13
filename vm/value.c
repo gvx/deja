@@ -119,3 +119,28 @@ bool truthy(V t)
 			return true;
 	}	
 }
+
+bool equal(V v1, V v2)
+{
+	if (v1 == v2) //identical objects
+	{
+		return false;
+	}
+	else if (getType(v1) == getType(v2))
+	{
+		if (getType(v1) == T_NUM)
+		{
+			return toNumber(v1) == toNumber(v2);
+		}
+		else if (getType(v1) == T_IDENT || getType(v1) == T_STR)
+		{
+			String* s1 = toString(v1);
+			String* s2 = toString(v2);
+			if (s1->length == s2->length)
+			{
+				return !memcmp(toCharArr(s1), toCharArr(s2), s1->length);
+			}
+		}
+	}
+	return false;
+}

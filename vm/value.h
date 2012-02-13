@@ -69,5 +69,6 @@ V new_list();
 V new_sized_dict();
 
 bool truthy(V);
+bool equal(V, V);
 
 #endif
