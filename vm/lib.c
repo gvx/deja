@@ -1338,6 +1338,36 @@ Error rand_(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error keys(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V dict = pop(S);
+	if (getType(dict) != T_DICT)
+	{
+		clear_ref(dict);
+		return TypeError;
+	}
+	V list = new_list();
+	HashMap *hm = toHashMap(dict);
+	if (hm->map != NULL)
+	{
+		Stack *s = toStack(list);
+		int i;
+		Bucket *b;
+		for (i = 0; i < hm->size; i++)
+		{
+			b = hm->map[i];
+			while(b != NULL)
+			{
+				push(s, add_ref(b->key));
+				b = b->next;
+			}
+		}
+	}
+	push(S, list);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1411,6 +1441,7 @@ static CFunc stdlib[] = {
 	{"to-str", to_str},
 	{"pass", pass},
 	{"rand", rand_},
+	{"keys", keys},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
