@@ -327,11 +327,7 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 	}
 	String *s1 = toString(v1);
 	String *s2 = toString(v2);
-	if (s1->length > s2->length)
-	{
-		push(S, int_to_value(-1));
-	}
-	else
+	if (s1->length <= s2->length)
 	{
 		int i;
 		for (i = 0; i <= s2->length - s1->length; i++)
@@ -344,8 +340,8 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 				return Nothing;
 			}
 		}
-		push(S, int_to_value(-1));
 	}
+	push(S, int_to_value(-1));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
