@@ -7,8 +7,7 @@
 
 typedef struct Bucket
 {
-	uint32_t keysize;
-	char *key;
+	V key;
 	V value;
 	struct Bucket *next;
 } Bucket;

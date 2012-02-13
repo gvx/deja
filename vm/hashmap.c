@@ -31,58 +31,67 @@ void hashmap_from_scope(V v_scope, int initialsize)
 	scope->hm.map = NULL;
 }
 
+uint32_t get_hash(V v)
+{
+	int t = getType(v);
+	if (t == T_STR || t == T_IDENT)
+	{
+		return toString(v)->hash;
+	}
+	else if (t == T_NUM)
+	{
+		return (uint32_t)toNumber(v);
+	}
+	else
+	{
+		return (unsigned long)v;
+	}
+}
+
 V get_hashmap(HashMap* hm, V key)
 {
 	if (hm->map == NULL)
 	{
 		return NULL;
 	}
-	String* s = toString(key);
-	Bucket* b = hm->map[s->hash % hm->size];
+	Bucket* b = hm->map[get_hash(key) % hm->size];
 	while (b != NULL)
 	{
-		if (s->length == b->keysize)
+		if (equal(key, b->key))
 		{
-			if (!memcmp(b->key, toCharArr(s), s->length))
-			{
-				return b->value;
-			}
+			return b->value;
 		}
 		b = b->next;
 	}
 	return NULL;
 }
 
-Bucket* new_bucket(String* s, V value)
+Bucket* new_bucket(V key, V value)
 {
 	Bucket* b = malloc(sizeof(Bucket));
-	b->keysize = s->length;
-	b->key = malloc(s->length + 1);
-	memcpy(b->key, toCharArr(s), s->length + 1);
+	b->key = add_ref(key);
 	b->value = add_ref(value);
 	b->next = NULL;
 	return b;
 }
 
-bool set_to_bucket(Bucket* b, String* s, V value)
+bool set_to_bucket(Bucket* b, V key, V value)
 {
-	if (s->length == b->keysize)
+	if (equal(b->key, key))
 	{
-		if (!memcmp(b->key, toCharArr(s), s->length))
-		{
-			clear_ref(b->value);
-			b->value = add_ref(value);
-			return false;
-		}
+		V tmp = b->value;
+		b->value = add_ref(value);
+		clear_ref(tmp);
+		return false;
 	}
 	if (b->next == NULL)
 	{
-		b->next = new_bucket(s, value);
+		b->next = new_bucket(key, value);
 		return true;
 	}
 	else
 	{
-		return set_to_bucket(b->next, s, value);	
+		return set_to_bucket(b->next, key, value);
 	}
 }
 
@@ -93,17 +102,16 @@ void set_hashmap(HashMap* hm, V key, V value)
 		Bucket **bl = calloc(hm->size, sizeof(Bucket*));
 		hm->map = bl;
 	}
-	String* s = toString(key);
-	uint32_t hash = s->hash % hm->size; 
+	uint32_t hash = get_hash(key) % hm->size; 
 	Bucket* b = hm->map[hash];
 	if (b == NULL)
 	{
-		hm->map[hash] = new_bucket(s, value);
+		hm->map[hash] = new_bucket(key, value);
 		hm->used++;
 	}
 	else
 	{
-		if (set_to_bucket(b, s, value))
+		if (set_to_bucket(b, key, value))
 		{
 			hm->used++;
 		}
@@ -114,16 +122,14 @@ void set_hashmap(HashMap* hm, V key, V value)
 	}
 }
 
-bool change_bucket(Bucket* b, String* s, V value)
+bool change_bucket(Bucket* b, V key, V value)
 {
-	if (s->length == b->keysize)
+	if (equal(b->key, key))
 	{
-		if (!memcmp(b->key, toCharArr(s), s->length))
-		{
-			clear_ref(b->value);
-			b->value = add_ref(value);
-			return true;
-		}
+		V tmp = b->value;
+		b->value = add_ref(value);
+		clear_ref(tmp);
+		return true;
 	}
 	if (b->next == NULL)
 	{
@@ -131,7 +137,7 @@ bool change_bucket(Bucket* b, String* s, V value)
 	}
 	else
 	{
-		return change_bucket(b->next, s, value);	
+		return change_bucket(b->next, key, value);
 	}
 }
 
@@ -141,15 +147,15 @@ bool change_hashmap(HashMap* hm, V key, V value)
 	{
 		return false;
 	}
-	String* s = toString(key);
-	Bucket* b = hm->map[s->hash % hm->size];
+
+	Bucket* b = hm->map[get_hash(key) % hm->size];
 	if (b == NULL)
 	{
 		return false;
 	}
 	else
 	{
-		return change_bucket(b, s, value);
+		return change_bucket(b, key, value);
 	}
 }
 
@@ -164,7 +170,7 @@ void grow_hashmap(HashMap* hm)
 		Bucket *b = hm->map[i];
 		while (b)
 		{
-			h = string_hash(b->keysize, b->key) % (hm->size * 2);
+			h = get_hash(b->key) % (hm->size * 2);
 			bb = b->next;
 			b->next = bl[h];
 			bl[h] = b;

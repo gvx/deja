@@ -48,7 +48,9 @@ void print_value(V v, int depth)
 						Bucket *b = hm->map[i];
 						while (b)
 						{
-							printf(" '%*s' ", b->keysize, b->key);
+							putchar(' ');
+							print_value(b->key, depth + 1);
+							putchar(' ');
 							print_value(b->value, depth + 1);
 							b = b->next;
 						}
@@ -402,17 +404,15 @@ Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
 	while (stack_size(S) > 0)
 	{
 		key = pop(S);
-		if (getType(key) != T_IDENT)
+		if (getType(key) == T_IDENT)
 		{
-			clear_ref(key);
-			return TypeError;
-		}
-		s = toString(key);
-		if (s->length == 1 && toCharArr(s)[0] == '}')
-		{
-			clear_ref(key);
-			push(S, v);
-			return Nothing;
+			s = toString(key);
+			if (s->length == 1 && toCharArr(s)[0] == '}')
+			{
+				clear_ref(key);
+				push(S, v);
+				return Nothing;
+			}
 		}
 		val = pop(S);
 		if (val == NULL)
@@ -1111,7 +1111,7 @@ Error set_to(Header* h, Stack* S, Stack* scope_arr)
 	V container = pop(S);
 	V key = pop(S);
 	V value = pop(S);
-	if (getType(container) != T_DICT || getType(key) != T_IDENT)
+	if (getType(container) != T_DICT)
 	{
 		clear_ref(key);
 		clear_ref(value);

@@ -327,7 +327,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			if (getType(container) != T_DICT || getType(key) != T_IDENT)
+			if (getType(container) != T_DICT)
 			{
 				return TypeError;
 			}
@@ -342,7 +342,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			container = pop(S);
 			key = pop(S);
-			if (getType(container) != T_DICT || getType(key) != T_IDENT)
+			if (getType(container) != T_DICT)
 			{
 				return TypeError;
 			}
@@ -361,7 +361,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			container = pop(S);
 			key = pop(S);
-			if (getType(container) != T_DICT || getType(key) != T_IDENT)
+			if (getType(container) != T_DICT)
 			{
 				return TypeError;
 			}

@@ -160,6 +160,7 @@ void iter_children(V t, void (*iter)(V))
 					b = hm->map[i];
 					while(b != NULL)
 					{
+						iter(b->key);
 						iter(b->value);
 						b = b->next;
 					}
@@ -182,6 +183,7 @@ void iter_children(V t, void (*iter)(V))
 					b = sc->hm.map[i];
 					while(b != NULL)
 					{
+						iter(b->key);
 						iter(b->value);
 						b = b->next;
 					}
