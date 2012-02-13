@@ -1060,7 +1060,7 @@ Error has(Header* h, Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	V v = get_hashmap(toHashMap(container), key);
-	push(S, v == NULL ? v_false : v_true);
+	push(S, add_ref(v == NULL ? v_false : v_true));
 	clear_ref(container);
 	clear_ref(key);
 	return Nothing;
