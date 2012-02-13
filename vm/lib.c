@@ -1353,6 +1353,35 @@ Error keys(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error exists(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V key = pop(S);
+	if (getType(key) != T_IDENT)
+	{
+		clear_ref(key);
+		return TypeError;
+	}
+
+	Scope *sc = toScope(get_head(scope_arr));
+	V v = get_hashmap(&sc->hm, key);
+	while (v == NULL)
+	{
+		if (sc->parent == NULL)
+		{
+			clear_ref(key);
+			push(S, add_ref(v_false));
+			return Nothing;
+		}
+		sc = toScope(sc->parent);
+		v = get_hashmap(&sc->hm, key);
+	}
+	push(S, add_ref(v_true));
+	clear_ref(key);
+	clear_ref(v);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1427,6 +1456,7 @@ static CFunc stdlib[] = {
 	{"pass", pass},
 	{"rand", rand_},
 	{"keys", keys},
+	{"?", exists},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
