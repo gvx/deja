@@ -322,24 +322,9 @@ Error type(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = pop(S);
-	if (getType(v) != T_IDENT)
-	{
-		clear_ref(v);
-		return TypeError;
-	}
-	V t;
-	V r = get_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, v);
-	clear_ref(v);
-	if (r == NULL)
-	{
-		t = get_ident("nil");
-	}
-	else
-	{
-		t = get_ident(gettype(r));
-	}
-	clear_ref(r);
+	V t = get_ident(gettype(v));
 	push(S, t);
+	clear_ref(v);
 	return Nothing;
 }
 
