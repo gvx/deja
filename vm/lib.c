@@ -479,7 +479,7 @@ Error lt(Header* h, Stack* S, Stack* scope_arr)
 	V v2 = pop(S);
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
+		V r = toNumber(v1) < toNumber(v2) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		push(S, add_ref(r));
