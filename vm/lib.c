@@ -1464,6 +1464,7 @@ static CFunc stdlib[] = {
 	{"ord", ord},
 	{"chr", chr},
 	{"find", find},
+	{"chars", chars},
 	{NULL, NULL}
 };
 

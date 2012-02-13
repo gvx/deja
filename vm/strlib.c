@@ -351,3 +351,23 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error chars(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V source = pop(S);
+	if (getType(source) != T_STR)
+	{
+		clear_ref(source);
+		return TypeError;
+	}
+	char *chrs = getChars(source);
+	V list = new_list();
+	Stack *st = toStack(list);
+	int i;
+	for (i = toString(source)->length - 1; i >= 0; i--)
+	{
+		push(st, str_to_value(1, chrs + i));
+	}
+	push(S, list);
+	return Nothing;
+}
