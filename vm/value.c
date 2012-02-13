@@ -124,7 +124,7 @@ bool equal(V v1, V v2)
 {
 	if (v1 == v2) //identical objects
 	{
-		return false;
+		return true;
 	}
 	else if (getType(v1) == getType(v2))
 	{
