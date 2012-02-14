@@ -1230,6 +1230,7 @@ Error print_var(Header *h, Stack *S, Stack *scope_arr)
 		V head = get_head(S);
 		if (getType(head) == T_IDENT && toString(head)->length == 1 && getChars(head)[0] == ')')
 		{
+			clear_ref(pop(S));
 			return Nothing;
 		}
 		print(h, S, scope_arr);
