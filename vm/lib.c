@@ -1383,6 +1383,48 @@ Error exists_(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error floor_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(floor(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error ceil_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(ceil(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error round_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(round(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1459,6 +1501,9 @@ static CFunc stdlib[] = {
 	{"keys", keys},
 	{"?", exists_},
 	{"exists?", exists_},
+	{"floor", floor_},
+	{"ceil", ceil_},
+	{"round", round_},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
