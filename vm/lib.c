@@ -1425,6 +1425,77 @@ Error round_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error produce_set(Header *h, Stack *S, Stack *scope_arr)
+{
+	V v = new_dict();
+	V val;
+	String *s;
+	while (stack_size(S) > 0)
+	{
+		val = pop(S);
+		if (getType(val) == T_IDENT)
+		{
+			s = toString(val);
+			if (s->length == 1 && toCharArr(s)[0] == '}')
+			{
+				clear_ref(val);
+				push(S, v);
+				return Nothing;
+			}
+		}
+		set_hashmap(toHashMap(v), val, v_true);
+	}
+	return StackEmpty;
+}
+
+Error in_set(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V set = pop(S);
+	if (getType(set) != T_DICT)
+	{
+		clear_ref(set);
+		return TypeError;
+	}
+	V item = pop(S);
+	push(S, add_ref(get_hashmap(toHashMap(set), item) == v_true ? v_true : v_false));
+	clear_ref(set);
+	clear_ref(item);
+	return Nothing;
+}
+
+Error add_set(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V set = pop(S);
+	if (getType(set) != T_DICT)
+	{
+		clear_ref(set);
+		return TypeError;
+	}
+	V item = pop(S);
+	set_hashmap(toHashMap(set), item, v_true);
+	clear_ref(set);
+	clear_ref(item);
+	return Nothing;
+}
+
+Error remove_set(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V set = pop(S);
+	if (getType(set) != T_DICT)
+	{
+		clear_ref(set);
+		return TypeError;
+	}
+	V item = pop(S);
+	set_hashmap(toHashMap(set), item, v_false);
+	clear_ref(set);
+	clear_ref(item);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1504,6 +1575,10 @@ static CFunc stdlib[] = {
 	{"floor", floor_},
 	{"ceil", ceil_},
 	{"round", round_},
+	{"set{", produce_set},
+	{"in-set?", in_set},
+	{"add-set", add_set},
+	{"remove-set", remove_set},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
