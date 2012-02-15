@@ -226,10 +226,10 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 			{
 				V new = str_to_value(start - laststart, toCharArr(s2) + laststart);
 				laststart = start + s1->length;
-				push(rs, new);
+				append(rs, new);
 			}
 		}
-		push(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
+		append(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
 		push(S, r);
 		clear_ref(v1);
 		clear_ref(v2);

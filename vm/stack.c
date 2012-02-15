@@ -38,6 +38,23 @@ void push(Stack *stack, V v)
 	}
 }
 
+void append(Stack *stack, V v)
+{
+	Node *new_node = malloc(sizeof(Node));
+	if (new_node != NULL)
+	{
+		Node **nptr = &stack->head;
+		while (*nptr != NULL)
+		{
+			nptr = &(*nptr)->next;
+		}
+		*nptr = new_node;
+		new_node->data = v;
+		new_node->next = NULL;
+		stack->size++;
+	}
+}
+
 V pop(Stack *stack)
 {
 	if (stack->size > 0)

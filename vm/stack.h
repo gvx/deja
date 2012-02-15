@@ -21,6 +21,7 @@ typedef struct
 Stack* new_stack();
 void copy_stack(Stack*, Stack*);
 void push(Stack*, V);
+void append(Stack*, V);
 V pop(Stack*);
 void clear_stack(Stack*);
 
