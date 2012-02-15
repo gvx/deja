@@ -850,8 +850,8 @@ Error print_depth(Header* h, Stack* S, Stack* scope_arr)
 
 Error input(Header* h, Stack* S, Stack* scope_arr)
 {
-	char line[80];
-	fgets(line, 80, stdin);
+	char line[256];
+	fgets(line, 256, stdin);
 	line[strlen(line) - 1] = '\0'; //removes trailing newline
 	push(S, a_to_value(line));
 	return Nothing;
