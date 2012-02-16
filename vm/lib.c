@@ -1620,6 +1620,8 @@ void open_std_lib(HashMap* hm)
 	v_range = new_cfunc(range);
 	set_hashmap(hm, get_ident("true"), v_true);
 	set_hashmap(hm, get_ident("false"), v_false);
+
+	srand((unsigned int)time(NULL));
 }
 
 V new_cfunc(CFuncP func)
