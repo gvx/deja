@@ -55,6 +55,46 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(v1);
 		return Nothing;
 	}
+	else if (getType(v1) == T_IDENT && toString(v1)->length == 1 && getChars(v1)[0] == '(')
+	{
+		int newlength = 0;
+		Node *n = S->head;
+		while (n != NULL)
+		{
+			int t = getType(n->data);
+			if (t == T_IDENT && toString(n->data)->length == 1 && getChars(n->data)[0] == ')')
+			{
+				break;
+			}
+			else if (t != T_STR)
+			{
+				clear_ref(v1);
+				return TypeError;
+			}
+			newlength += toString(n->data)->length;
+			n = n->next;
+		}
+
+		char *new = malloc(newlength + 1);
+		char *currpoint = new;
+
+		n = S->head;
+		while (n != NULL)
+		{
+			if (getType(n->data) == T_IDENT && toString(n->data)->length == 1 && getChars(n->data)[0] == ')')
+			{
+				break;
+			}
+			s1 = toString(n->data);
+			memcpy(currpoint, toCharArr(s1), s1->length);
+			currpoint += s1->length;
+			n = n->next;
+		}
+		*currpoint = '\0';
+		push(S, str_to_value(newlength, new));
+		clear_ref(v1);
+		return Nothing;
+	}
 	else
 	{
 		clear_ref(v1);
