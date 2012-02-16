@@ -21,38 +21,6 @@ uint64_t ntohll(uint64_t i)
 }
 #endif
 
-double unpack754(uint64_t i)
-{
-    double result;
-    long long shift;
-
-    if (i == 0)
-    {
-    	return 0.0;
-    }
-
-    result = (i & ((1LL << 52) - 1));
-    result /= (1LL << 52);
-    result += 1.0;
-
-    shift = ((i >> 52) & ((1LL << 11) - 1)) - (1 << 10) + 1;
-    while(shift-- > 0)
-    {
-	    result *= 2.0;
-	}
-    while(++shift < 0)
-    {
-	    result /= 2.0;
-	}
-
-	if (i >> 63)
-	{
-		result = -result;
-	}
-
-    return result;
-}
-
 void read_literals(FILE* f, Header* h)
 {
 	long oldpos = ftell(f);
@@ -91,7 +59,8 @@ void read_literals(FILE* f, Header* h)
 		{
 			uint64_t d;
 			fread(&d, sizeof(d), 1, f);
-			t = double_to_value(unpack754(ntohll(d)));
+			d = ntohll(d);
+			t = double_to_value(*(double*)&d);
 		}
 		else //if (type == TYPE_STR || type == TYPE_IDENT)
 		{
