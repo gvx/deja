@@ -1496,6 +1496,43 @@ Error remove_set(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error plus_one(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) == T_NUM)
+	{
+		V r = double_to_value(toNumber(v) + 1.0);
+		clear_ref(v);
+		push(S, r);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+}
+
+Error minus_one(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) == T_NUM)
+	{
+		V r = double_to_value(toNumber(v) - 1.0);
+		clear_ref(v);
+		push(S, r);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+}
+
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1579,6 +1616,8 @@ static CFunc stdlib[] = {
 	{"in-set?", in_set},
 	{"add-set", add_set},
 	{"remove-set", remove_set},
+	{"++", plus_one},
+	{"--", minus_one},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
