@@ -166,6 +166,7 @@ void iter_children(V t, void (*iter)(V))
 					}
 				}
 			}
+			break;
 		case T_SCOPE:
 			sc = toScope(t);
 			if (sc->parent && toScope(sc->parent)->parent)
