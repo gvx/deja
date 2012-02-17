@@ -14,7 +14,18 @@ void print_value(V v, int depth)
 			printf("%*s", s->length, toCharArr(s));
 			break;
 		case T_NUM:
-			printf("%.15g", toNumber(v));
+			if (v == v_true)
+			{
+				fputs("true", stdout);
+			}
+			else if (v == v_false)
+			{
+				fputs("false", stdout);
+			}
+			else
+			{
+				printf("%.15g", toNumber(v));
+			}
 			break;
 		case T_STACK:
 			if (depth < 4)
@@ -1654,8 +1665,10 @@ void open_std_lib(HashMap* hm)
 		V j = get_ident(*k);
 		set_hashmap(hm, j, j);
 	}
-	v_true = int_to_value(1);
-	v_false = int_to_value(0);
+	v_true = make_new_value(T_NUM, true, sizeof(double));
+	toDouble(v_true) = 1.0;
+	v_false = make_new_value(T_NUM, true, sizeof(double));
+	toDouble(v_false) = 0.0;
 	v_range = new_cfunc(range);
 	set_hashmap(hm, get_ident("true"), v_true);
 	set_hashmap(hm, get_ident("false"), v_false);
