@@ -115,6 +115,8 @@ bool truthy(V t)
 			return toString(t)->length > 0;
 		case T_STACK:
 			return toStack(t)->size > 0;
+		case T_DICT:
+			return toHashMap(t)->used > 0;
 		default:
 			return true;
 	}	
