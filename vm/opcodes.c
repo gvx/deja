@@ -323,17 +323,14 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			container = pop(S);
 			key = pop(S);
-			if (key == NULL)
-			{
-				return StackEmpty;
-			}
 			if (getType(container) != T_DICT)
 			{
 				return TypeError;
 			}
 			v = get_hashmap(toHashMap(container), key);
-			push(S, v != NULL ? v_true : v_false);
+			push(S, add_ref(v != NULL ? v_true : v_false));
 			clear_ref(container);
+			clear_ref(key);
 			break;
 		case OP_GET_DICT:
 			if (stack_size(S) < 2)
