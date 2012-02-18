@@ -1543,6 +1543,10 @@ Error minus_one(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
+Error undef(Header* h, Stack* S, Stack* scope_arr)
+{
+	return UnknownError;
+}
 
 static CFunc stdlib[] = {
 	{"get", get},
@@ -1629,6 +1633,7 @@ static CFunc stdlib[] = {
 	{"remove-set", remove_set},
 	{"++", plus_one},
 	{"--", minus_one},
+	{"undef", undef},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
