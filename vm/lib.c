@@ -1548,6 +1548,26 @@ Error undef(Header* h, Stack* S, Stack* scope_arr)
 	return UnknownError;
 }
 
+Error choose(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_STACK)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	int n = stack_size(toStack(v)) - 1;
+	Node *node = toStack(v)->head;
+	for (n = (int)floor(rand() / (RAND_MAX + 1.0) * n); n >= 0; n--)
+	{
+		node = node->next;
+	}
+	push(S, add_ref(node->data));
+	clear_ref(v);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1634,6 +1654,7 @@ static CFunc stdlib[] = {
 	{"++", plus_one},
 	{"--", minus_one},
 	{"undef", undef},
+	{"choose", choose},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
