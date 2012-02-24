@@ -38,6 +38,7 @@ V new_scope(V parent)
 	scope->func = pscope->func == NULL ? NULL : add_ref(pscope->func);
 	scope->file = pscope->file == NULL ? NULL : add_ref(pscope->file);
 	scope->pc = pscope->pc;
+	scope->linenr = pscope->linenr;
 	hashmap_from_scope(sc, 16);
 	return sc;
 }
