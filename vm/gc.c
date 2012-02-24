@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include <assert.h>
+
 #define MAX_ROOTS 1024
 
 static int root_size = 0;
@@ -96,6 +98,7 @@ void free_value(V t)
 			{
 				if (MAXSCOPE == sc->index)
 				{
+					sc->index = 0;
 					while (SCOPECACHE[--MAXSCOPE].sc.index == 0)
 					{
 						if (MAXSCOPE == 0)

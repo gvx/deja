@@ -26,8 +26,8 @@ typedef struct
 } ValueScope;
 
 #define MAXCACHE 1024
-static ValueScope SCOPECACHE[MAXCACHE];
-static int MAXSCOPE = 0;
+ValueScope SCOPECACHE[MAXCACHE];
+int MAXSCOPE;
 
 V new_scope(V);
 V new_function_scope(V);
