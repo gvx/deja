@@ -645,7 +645,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	{
 		if (toNumber(v1) > toNumber(v2))
 		{
-			push(S, int_to_value(0));
+			push(S, add_ref(v_false));
 			clear_ref(v1);
 			clear_ref(v2);
 		}
@@ -698,7 +698,7 @@ Error in(Header* h, Stack* S, Stack* scope_arr)
 	}
 	else
 	{
-		push(S, int_to_value(0));
+		push(S, add_ref(v_false));
 	}
 	return Nothing;
 }
@@ -862,8 +862,15 @@ Error print_depth(Header* h, Stack* S, Stack* scope_arr)
 Error input(Header* h, Stack* S, Stack* scope_arr)
 {
 	char line[256];
-	fgets(line, 256, stdin);
-	line[strlen(line) - 1] = '\0'; //removes trailing newline
+	if (!fgets(line, 256, stdin))
+	{
+		push(S, add_ref(v_false));
+		return Nothing;
+	}
+	if (line[strlen(line) - 1] == '\n')
+	{
+		line[strlen(line) - 1] = '\0'; //removes trailing newline
+	}
 	push(S, a_to_value(line));
 	return Nothing;
 }
@@ -1216,7 +1223,7 @@ Error quote(Header* h, Stack* S, Stack* scope_arr)
 	String *s = toString(v);
 	char *buff = malloc(s->length + 2);
 	buff[0] = '"';
-	memcpy(buff + 1, toCharArr(s), s->length + 1); 
+	memcpy(buff + 1, toCharArr(s), s->length + 1);
 	V r = get_ident(buff);
 	free(buff);
 	push(S, add_ref(r));
