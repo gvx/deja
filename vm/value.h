@@ -37,10 +37,11 @@ typedef enum GCColor
 
 typedef struct Value
 {
-	int type;
-	GCColor color;
-	bool buffered;
-	unsigned int refs;
+	uint16_t type;
+	uint16_t buffered;
+	uint32_t /*GCColor*/ color;
+	uint32_t refs;
+	uint32_t baserefs;
 } Value;
 
 typedef Value* V;

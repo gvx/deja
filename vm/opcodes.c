@@ -195,11 +195,11 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc += argument - 1;
 			break;
 		case OP_ENTER_SCOPE:
-			push(scope_arr, new_scope(scope));
+			push(scope_arr, add_rooted(new_scope(scope)));
 			break;
 		case OP_LEAVE_SCOPE:
 			pc = sc->pc;
-			clear_ref(pop(scope_arr));
+			clear_base_ref(pop(scope_arr));
 			sc = toScope(get_head(scope_arr));
 			sc->pc = pc;
 			break;

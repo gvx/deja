@@ -25,6 +25,7 @@ V make_new_value(int type, bool simple, int size)
 	t->buffered = false;
 	t->type = type;
 	t->refs = 1;
+	t->baserefs = 0;
 	t->color = simple ? Green : Black;
 	return t;
 }
@@ -39,6 +40,26 @@ V add_ref(V t)
 	{
 		t->color = Black;
 	}
+	return t;
+}
+
+V add_base_ref(V t)
+{
+	if isInt(t)
+		return t;
+
+	t->baserefs++;
+
+	return add_ref(t);
+}
+
+V add_rooted(V t)
+{
+	if isInt(t)
+		return t;
+
+	t->baserefs++;
+
 	return t;
 }
 
@@ -381,9 +402,22 @@ void clear_ref(V t)
 		{
 			release_value(t);
 		}
-		else if (t->color != Green)
+		else if (t->color != Green && t->baserefs == 0)
 		{
 			possible_root(t);
 		}
+	}
+}
+
+void clear_base_ref(V t)
+{
+	if (isInt(t))
+		return;
+
+	if (t != NULL)
+	{
+		t->baserefs--;
+
+		clear_ref(t);
 	}
 }
