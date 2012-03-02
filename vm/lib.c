@@ -1575,6 +1575,24 @@ Error choose(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error flatten(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V list = pop(S);
+	if (getType(list) != T_STACK)
+	{
+		clear_ref(list);
+		return TypeError;
+	}
+	Node *n = toStack(list)->head;
+	while (n)
+	{
+		push(S, add_ref(n->data));
+		n = n->next;
+	}
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1662,6 +1680,7 @@ static CFunc stdlib[] = {
 	{"--", minus_one},
 	{"undef", undef},
 	{"choose", choose},
+	{"flatten", flatten},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
