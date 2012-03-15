@@ -1310,10 +1310,17 @@ Error to_str(Header *h, Stack *S, Stack *scope_arr)
 	// need to take scientific notation etc. in account
 	// also numbers near 0, which are long and have a negative log10
 	// and negative numbers
+	if (!toNumber(v))
+	{
+		push(S, str_to_value(1, "0"));
+		clear_ref(v);
+		return Nothing;
+	}
 	char *buff = malloc(fmin(5 + abs(log10(fabs(toNumber(v)))), 30));
 	sprintf(buff, "%.15g", toNumber(v));
 	push(S, a_to_value(buff));
 	free(buff);
+	clear_ref(v);
 	return Nothing;
 }
 
