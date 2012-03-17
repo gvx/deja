@@ -28,12 +28,6 @@ typedef struct
 	CFuncP cfunc;
 } CFunc;
 
-typedef struct
-{
-	Value v;
-	CFuncP f;
-} ValueCFunc;
-
 V new_cfunc(CFuncP);
 V v_true;
 V v_false;

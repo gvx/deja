@@ -18,7 +18,7 @@
 #define getChars(x) (toCharArr(toString(x)))
 #define toDouble(x) (*(double*)(x + 1))
 #define toNumber(x) (isInt(x) ? (double)toInt(x) : toDouble(x))
-#define toCFunc(x) (((ValueCFunc*)(x))->f)
+#define toCFunc(x) (*(CFuncP*)(x + 1))
 #define toHashMap(x) ((HashMap*)(x + 1))
 #define getType(x) (isInt(x) ? T_NUM : x->type)
 
