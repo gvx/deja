@@ -7,7 +7,7 @@ void print_value(V v, int depth)
 	{
 		case T_IDENT:
 			s = toString(v);
-			printf("'%*s'", s->length, toCharArr(s));
+			printf(":%*s", s->length, toCharArr(s));
 			break;
 		case T_STR:
 			s = toString(v);
