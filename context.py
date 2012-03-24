@@ -50,8 +50,8 @@ class LineContext(Context):
 			else:
 				tokens = s.split()
 				for i, token in enumerate(tokens):
-					if token.startswith(':') and len(token) > 1:
-						tokens[i] = "'%s'" % token[1:]
+					if token.startswith('@') and len(token) > 1:
+						tokens[i] = ":%s" % token[1:]
 						tokens.insert(i, 'get')
 				self.tokens.extend(tokens)
 		return self
@@ -82,7 +82,7 @@ class LineContext(Context):
 		if not self.tokens:
 			raise DejaSyntaxError("Missing function name", self, self.text.index(':'))
 		self.assert_labda()
-	
+
 	assert_local = assert_func
 
 	def assert_for(self):

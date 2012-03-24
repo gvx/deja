@@ -51,9 +51,9 @@ class Number(Word):
 
 class Ident(Word):
 	def convert(self, value):
-		return value[1:-1]
+		return value[1:]
 	def __str__(self):
-		return "'" + self.value + "'"
+		return ":" + self.value
 
 class ProperWord(Word):
 	def convert(self, value):
@@ -68,7 +68,7 @@ class WordList(Node):
 	def gettokentype(token):
 		if token.startswith('"'):
 			return 'str'
-		elif token.startswith("'") and token.endswith("'"):
+		elif token.startswith(":"):
 			return 'ident'
 		elif token.count('.') < 2 and (token.replace('.', '').isdigit() or token.startswith('-') and token[1:].replace('.', '').isdigit()):
 			return 'num'
