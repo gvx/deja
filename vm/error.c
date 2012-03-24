@@ -1,5 +1,7 @@
 #include "error.h"
 
+V lastCall = NULL;
+
 void init_errors(void)
 {
 	error_names[0] = get_ident("nothing");
@@ -57,6 +59,11 @@ Error ident_to_error(V e)
 void handle_error(Error e, Stack *scope_arr)
 {
 	puts(error_name(e));
+	if (lastCall)
+	{
+		String *s = toString(lastCall);
+		printf("In %*s:\n", s->length, toCharArr(s));
+	}
 	if (scope_arr == NULL)
 	{
 		return;
