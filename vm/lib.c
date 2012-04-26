@@ -74,6 +74,13 @@ void print_value(V v, int depth)
 				fputs("{...}", stdout);
 			}
 			break;
+		case T_PAIR:
+			// note: pairs are not cyclic, so no need to increase the depth
+			fputs("& ", stdout);
+			print_value(toFirst(v), depth);
+			fputs(" ", stdout);
+			print_value(toSecond(v), depth);
+			break;
 		case T_CFUNC:
 			printf("<func:%p>", toCFunc(v));
 			break;
@@ -320,6 +327,8 @@ const char* gettype(V r)
 			return "list";
 		case T_DICT:
 			return "dict";
+		case T_PAIR:
+			return "pair";
 		case T_FUNC:
 		case T_CFUNC:
 			return "func";
