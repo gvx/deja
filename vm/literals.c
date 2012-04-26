@@ -28,7 +28,7 @@ void read_literals(FILE* f, Header* h)
 	int i;
 	int n = 0;
 	char type;
-	uint32_t str_length; 
+	uint32_t str_length;
 	fseek(f, h->size * 4, SEEK_CUR);
 	startpos = ftell(f);
 	while (!feof(f))
