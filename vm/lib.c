@@ -1600,6 +1600,49 @@ Error flatten(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error make_pair(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V first = pop(S);
+	V second = pop(S);
+	if (!is_simple(first) || !is_simple(second))
+	{
+		clear_ref(first);
+		clear_ref(second);
+		return TypeError;
+	}
+	push(S, new_pair(first, second));
+	return Nothing;
+}
+
+Error get_first(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V pair = pop(S);
+	if (getType(pair) != T_PAIR)
+	{
+		clear_ref(pair);
+		return TypeError;
+	}
+	push(S, add_ref(toFirst(pair)));
+	clear_ref(pair);
+	return Nothing;
+}
+
+Error get_second(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V pair = pop(S);
+	if (getType(pair) != T_PAIR)
+	{
+		clear_ref(pair);
+		return TypeError;
+	}
+	push(S, add_ref(toSecond(pair)));
+	clear_ref(pair);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1688,6 +1731,9 @@ static CFunc stdlib[] = {
 	{"undef", undef},
 	{"choose", choose},
 	{"flatten", flatten},
+	{"&", make_pair},
+	{"&<", get_first},
+	{"&>", get_second},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},

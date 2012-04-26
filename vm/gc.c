@@ -191,6 +191,10 @@ void iter_children(V t, void (*iter)(V))
 				}
 			}
 			break;
+		case T_PAIR:
+			iter(toFirst(t));
+			iter(toSecond(t));
+			break;
 		case T_SCOPE:
 			sc = toScope(t);
 			if (sc->parent && toScope(sc->parent)->parent)
@@ -420,4 +424,9 @@ void clear_base_ref(V t)
 
 		clear_ref(t);
 	}
+}
+
+bool is_simple(V t)
+{
+	return t == NULL || isInt(t) || t->color == Green;
 }

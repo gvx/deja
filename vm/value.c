@@ -102,6 +102,14 @@ V new_sized_dict(int size)
 	return t;
 }
 
+V new_pair(V first, V second)
+{
+	V t = make_new_value(T_PAIR, true, sizeof(V) * 2);
+	toFirst(t) = first;
+	toSecond(t) = second;
+	return t;
+}
+
 bool truthy(V t)
 {
 	switch(getType(t))
@@ -119,7 +127,7 @@ bool truthy(V t)
 			return toHashMap(t)->used > 0;
 		default:
 			return true;
-	}	
+	}
 }
 
 bool equal(V v1, V v2)

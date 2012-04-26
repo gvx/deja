@@ -12,5 +12,6 @@ V add_base_ref(V);
 void clear_ref(V);
 void clear_base_ref(V);
 void collect_cycles(void);
+bool is_simple(V);
 
 #endif

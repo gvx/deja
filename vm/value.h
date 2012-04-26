@@ -21,6 +21,8 @@
 #define toCFunc(x) (*(CFuncP*)(x + 1))
 #define toHashMap(x) ((HashMap*)(x + 1))
 #define getType(x) (isInt(x) ? T_NUM : x->type)
+#define toFirst(x) (*((V*)(x + 1)))
+#define toSecond(x) (*((V*)(x + 2)))
 
 #define new_dict() new_sized_dict(16)
 
@@ -68,6 +70,7 @@ V empty_str_to_value(int, char**);
 V get_ident(const char*);
 V new_list();
 V new_sized_dict();
+V new_pair(V, V);
 
 bool truthy(V);
 bool equal(V, V);
