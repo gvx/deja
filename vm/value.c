@@ -151,6 +151,11 @@ bool equal(V v1, V v2)
 				return !memcmp(toCharArr(s1), toCharArr(s2), s1->length);
 			}
 		}
+		else if (getType(v1) == T_PAIR)
+		{
+			// pairs count as simple datatypes, so this is safe
+			return equal(toFirst(v1), toFirst(v2)) && equal(toSecond(v1), toSecond(v2));
+		}
 	}
 	return false;
 }
