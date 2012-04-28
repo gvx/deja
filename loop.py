@@ -13,3 +13,8 @@ class ForStatement(SimpleStatement):
 
 class ForClause(ConditionClause):
 	pass
+
+class RepeatStatement(SimpleStatement):
+	def __init__(self, parent, tokens, linenr):
+		SimpleStatement.__init__(self, parent, linenr)
+		self.forclause = ForClause(self, tokens)
