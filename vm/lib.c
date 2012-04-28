@@ -1652,6 +1652,15 @@ Error get_second(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error file_info(Header* h, Stack* S, Stack* scope_arr)
+{
+	File *f = toFile(toScope(get_head(scope_arr))->file);
+	printf("(source size:%d, literals:%d, filename:%s, source:%s, globals:%d)\n",
+		h->size, h->n_literals, getChars(f->name), getChars(f->source),
+		toScope(f->global)->hm.used);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1743,6 +1752,7 @@ static CFunc stdlib[] = {
 	{"&", make_pair},
 	{"&<", get_first},
 	{"&>", get_second},
+	{"(file-info)", file_info},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
