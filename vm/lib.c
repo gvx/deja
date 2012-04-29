@@ -11,7 +11,7 @@ void print_value(V v, int depth)
 			break;
 		case T_STR:
 			s = toString(v);
-			printf("%*s", s->length, toCharArr(s));
+			printf("\"%*s\"", s->length, toCharArr(s));
 			break;
 		case T_NUM:
 			if (v == v_true)
@@ -1261,6 +1261,7 @@ Error print_var(Header *h, Stack *S, Stack *scope_arr)
 			return Nothing;
 		}
 		print(h, S, scope_arr);
+		putchar(' ');
 	}
 }
 
@@ -1661,6 +1662,58 @@ Error file_info(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error print_f(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	switch (getType(v))
+	{
+		case T_STR:
+			printf("%*s", toString(v)->length, getChars(v));
+			break;
+		case T_NUM:
+			printf("%.15g", toNumber(v));
+			break;
+		default:
+			print_value(v, 1);
+	}
+	clear_ref(v);
+	return Nothing;
+}
+
+Error print_f_nl(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(1);
+	print_f(h, S, scope_arr);
+	putchar('\n');
+	return Nothing;
+}
+
+Error print_f_var(Header *h, Stack *S, Stack *scope_arr)
+{
+	while (true)
+	{
+		require(1);
+		V head = get_head(S);
+		if (getType(head) == T_IDENT && toString(head)->length == 1 && getChars(head)[0] == ')')
+		{
+			clear_ref(pop(S));
+			return Nothing;
+		}
+		print_f(h, S, scope_arr);
+	}
+}
+
+Error print_f_var_nl(Header *h, Stack *S, Stack *scope_arr)
+{
+	Error e = print_f_var(h, S, scope_arr);
+	if (e == Nothing)
+	{
+		putchar('\n');
+	}
+	return e;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1681,6 +1734,10 @@ static CFunc stdlib[] = {
 	{".\\", print},
 	{".\\(", print_var},
 	{".(", print_var_nl},
+	{"print\\", print_f},
+	{"print", print_f_nl},
+	{"print\\(", print_f_var},
+	{"print(", print_f_var_nl},
 	{"type", type},
 	{"[]", make_new_list},
 	{"[", produce_list},
