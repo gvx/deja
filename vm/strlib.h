@@ -11,3 +11,4 @@ Error ord(Header*, Stack*, Stack*);
 Error chr(Header*, Stack*, Stack*);
 Error find(Header*, Stack*, Stack*);
 Error chars(Header*, Stack*, Stack*);
+Error count(Header*, Stack*, Stack*);

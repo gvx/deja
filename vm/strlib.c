@@ -407,3 +407,44 @@ Error chars(Header* h, Stack* S, Stack* scope_arr)
 	push(S, list);
 	return Nothing;
 }
+
+Error count(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V haystack = pop(S);
+	V needle = pop(S);
+	if (getType(haystack) != T_STR || getType(needle) != T_STR)
+	{
+		clear_ref(haystack);
+		clear_ref(needle);
+		return TypeError;
+	}
+	int haystack_len = toString(haystack)->length;
+	int needle_len = toString(needle)->length;
+	char *haystack_c = getChars(haystack);
+	char *needle_c = getChars(needle);
+	if (needle_len == 0)
+	{
+		push(S, int_to_value(haystack_len + 1));
+		return Nothing;
+	}
+	if (needle_len > haystack_len)
+	{
+		push(S, int_to_value(0));
+		return Nothing;
+	}
+	int ix;
+	int count = 0;
+	for (ix = 0; ix < haystack_len - needle_len + 1; ix++)
+	{
+		if (!memcmp(haystack_c + ix, needle_c, needle_len))
+		{
+			count++;
+			ix += needle_len - 1;
+		}
+	}
+	push(S, int_to_value(count));
+	clear_ref(haystack);
+	clear_ref(needle);
+	return Nothing;
+}
