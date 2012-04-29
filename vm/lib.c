@@ -1766,6 +1766,7 @@ static CFunc stdlib[] = {
 	{"find", find},
 	{"chars", chars},
 	{"count", count},
+	{"split-any", split_any},
 	{NULL, NULL}
 };
 

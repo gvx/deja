@@ -12,3 +12,4 @@ Error chr(Header*, Stack*, Stack*);
 Error find(Header*, Stack*, Stack*);
 Error chars(Header*, Stack*, Stack*);
 Error count(Header*, Stack*, Stack*);
+Error split_any(Header*, Stack*, Stack*);

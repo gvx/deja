@@ -448,3 +448,40 @@ Error count(Header* h, Stack* S, Stack* scope_arr)
 	clear_ref(needle);
 	return Nothing;
 }
+
+Error split_any(Header* h, Stack* S, Stack* scope_arr)
+{
+	String *s1;
+	String *s2;
+	require(2);
+	V v1 = pop(S);
+	V v2 = pop(S);
+	if (getType(v1) == T_STR && getType(v2) == T_STR)
+	{
+		s1 = toString(v1);
+		s2 = toString(v2);
+		V r = new_list();
+		Stack *rs = toStack(r);
+		int start, laststart = 0;
+		for (start = 0; start < s2->length; start++)
+		{
+			if (memchr(toCharArr(s1), toCharArr(s2)[start], s1->length))
+			{
+				V new = str_to_value(start - laststart, toCharArr(s2) + laststart);
+				laststart = start + 1;
+				append(rs, new);
+			}
+		}
+		append(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
+		push(S, r);
+		clear_ref(v1);
+		clear_ref(v2);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+}
