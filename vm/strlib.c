@@ -307,7 +307,7 @@ Error slice(Header* h, Stack* S, Stack* scope_arr)
 	else if (s > len)
 		s = len;
 	if (e <= 0)
-		e = len - e;
+		e = len + e;
 	if (e < s)
 		e = s;
 	else if (e > len)
