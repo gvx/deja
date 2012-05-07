@@ -1714,6 +1714,104 @@ Error print_f_var_nl(Header *h, Stack *S, Stack *scope_arr)
 	return e;
 }
 
+Error abs_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(fabs(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error sin_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(sin(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error cos_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(cos(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error tan_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(tan(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error asin_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(asin(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error acos_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(acos(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error atan_(Header *h, Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V v = pop(S);
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	push(S, double_to_value(atan(toNumber(v))));
+	clear_ref(v);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1810,6 +1908,13 @@ static CFunc stdlib[] = {
 	{"&<", get_first},
 	{"&>", get_second},
 	{"(file-info)", file_info},
+	{"abs", abs_},
+	{"sin", sin_},
+	{"cos", cos_},
+	{"tan", tan_},
+	{"asin", asin_},
+	{"acos", acos_},
+	{"atan", atan_},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
