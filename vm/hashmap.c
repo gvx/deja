@@ -42,6 +42,10 @@ uint32_t get_hash(V v)
 	{
 		return (uint32_t)toNumber(v);
 	}
+	else if (t == T_PAIR)
+	{
+		return get_hash(toFirst(v)) + get_hash(toSecond(v));
+	}
 	else
 	{
 		return (unsigned long)v;
@@ -102,7 +106,7 @@ void set_hashmap(HashMap* hm, V key, V value)
 		Bucket **bl = calloc(hm->size, sizeof(Bucket*));
 		hm->map = bl;
 	}
-	uint32_t hash = get_hash(key) % hm->size; 
+	uint32_t hash = get_hash(key) % hm->size;
 	Bucket* b = hm->map[hash];
 	if (b == NULL)
 	{
