@@ -43,7 +43,7 @@ void run(V file_name)
 			while (stack_size(scope) > 0 && !sc->is_error_handler);
 			if (stack_size(scope) > 0)
 			{ //Let error be handled by code
-				push(S, add_ref(error_to_ident(e)));
+				pushS(add_ref(error_to_ident(e)));
 				e = Nothing;
 			}
 			else

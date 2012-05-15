@@ -5,11 +5,11 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 	String *s1;
 	String *s2;
 	require(1);
-	V v1 = pop(S);
+	V v1 = popS();
 	if (getType(v1) == T_STR)
 	{
 		require(1);
-		V v2 = pop(S);
+		V v2 = popS();
 		if (getType(v2) != T_STR)
 		{
 			return TypeError;
@@ -19,7 +19,7 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		char *new = malloc(s1->length + s2->length + 1);
 		memcpy(new, toCharArr(s1), s1->length);
 		memcpy(new + s1->length, toCharArr(s2), s2->length + 1);
-		push(S, str_to_value(s1->length + s2->length, new));
+		pushS(str_to_value(s1->length + s2->length, new));
 		clear_ref(v1);
 		clear_ref(v2);
 		return Nothing;
@@ -51,7 +51,7 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 			n = n->next;
 		}
 		*currpoint = '\0';
-		push(S, str_to_value(newlength, new));
+		pushS(str_to_value(newlength, new));
 		clear_ref(v1);
 		return Nothing;
 	}
@@ -91,7 +91,7 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 			n = n->next;
 		}
 		*currpoint = '\0';
-		push(S, str_to_value(newlength, new));
+		pushS(str_to_value(newlength, new));
 		clear_ref(v1);
 		return Nothing;
 	}
@@ -105,8 +105,8 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 Error contains(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V v1 = pop(S);
-	V v2 = pop(S);
+	V v1 = popS();
+	V v2 = popS();
 	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
@@ -117,7 +117,7 @@ Error contains(Header* h, Stack* S, Stack* scope_arr)
 	String *s2 = toString(v2);
 	if (s1->length > s2->length)
 	{
-		push(S, add_ref(v_false));
+		pushS(add_ref(v_false));
 	}
 	else
 	{
@@ -126,13 +126,13 @@ Error contains(Header* h, Stack* S, Stack* scope_arr)
 		{
 			if (!memcmp(toCharArr(s2) + i, toCharArr(s1), s1->length))
 			{
-				push(S, add_ref(v_true));
+				pushS(add_ref(v_true));
 				clear_ref(v1);
 				clear_ref(v2);
 				return Nothing;
 			}
 		}
-		push(S, add_ref(v_false));
+		pushS(add_ref(v_false));
 	}
 	clear_ref(v1);
 	clear_ref(v2);
@@ -142,8 +142,8 @@ Error contains(Header* h, Stack* S, Stack* scope_arr)
 Error starts_with(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V v1 = pop(S);
-	V v2 = pop(S);
+	V v1 = popS();
+	V v2 = popS();
 	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
@@ -154,11 +154,11 @@ Error starts_with(Header* h, Stack* S, Stack* scope_arr)
 	String *s2 = toString(v2);
 	if (s1->length > s2->length || memcmp(toCharArr(s2), toCharArr(s1), s1->length))
 	{
-		push(S, add_ref(v_false));
+		pushS(add_ref(v_false));
 	}
 	else
 	{
-		push(S, add_ref(v_true));
+		pushS(add_ref(v_true));
 	}
 	clear_ref(v1);
 	clear_ref(v2);
@@ -168,8 +168,8 @@ Error starts_with(Header* h, Stack* S, Stack* scope_arr)
 Error ends_with(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V v1 = pop(S);
-	V v2 = pop(S);
+	V v1 = popS();
+	V v2 = popS();
 	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
@@ -180,11 +180,11 @@ Error ends_with(Header* h, Stack* S, Stack* scope_arr)
 	String *s2 = toString(v2);
 	if (s1->length > s2->length || memcmp(toCharArr(s2) + s2->length - s1->length, toCharArr(s1), s1->length))
 	{
-		push(S, add_ref(v_false));
+		pushS(add_ref(v_false));
 	}
 	else
 	{
-		push(S, add_ref(v_true));
+		pushS(add_ref(v_true));
 	}
 	clear_ref(v1);
 	clear_ref(v2);
@@ -196,8 +196,8 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 	String *s1;
 	String *s2;
 	require(2);
-	V v1 = pop(S);
-	V v2 = pop(S);
+	V v1 = popS();
+	V v2 = popS();
 	if (getType(v1) == T_STR && getType(v2) == T_STACK)
 	{
 		s1 = toString(v1);
@@ -233,7 +233,7 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 			}
 		}
 		*currpoint = '\0';
-		push(S, str_to_value(newlength, new));
+		pushS(str_to_value(newlength, new));
 		clear_ref(v1);
 		clear_ref(v2);
 		return Nothing;
@@ -251,8 +251,8 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 	String *s1;
 	String *s2;
 	require(2);
-	V v1 = pop(S);
-	V v2 = pop(S);
+	V v1 = popS();
+	V v2 = popS();
 	if (getType(v1) == T_STR && getType(v2) == T_STR)
 	{
 		s1 = toString(v1);
@@ -270,7 +270,7 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 			}
 		}
 		append(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
-		push(S, r);
+		pushS(r);
 		clear_ref(v1);
 		clear_ref(v2);
 		return Nothing;
@@ -286,9 +286,9 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 Error slice(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(3);
-	V str = pop(S);
-	V start = pop(S);
-	V end = pop(S);
+	V str = popS();
+	V start = popS();
+	V end = popS();
 	if (getType(str) != T_STR || getType(start) != T_NUM || getType(end) != T_NUM)
 	{
 		clear_ref(str);
@@ -312,7 +312,7 @@ Error slice(Header* h, Stack* S, Stack* scope_arr)
 		e = s;
 	else if (e > len)
 		e = len;
-	push(S, str_to_value(e - s, toCharArr(string) + s));
+	pushS(str_to_value(e - s, toCharArr(string) + s));
 	clear_ref(str);
 	clear_ref(start);
 	clear_ref(end);
@@ -322,7 +322,7 @@ Error slice(Header* h, Stack* S, Stack* scope_arr)
 Error ord(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
-	V v = pop(S);
+	V v = popS();
 	if (getType(v) != T_STR)
 	{
 		clear_ref(v);
@@ -334,7 +334,7 @@ Error ord(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(v);
 		return ValueError;
 	}
-	push(S, int_to_value((int)toCharArr(s)[0]));
+	pushS(int_to_value((int)toCharArr(s)[0]));
 	clear_ref(v);
 	return Nothing;
 }
@@ -342,14 +342,14 @@ Error ord(Header* h, Stack* S, Stack* scope_arr)
 Error chr(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
-	V v = pop(S);
+	V v = popS();
 	if (getType(v) != T_NUM)
 	{
 		clear_ref(v);
 		return TypeError;
 	}
 	char x = toNumber(v);
-	push(S, str_to_value(1, &x));
+	pushS(str_to_value(1, &x));
 	clear_ref(v);
 	return Nothing;
 }
@@ -357,8 +357,8 @@ Error chr(Header* h, Stack* S, Stack* scope_arr)
 Error find(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V v1 = pop(S);
-	V v2 = pop(S);
+	V v1 = popS();
+	V v2 = popS();
 	if (getType(v1) != T_STR || getType(v2) != T_STR)
 	{
 		clear_ref(v1);
@@ -374,14 +374,14 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 		{
 			if (!memcmp(toCharArr(s2) + i, toCharArr(s1), s1->length))
 			{
-				push(S, int_to_value(i));
+				pushS(int_to_value(i));
 				clear_ref(v1);
 				clear_ref(v2);
 				return Nothing;
 			}
 		}
 	}
-	push(S, int_to_value(-1));
+	pushS(int_to_value(-1));
 	clear_ref(v1);
 	clear_ref(v2);
 	return Nothing;
@@ -390,7 +390,7 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 Error chars(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
-	V source = pop(S);
+	V source = popS();
 	if (getType(source) != T_STR)
 	{
 		clear_ref(source);
@@ -404,15 +404,15 @@ Error chars(Header* h, Stack* S, Stack* scope_arr)
 	{
 		push(st, str_to_value(1, chrs + i));
 	}
-	push(S, list);
+	pushS(list);
 	return Nothing;
 }
 
 Error count(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V haystack = pop(S);
-	V needle = pop(S);
+	V haystack = popS();
+	V needle = popS();
 	if (getType(haystack) != T_STR || getType(needle) != T_STR)
 	{
 		clear_ref(haystack);
@@ -425,12 +425,12 @@ Error count(Header* h, Stack* S, Stack* scope_arr)
 	char *needle_c = getChars(needle);
 	if (needle_len == 0)
 	{
-		push(S, int_to_value(haystack_len + 1));
+		pushS(int_to_value(haystack_len + 1));
 		return Nothing;
 	}
 	if (needle_len > haystack_len)
 	{
-		push(S, int_to_value(0));
+		pushS(int_to_value(0));
 		return Nothing;
 	}
 	int ix;
@@ -443,7 +443,7 @@ Error count(Header* h, Stack* S, Stack* scope_arr)
 			ix += needle_len - 1;
 		}
 	}
-	push(S, int_to_value(count));
+	pushS(int_to_value(count));
 	clear_ref(haystack);
 	clear_ref(needle);
 	return Nothing;
@@ -454,8 +454,8 @@ Error split_any(Header* h, Stack* S, Stack* scope_arr)
 	String *s1;
 	String *s2;
 	require(2);
-	V v1 = pop(S);
-	V v2 = pop(S);
+	V v1 = popS();
+	V v2 = popS();
 	if (getType(v1) == T_STR && getType(v2) == T_STR)
 	{
 		s1 = toString(v1);
@@ -473,7 +473,7 @@ Error split_any(Header* h, Stack* S, Stack* scope_arr)
 			}
 		}
 		append(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
-		push(S, r);
+		pushS(r);
 		clear_ref(v1);
 		clear_ref(v2);
 		return Nothing;

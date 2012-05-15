@@ -10,6 +10,7 @@ V add_ref(V);
 V add_rooted(V);
 V add_base_ref(V);
 void clear_ref(V);
+V clear_rooted(V);
 void clear_base_ref(V);
 void collect_cycles(void);
 bool is_simple(V);

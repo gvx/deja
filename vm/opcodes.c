@@ -50,10 +50,10 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	switch (opcode)
 	{
 		case OP_PUSH_LITERAL:
-			push(S, add_ref(get_literal(h, argument)));
+			pushS(add_ref(get_literal(h, argument)));
 			break;
 		case OP_PUSH_INTEGER:
-			push(S, int_to_value(argument));
+			pushS(int_to_value(argument));
 			break;
 		case OP_PUSH_WORD:
 			lastCall = key = add_ref(get_literal(h, argument));
@@ -77,7 +77,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			else
 			{
-				push(S, add_ref(v));
+				pushS(add_ref(v));
 			}
 			break;
 		case OP_SET:
@@ -85,7 +85,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			v = pop(S);
+			v = popS();
 			V key = get_literal(h, argument);
 			while (!change_hashmap(&sc->hm, key, v))
 			{
@@ -107,7 +107,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			v = pop(S);
+			v = popS();
 			set_hashmap(&sc->hm, get_literal(h, argument), v);
 			clear_ref(v);
 			break;
@@ -116,7 +116,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			v = pop(S);
+			v = popS();
 			set_hashmap(&toScope(toFile(sc->file)->global)->hm, get_literal(h, argument), v);
 			clear_ref(v);
 			break;
@@ -132,7 +132,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				sc = toScope(sc->parent);
 				v = get_hashmap(&sc->hm, key);
 			}
-			push(S, add_ref(v));
+			pushS(add_ref(v));
 			break;
 		case OP_GET_GLOBAL:
 			v = get_hashmap(&toScope(toFile(sc->file)->global)->hm, get_literal(h, argument));
@@ -140,7 +140,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return NameError;
 			}
-			push(S, add_ref(v));
+			pushS(add_ref(v));
 			break;
 		case OP_JMP:
 			sc->pc += argument - 1;
@@ -150,7 +150,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			v = pop(S);
+			v = popS();
 			bool t = truthy(v);
 			clear_ref(v);
 			if (!t)
@@ -195,7 +195,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc = toFunc(sc->func)->start;
 			break;
 		case OP_LABDA:
-			push(S, new_func(scope, sc->pc));
+			pushS(new_func(scope, sc->pc));
 			sc->pc += argument - 1;
 			break;
 		case OP_ENTER_SCOPE:
@@ -208,21 +208,21 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc = pc;
 			break;
 		case OP_NEW_LIST:
-			push(S, new_list());
+			pushS(new_list());
 			break;
 		case OP_POP_FROM:
 			if (stack_size(S) < 1)
 			{
 				return StackEmpty;
 			}
-			container = pop(S);
+			container = popS();
 			if (getType(container) != T_STACK)
 			{
 				clear_ref(container);
 				return TypeError;
 			}
 			v = pop(toStack(container));
-			push(S, v);
+			pushS(v);
 			clear_ref(container);
 			break;
 		case OP_PUSH_TO:
@@ -230,13 +230,13 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			container = pop(S);
+			container = popS();
 			if (getType(container) != T_STACK)
 			{
 				clear_ref(container);
 				return TypeError;
 			}
-			push(toStack(container), pop(S));
+			push(toStack(container), popS());
 			clear_ref(container);
 			break;
 		case OP_PUSH_THROUGH:
@@ -244,38 +244,38 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			container = pop(S);
+			container = popS();
 			if (getType(container) != T_STACK)
 			{
 				clear_ref(container);
 				return TypeError;
 			}
-			push(toStack(container), pop(S));
-			push(S, container);
+			push(toStack(container), popS());
+			pushS(container);
 			break;
 		case OP_DROP:
 			if (stack_size(S) < 1)
 			{
 				return StackEmpty;
 			}
-			clear_ref(pop(S));
+			clear_ref(popS());
 			break;
 		case OP_DUP:
 			if (stack_size(S) < 1)
 			{
 				return StackEmpty;
 			}
-			push(S, add_ref(get_head(S)));
+			pushS(add_ref(get_head(S)));
 			break;
 		case OP_SWAP:
 			if (stack_size(S) < 2)
 			{
 				return StackEmpty;
 			}
-			V v1 = pop(S);
-			V v2 = pop(S);
-			push(S, v1);
-			push(S, v2);
+			V v1 = popS();
+			V v2 = popS();
+			pushS(v1);
+			pushS(v2);
 			break;
 		case OP_ROT:
 			if (stack_size(S) < 3)
@@ -294,7 +294,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			push(S, add_ref(S->head->next->data));
+			pushS(add_ref(S->head->next->data));
 			break;
 		case OP_LINE_NUMBER:
 			sc->linenr = argument;
@@ -318,21 +318,21 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->pc = pc;
 			break;
 		case OP_NEW_DICT:
-			push(S, new_dict());
+			pushS(new_dict());
 			break;
 		case OP_HAS_DICT:
 			if (stack_size(S) < 2)
 			{
 				return StackEmpty;
 			}
-			container = pop(S);
-			key = pop(S);
+			container = popS();
+			key = popS();
 			if (getType(container) != T_DICT)
 			{
 				return TypeError;
 			}
 			v = get_hashmap(toHashMap(container), key);
-			push(S, add_ref(v != NULL ? v_true : v_false));
+			pushS(add_ref(v != NULL ? v_true : v_false));
 			clear_ref(container);
 			clear_ref(key);
 			break;
@@ -341,8 +341,8 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			container = pop(S);
-			key = pop(S);
+			container = popS();
+			key = popS();
 			if (getType(container) != T_DICT)
 			{
 				return TypeError;
@@ -352,7 +352,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return ValueError;
 			}
-			push(S, add_ref(v));
+			pushS(add_ref(v));
 			clear_ref(container);
 			break;
 		case OP_SET_DICT:
@@ -360,13 +360,13 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return StackEmpty;
 			}
-			container = pop(S);
-			key = pop(S);
+			container = popS();
+			key = popS();
 			if (getType(container) != T_DICT)
 			{
 				return TypeError;
 			}
-			v = pop(S);
+			v = popS();
 			if (v == NULL)
 			{
 				clear_ref(container);

@@ -26,6 +26,9 @@
 
 #define new_dict() new_sized_dict(16)
 
+#define pushS(v) push(S, add_rooted(v))
+#define popS() clear_rooted(pop(S))
+
 // Déjà Vu utilises the synchronous cycle collection algorithm
 // described by David F. Bacon and V.T. Rajan (2001)
 typedef enum GCColor

@@ -426,6 +426,20 @@ void clear_base_ref(V t)
 	}
 }
 
+
+V clear_rooted(V t)
+{
+	if (isInt(t))
+		return t;
+
+	if (t != NULL)
+	{
+		t->baserefs--;
+
+		return t;
+	}
+}
+
 bool is_simple(V t)
 {
 	return t == NULL || isInt(t) || t->color == Green;
