@@ -22,6 +22,7 @@ typedef enum
 } Error;
 
 V error_names[UnknownError];
+char *error_msg;
 
 void init_errors();
 

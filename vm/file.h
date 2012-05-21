@@ -6,6 +6,7 @@
 #include "value.h"
 #include "types.h"
 #include "gc.h"
+#include "error.h"
 
 #include <stdio.h>
 #include <stdlib.h>

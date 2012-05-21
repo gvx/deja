@@ -47,6 +47,8 @@ V find_file(V module_name)
 		}
 		free(fname);
 	}
+	error_msg = malloc(24 + l);
+	sprintf(error_msg, "Could not find module %*s.", l, mod_name);
 	clear_ref(module_name);
 	return NULL;
 }

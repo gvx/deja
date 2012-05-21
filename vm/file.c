@@ -26,6 +26,8 @@ V load_file(V file_name, V global)
 		fread(code, 4, h.size, f);
 		f_obj->code = code;
 	}
+	else
+		error_msg = "Not a valid Déjà Vu bytecode file.";
 	fclose(f);
 	return new_file;
 }

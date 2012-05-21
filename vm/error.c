@@ -4,6 +4,7 @@ V lastCall = NULL;
 
 void init_errors(void)
 {
+	error_msg = NULL;
 	error_names[0] = get_ident("nothing");
 	error_names[1] = get_ident("exit");
 	error_names[2] = get_ident("name-error");
@@ -58,7 +59,10 @@ Error ident_to_error(V e)
 
 void handle_error(Error e, Stack *scope_arr)
 {
-	puts(error_name(e));
+	if (error_msg)
+		puts(error_msg);
+	else
+		puts(error_name(e));
 	if (lastCall)
 	{
 		String *s = toString(lastCall);
