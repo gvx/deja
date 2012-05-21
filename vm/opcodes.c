@@ -221,6 +221,11 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				clear_ref(container);
 				return TypeError;
 			}
+			if (stack_size(toStack(container)) < 1)
+			{
+				clear_ref(container);
+				return ValueError;
+			}
 			v = pop(toStack(container));
 			pushS(v);
 			clear_ref(container);

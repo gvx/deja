@@ -793,6 +793,11 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(list);
 		return TypeError;
 	}
+	if (stack_size(toStack(list)) < 1)
+	{
+		clear_ref(list);
+		return ValueError;
+	}
 	V val = pop(toStack(list));
 	pushS(val);
 	clear_ref(list);
