@@ -35,9 +35,13 @@ V find_file(V module_name)
 		{
 			break;
 		}
-		int length = strlen(search_path[i]) + l;
+		int length = strlen(search_path[i]) + l + 3; // ".vu"
 		char *fname = malloc(length + 1);
 		strncat(strcpy(fname, search_path[i]), mod_name, l + 1);
+		if (!exists(fname))
+		{
+			strcat(fname, ".vu");
+		}
 		if (exists(fname))
 		{
 			set_hashmap(loaded, module_name, int_to_value(1));
