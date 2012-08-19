@@ -1,5 +1,7 @@
 #include "lib.h"
 
+void print_list_value(Node*, int);
+
 void print_value(V v, int depth)
 {
 	String* s;
@@ -31,14 +33,7 @@ void print_value(V v, int depth)
 			if (depth < 4)
 			{
 				fputs("[ ", stdout);
-				Stack *st = toStack(v);
-				Node *n = st->head;
-				while (n)
-				{
-					print_value(n->data, depth + 1);
-					fputs(" ", stdout);
-					n = n->next;
-			}
+				print_list_value(toStack(v)->head, depth);
 				fputs("]", stdout);
 			}
 			else
@@ -88,6 +83,15 @@ void print_value(V v, int depth)
 			printf("<func:%p>", toFunc(v));
 			break;
 	};
+}
+
+void print_list_value(Node *n, int depth)
+{
+	if (!n)
+		return;
+	print_list_value(n->next, depth);
+	print_value(n->data, depth + 1);
+	fputs(" ", stdout);
 }
 
 Error get(Header* h, Stack* S, Stack* scope_arr)
