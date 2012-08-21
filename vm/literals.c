@@ -1,6 +1,7 @@
 #include "literals.h"
 #include "gc.h"
 #include "types.h"
+#include "idents.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -62,14 +63,23 @@ void read_literals(FILE* f, Header* h)
 			d = ntohll(d);
 			t = double_to_value(*(double*)&d);
 		}
-		else //if (type == TYPE_STR || type == TYPE_IDENT)
+		else if (type == TYPE_STR)
 		{
 			fread(&str_length, sizeof(str_length), 1, f);
 			str_length = ntohl(str_length);
 			char data[str_length];
 			fread(data, str_length, 1, f);
 			t = str_to_value(str_length, data);
-			t->type = type == TYPE_STR ? T_STR : T_IDENT;
+			t->type = T_STR;
+		}
+		else // if (type == TYPE_IDENT)
+		{
+			fread(&str_length, sizeof(str_length), 1, f);
+			str_length = ntohl(str_length);
+			char data[str_length + 1];
+			fread(data, str_length, 1, f);
+			data[str_length] = '\0';
+			t = lookup_ident(str_length, data);
 		}
 		arr[i] = t;
 	}
@@ -80,5 +90,9 @@ void read_literals(FILE* f, Header* h)
 
 V get_literal(Header* h, uint32_t index)
 {
+	if (index >= h->n_literals)
+	{
+		return NULL;
+	}
 	return h->literals[index];
 }

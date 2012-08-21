@@ -1792,6 +1792,12 @@ Error atan_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error print_ident_count(Header *h, Stack *S, Stack *scope_arr)
+{
+	printf("(idents:%d)\n", ident_count());
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1894,6 +1900,7 @@ static CFunc stdlib[] = {
 	{"asin", asin_},
 	{"acos", acos_},
 	{"atan", atan_},
+	{"(ident-count)", print_ident_count},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},

@@ -3,6 +3,7 @@
 #include "gc.h"
 #include "stack.h"
 #include "hashmap.h"
+#include "idents.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -78,13 +79,7 @@ V empty_str_to_value(int max, char **adr)
 
 V get_ident(const char* name)
 {
-	size_t l = strlen(name);
-	V t = make_new_value(T_IDENT, true, sizeof(String) + l + 1);
-	String *s = &((StrValue*)t)->s;
-	s->length = l;
-	memcpy((char*)t + sizeof(StrValue), name, l + 1);
-	s->hash = string_hash(l, name);
-	return t;
+	return lookup_ident(strlen(name), name);
 }
 
 V new_list(void)
@@ -142,7 +137,7 @@ bool equal(V v1, V v2)
 		{
 			return toNumber(v1) == toNumber(v2);
 		}
-		else if (getType(v1) == T_IDENT || getType(v1) == T_STR)
+		else if (getType(v1) == T_STR)
 		{
 			String* s1 = toString(v1);
 			String* s2 = toString(v2);
