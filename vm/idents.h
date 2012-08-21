@@ -12,5 +12,6 @@ typedef struct TreeNode {
 
 V lookup_ident(size_t, const char*);
 int ident_count();
+int ident_depth();
 
 #endif

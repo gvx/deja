@@ -62,3 +62,19 @@ int ident_count()
 {
 	return count_idents_at(ident_store);
 }
+
+int ident_depth_at(ITreeNode *loc)
+{
+	if (!loc)
+	{
+		return 0;
+	}
+	int ldepth = ident_depth_at(loc->left);
+	int rdepth = ident_depth_at(loc->right);
+	return 1 + (ldepth > rdepth ? ldepth : rdepth);
+}
+
+int ident_depth()
+{
+	return ident_depth_at(ident_store);
+}

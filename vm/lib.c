@@ -1798,6 +1798,12 @@ Error print_ident_count(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error print_ident_depth(Header *h, Stack *S, Stack *scope_arr)
+{
+	printf("(ident-depth:%d)\n", ident_depth());
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1901,6 +1907,7 @@ static CFunc stdlib[] = {
 	{"acos", acos_},
 	{"atan", atan_},
 	{"(ident-count)", print_ident_count},
+	{"(ident-depth)", print_ident_depth},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
