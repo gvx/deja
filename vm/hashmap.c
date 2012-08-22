@@ -34,7 +34,7 @@ void hashmap_from_scope(V v_scope, int initialsize)
 uint32_t get_hash(V v)
 {
 	int t = getType(v);
-	if (t == T_STR || t == T_IDENT)
+	if (t == T_STR)
 	{
 		return toString(v)->hash;
 	}
