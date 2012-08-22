@@ -44,16 +44,13 @@ V error_to_ident(Error e)
 Error ident_to_error(V e)
 {
 	int i;
-	String *s = toString(e);
 	for (i = 0; i < UnknownError; i++)
 	{
-		if (toString(error_names[i])->length == s->length && !memcmp(getChars(error_names[i]), toCharArr(s), s->length))
+		if (error_names[i] == e)
 		{
-			clear_ref(e);
 			return i;
 		}
 	}
-	clear_ref(e);
 	return UnknownError;
 }
 
