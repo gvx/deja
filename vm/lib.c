@@ -385,14 +385,12 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 {
 	V v = new_list();
 	V p;
-	String *s;
 	while (stack_size(S) > 0)
 	{
 		p = popS();
 		if (getType(p) == T_IDENT)
 		{
-			s = toString(p);
-			if (s->length == 1 && toCharArr(s)[0] == ']')
+			if (p == get_ident("]"))
 			{
 				clear_ref(p);
 				pushS(v);
@@ -409,14 +407,12 @@ Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
 	V v = new_dict();
 	V key;
 	V val;
-	String *s;
 	while (stack_size(S) > 0)
 	{
 		key = popS();
 		if (getType(key) == T_IDENT)
 		{
-			s = toString(key);
-			if (s->length == 1 && toCharArr(s)[0] == '}')
+			if (p == get_ident("}"))
 			{
 				clear_ref(key);
 				pushS(v);
@@ -1033,7 +1029,6 @@ Error len(Header* h, Stack* S, Stack* scope_arr)
 	switch (getType(v))
 	{
 		case T_STR:
-		case T_IDENT:
 			pushS(int_to_value(toString(v)->length));
 			break;
 		case T_STACK:
