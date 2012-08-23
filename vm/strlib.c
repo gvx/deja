@@ -55,14 +55,14 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(v1);
 		return Nothing;
 	}
-	else if (getType(v1) == T_IDENT && toString(v1)->length == 1 && getChars(v1)[0] == '(')
+	else if (getType(v1) == T_IDENT && v1 == get_ident("("))
 	{
 		int newlength = 0;
 		Node *n = S->head;
 		while (n != NULL)
 		{
 			int t = getType(n->data);
-			if (t == T_IDENT && toString(n->data)->length == 1 && getChars(n->data)[0] == ')')
+			if (t == T_IDENT && n->data == get_ident(")"))
 			{
 				break;
 			}
@@ -81,7 +81,7 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 		n = S->head;
 		while (n != NULL)
 		{
-			if (getType(n->data) == T_IDENT && toString(n->data)->length == 1 && getChars(n->data)[0] == ')')
+			if (getType(n->data) == T_IDENT && n->data == get_ident(")"))
 			{
 				break;
 			}

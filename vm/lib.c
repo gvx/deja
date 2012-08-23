@@ -412,7 +412,7 @@ Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
 		key = popS();
 		if (getType(key) == T_IDENT)
 		{
-			if (p == get_ident("}"))
+			if (key == get_ident("}"))
 			{
 				clear_ref(key);
 				pushS(v);
