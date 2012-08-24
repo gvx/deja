@@ -24,7 +24,7 @@ class LineContext(Context):
 		self.linenr = linenr
 
 	def indent(self):
-		self.text = self.text.lstrip('\t')
+		self.text = self.text.replace('    ', '\t').lstrip('\t')
 		self.indent = len(self.origtext) - len(self.text)
 		return self
 
