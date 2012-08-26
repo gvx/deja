@@ -10,13 +10,9 @@ static ITreeNode *ident_store = NULL;
 
 ITreeNode *create_ident(size_t length, const char *data)
 {
-	V t = make_new_value(T_IDENT, true, sizeof(String) + length + 1);
-	String *s = &((StrValue*)t)->s;
-	s->length = length;
-	memcpy((char*)t + sizeof(StrValue), data, length + 1);
-	s->hash = string_hash(length, data);
-	ITreeNode *new = malloc(sizeof(ITreeNode));
-	new->ident = t;
+	ITreeNode *new = malloc(sizeof(ITreeNode) + length);
+	new->length = length;
+	memcpy(new->data, data, length + 1);
 	new->left = NULL;
 	new->right = NULL;
 	return new;
@@ -27,12 +23,12 @@ V lookup_ident_at(ITreeNode **loc, size_t length, const char *data)
 	if (!*loc)
 	{
 		*loc = create_ident(length, data);
-		return (*loc)->ident;
+		return (V)(*loc);
 	}
-	int cmp = memcmp(data, getChars((*loc)->ident), length);
+	int cmp = memcmp(data, toIdent((V)(*loc))->data, length);
 	if (cmp == 0)
 	{
-		return (*loc)->ident;
+		return (V)(*loc);
 	}
 	else if (cmp < 0)
 	{

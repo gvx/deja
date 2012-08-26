@@ -5,11 +5,12 @@ void print_list_value(Node*, int);
 void print_value(V v, int depth)
 {
 	String* s;
+	ITreeNode* i;
 	switch (getType(v))
 	{
 		case T_IDENT:
-			s = toIdent(v);
-			printf(":%*s", s->length, toIdentCharArr(s));
+			i = toIdent(v);
+			printf(":%*s", i->length, i->data);
 			break;
 		case T_STR:
 			s = toString(v);

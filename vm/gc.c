@@ -32,7 +32,7 @@ V make_new_value(int type, bool simple, int size)
 
 V add_ref(V t)
 {
-	if isInt(t)
+	if (isInt(t) || t->type == T_IDENT)
 		return t;
 
 	t->refs++;
@@ -45,7 +45,7 @@ V add_ref(V t)
 
 V add_base_ref(V t)
 {
-	if isInt(t)
+	if (isInt(t) || t->type == T_IDENT)
 		return t;
 
 	t->baserefs++;
@@ -55,7 +55,7 @@ V add_base_ref(V t)
 
 V add_rooted(V t)
 {
-	if isInt(t)
+	if (isInt(t) || t->type == T_IDENT)
 		return t;
 
 	t->baserefs++;
@@ -145,7 +145,7 @@ void free_value(V t)
 
 void iter_children(V t, void (*iter)(V))
 {
-	if (isInt(t))
+	if (isInt(t) || t->type == T_IDENT)
 		return;
 
 	Stack* s;
@@ -261,7 +261,7 @@ void mark_gray(V);
 
 void mark_gray_child(V child)
 {
-	if (isInt(child))
+	if (isInt(child) || child->type == T_IDENT)
 		return;
 
 	if (child != NULL)
@@ -307,7 +307,7 @@ void scan_black(V);
 
 void scan_black_child(V child)
 {
-	if (isInt(child))
+	if (isInt(child) || child->type == T_IDENT)
 		return;
 
 	if (child != NULL)
@@ -329,7 +329,7 @@ void scan_black(V t)
 
 void scan(V t)
 {
-	if (isInt(t))
+	if (isInt(t) || t->type == T_IDENT)
 		return;
 
 	if (t->color == Gray)
@@ -360,7 +360,7 @@ void scan_roots(void)
 
 void collect_white(V t)
 {
-	if (isInt(t))
+	if (isInt(t) || t->type == T_IDENT)
 		return;
 
 	if (t->color == White && !t->buffered)
@@ -397,50 +397,40 @@ void collect_cycles(void)
 
 void clear_ref(V t)
 {
-	if (isInt(t))
+	if (t == NULL || isInt(t) || t->type == T_IDENT)
 		return;
 
-	if (t != NULL)
+	if (--t->refs == 0)
 	{
-		if (--t->refs == 0)
-		{
-			release_value(t);
-		}
-		else if (t->color != Green && t->baserefs == 0)
-		{
-			possible_root(t);
-		}
+		release_value(t);
+	}
+	else if (t->color != Green && t->baserefs == 0)
+	{
+		possible_root(t);
 	}
 }
 
 void clear_base_ref(V t)
 {
-	if (isInt(t))
+	if (t == NULL || isInt(t) || t->type == T_IDENT)
 		return;
 
-	if (t != NULL)
-	{
-		t->baserefs--;
-
-		clear_ref(t);
-	}
+	t->baserefs--;
+	clear_ref(t);
 }
 
 
 V clear_rooted(V t)
 {
-	if (isInt(t))
+	if (t == NULL || isInt(t) || t->type == T_IDENT)
 		return t;
 
-	if (t != NULL)
-	{
-		t->baserefs--;
+	t->baserefs--;
 
-		return t;
-	}
+	return t;
 }
 
 bool is_simple(V t)
 {
-	return t == NULL || isInt(t) || t->color == Green;
+	return t == NULL || isInt(t) || t->type == T_IDENT || t->color == Green;
 }

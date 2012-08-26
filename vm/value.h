@@ -14,9 +14,8 @@
 #define toFunc(x) ((Func*)(x + 1))
 #define toStack(x) ((Stack*)(x + 1))
 #define toString(x) ((String*)(x + 1))
-#define toIdent(x) toString(x)
+#define toIdent(x) ((ITreeNode*)(x))
 #define toCharArr(x) ((char*)(x + 1))
-#define toIdentCharArr(x) toCharArr(x)
 #define getChars(x) (toCharArr(toString(x)))
 #define toDouble(x) (*(double*)(x + 1))
 #define toNumber(x) (isInt(x) ? (double)toInt(x) : toDouble(x))
@@ -65,12 +64,13 @@ typedef struct
 	String s;
 } StrValue;
 
-typedef struct
-{
+typedef struct TreeNode {
 	uint8_t type;
 	uint32_t length;
-	char data[];
-} Ident;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	char data[1]; // That length is a white lie.
+} ITreeNode;
 
 uint32_t string_hash(int, const char*);
 

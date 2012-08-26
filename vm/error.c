@@ -62,8 +62,8 @@ void handle_error(Error e, Stack *scope_arr)
 		puts(error_name(e));
 	if (lastCall)
 	{
-		String *s = toIdent(lastCall);
-		printf("In %*s:\n", s->length, toIdentCharArr(s));
+		ITreeNode *s = toIdent(lastCall);
+		printf("In %*s:\n", s->length, s->data);
 	}
 	if (scope_arr == NULL)
 	{

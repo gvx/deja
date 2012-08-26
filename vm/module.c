@@ -26,8 +26,9 @@ V find_file(V module_name)
 	{
 		return a;
 	}
-	int l = toIdent(module_name)->length;
-	char *mod_name = toIdentCharArr(toIdent(module_name));
+	ITreeNode *id = toIdent(module_name);
+	int l = id->length;
+	char *mod_name = id->data;
 	int i;
 	for (i = 0; i < SEARCH_PATH_SIZE; i++)
 	{
