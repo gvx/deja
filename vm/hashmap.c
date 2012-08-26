@@ -48,7 +48,12 @@ uint32_t get_hash(V v)
 	}
 	else
 	{
-		return (unsigned long)v;
+		return (unsigned long)v >> 3;
+		/* This discards 3 bits.
+		 * On 64-bit platforms, that's perfect.
+		 * On 32-bit platforms, we lose 1 bit of entropy.
+		 * If you have a better solution, please share.
+		 */
 	}
 }
 
