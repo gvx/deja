@@ -14,7 +14,9 @@
 #define toFunc(x) ((Func*)(x + 1))
 #define toStack(x) ((Stack*)(x + 1))
 #define toString(x) ((String*)(x + 1))
+#define toIdent(x) toString(x)
 #define toCharArr(x) ((char*)(x + 1))
+#define toIdentCharArr(x) toCharArr(x)
 #define getChars(x) (toCharArr(toString(x)))
 #define toDouble(x) (*(double*)(x + 1))
 #define toNumber(x) (isInt(x) ? (double)toInt(x) : toDouble(x))
@@ -62,6 +64,13 @@ typedef struct
 	Value v;
 	String s;
 } StrValue;
+
+typedef struct
+{
+	uint8_t type;
+	uint32_t length;
+	char data[];
+} Ident;
 
 uint32_t string_hash(int, const char*);
 

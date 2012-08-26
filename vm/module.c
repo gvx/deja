@@ -26,8 +26,8 @@ V find_file(V module_name)
 	{
 		return a;
 	}
-	char *mod_name = getChars(module_name);
-	int l = toString(module_name)->length;
+	int l = toIdent(module_name)->length;
+	char *mod_name = toIdentCharArr(toIdent(module_name));
 	int i;
 	for (i = 0; i < SEARCH_PATH_SIZE; i++)
 	{

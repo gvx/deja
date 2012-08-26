@@ -8,8 +8,8 @@ void print_value(V v, int depth)
 	switch (getType(v))
 	{
 		case T_IDENT:
-			s = toString(v);
-			printf(":%*s", s->length, toCharArr(s));
+			s = toIdent(v);
+			printf(":%*s", s->length, toIdentCharArr(s));
 			break;
 		case T_STR:
 			s = toString(v);
