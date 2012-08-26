@@ -1141,6 +1141,23 @@ Error set_to(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error delete_from(Header* h, Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V container = popS();
+	V key = popS();
+	if (getType(container) != T_DICT)
+	{
+		clear_ref(key);
+		clear_ref(container);
+		return TypeError;
+	}
+	delete_hashmap(toHashMap(container), key);
+	clear_ref(key);
+	clear_ref(container);
+	return Nothing;
+}
+
 Error rep(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
@@ -1869,6 +1886,7 @@ static CFunc stdlib[] = {
 	{"has", has},
 	{"get-from", get_from},
 	{"set-to", set_to},
+	{"delete-from", delete_from},
 	{"rep", rep},
 	{"export", export},
 	{"to-num", to_num},

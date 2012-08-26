@@ -190,7 +190,6 @@ bool delete_hashmap(HashMap *hm, V key)
 {
 	if (hm->map == NULL)
 	{
-		clear_ref(key);
 		return false;
 	}
 	Bucket **bprev = &hm->map[get_hash(key) % hm->size];
@@ -200,12 +199,11 @@ bool delete_hashmap(HashMap *hm, V key)
 		if (equal(key, b->key))
 		{
 			*bprev = b->next;
-			clear_ref(key);
 			clear_ref(b->key);
 			clear_ref(b->value);
 			free(b);
 			hm->used--;
-			if (hm->used < hm->size / 2)
+			if ((hm->used < hm->size / 2) && (hm->size > 16))
 			{
 				resize_hashmap(hm, hm->size / 2);
 			}
@@ -214,6 +212,5 @@ bool delete_hashmap(HashMap *hm, V key)
 		bprev = &(*bprev)->next;
 		b = b->next;
 	}
-	clear_ref(key);
 	return false;
 }
