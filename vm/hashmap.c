@@ -163,7 +163,7 @@ bool change_hashmap(HashMap* hm, V key, V value)
 	}
 }
 
-void resize_hashmap(HashMap* hm, size_t newsize)
+void resize_hashmap(HashMap* hm, int newsize)
 {
 	Bucket** bl = calloc(newsize, sizeof(Bucket*));
 	int i;
