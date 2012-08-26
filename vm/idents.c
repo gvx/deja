@@ -11,6 +11,7 @@ static ITreeNode *ident_store = NULL;
 ITreeNode *create_ident(size_t length, const char *data)
 {
 	ITreeNode *new = malloc(sizeof(ITreeNode) + length);
+	new->type = T_IDENT;
 	new->length = length;
 	memcpy(new->data, data, length + 1);
 	new->left = NULL;
