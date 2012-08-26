@@ -1178,69 +1178,6 @@ Error rep(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error export(Header* h, Stack* S, Stack* scope_arr)
-{
-	require(2);
-	V modname = popS();
-	if (getType(modname) != T_IDENT)
-	{
-		clear_ref(modname);
-		return TypeError;
-	}
-	int modlength = toString(modname)->length;
-	V functions = popS();
-	if (getType(functions) != T_STACK)
-	{
-		clear_ref(modname);
-		clear_ref(functions);
-		return TypeError;
-	}
-	Stack *fs = toStack(functions);
-	while (stack_size(fs))
-	{
-		V name = pop(fs);
-		if (getType(fs->head->data) != T_IDENT)
-		{
-			clear_ref(modname);
-			clear_ref(functions);
-			clear_ref(name);
-			return TypeError;
-		}
-		pushS(name);
-		Error e = get(h, S, scope_arr);
-		if (e != Nothing)
-		{
-			clear_ref(modname);
-			clear_ref(functions);
-			clear_ref(name);
-			return e;
-		}
-		require(1);
-		char *start = NULL;
-		int strln = modlength + 1 + toString(name)->length;
-		V globalname = empty_str_to_value(strln, &start);
-		char *buffer = start;
-		memcpy(buffer, getChars(modname), modlength);
-		buffer += modlength;
-		*buffer = '.';
-		buffer++;
-		memcpy(buffer, getChars(name), toString(name)->length);
-		toString(globalname)->hash = string_hash(strln, start);
-		globalname->type = T_IDENT;
-		pushS(globalname);
-		e = setglobal(h, S, scope_arr);
-		clear_ref(name);
-		clear_ref(globalname);
-		if (e != Nothing)
-		{
-			return e;
-		}
-	}
-	clear_ref(modname);
-	clear_ref(functions);
-	return Nothing;
-}
-
 Error print_var(Header *h, Stack *S, Stack *scope_arr)
 {
 	while (true)
@@ -1838,7 +1775,6 @@ static CFunc stdlib[] = {
 	{"set-to", set_to},
 	{"delete-from", delete_from},
 	{"rep", rep},
-	{"export", export},
 	{"to-num", to_num},
 	{"to-str", to_str},
 	{"pass", pass},
