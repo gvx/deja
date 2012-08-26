@@ -24,8 +24,9 @@ typedef struct HashMap
 HashMap* new_hashmap(int);
 void hashmap_from_scope(V, int);
 V get_hashmap(HashMap*, V);
+bool delete_hashmap(HashMap*, V);
 void set_hashmap(HashMap*, V, V);
 bool change_hashmap(HashMap*, V, V);
-void grow_hashmap(HashMap*);
+void resize_hashmap(HashMap*, size_t);
 
 #endif

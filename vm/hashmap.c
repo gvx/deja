@@ -122,7 +122,7 @@ void set_hashmap(HashMap* hm, V key, V value)
 	}
 	if (hm->used > hm->size)
 	{
-		grow_hashmap(hm);
+		resize_hashmap(hm, hm->size * 2);
 	}
 }
 
@@ -163,9 +163,9 @@ bool change_hashmap(HashMap* hm, V key, V value)
 	}
 }
 
-void grow_hashmap(HashMap* hm)
+void resize_hashmap(HashMap* hm, size_t newsize)
 {
-	Bucket** bl = calloc(hm->size * 2, sizeof(Bucket*));
+	Bucket** bl = calloc(newsize, sizeof(Bucket*));
 	int i;
 	int h;
 	Bucket* bb;
@@ -174,7 +174,7 @@ void grow_hashmap(HashMap* hm)
 		Bucket *b = hm->map[i];
 		while (b)
 		{
-			h = get_hash(b->key) % (hm->size * 2);
+			h = get_hash(b->key) % newsize;
 			bb = b->next;
 			b->next = bl[h];
 			bl[h] = b;
@@ -183,5 +183,37 @@ void grow_hashmap(HashMap* hm)
 	}
 	free(hm->map);
 	hm->map = bl;
-	hm->size *= 2;
+	hm->size = newsize;
+}
+
+bool delete_hashmap(HashMap *hm, V key)
+{
+	if (hm->map == NULL)
+	{
+		clear_ref(key);
+		return false;
+	}
+	Bucket **bprev = &hm->map[get_hash(key) % hm->size];
+	Bucket *b = *bprev;
+	while (b != NULL)
+	{
+		if (equal(key, b->key))
+		{
+			*bprev = b->next;
+			clear_ref(key);
+			clear_ref(b->key);
+			clear_ref(b->value);
+			free(b);
+			hm->used--;
+			if (hm->used < hm->size / 2)
+			{
+				resize_hashmap(hm, hm->size / 2);
+			}
+			return true;
+		}
+		bprev = &(*bprev)->next;
+		b = b->next;
+	}
+	clear_ref(key);
+	return false;
 }
