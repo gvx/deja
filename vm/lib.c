@@ -1475,54 +1475,6 @@ Error produce_set(Header *h, Stack *S, Stack *scope_arr)
 	return StackEmpty;
 }
 
-Error in_set(Header *h, Stack *S, Stack *scope_arr)
-{
-	require(2);
-	V set = popS();
-	if (getType(set) != T_DICT)
-	{
-		clear_ref(set);
-		return TypeError;
-	}
-	V item = popS();
-	pushS(add_ref(get_hashmap(toHashMap(set), item) == v_true ? v_true : v_false));
-	clear_ref(set);
-	clear_ref(item);
-	return Nothing;
-}
-
-Error add_set(Header *h, Stack *S, Stack *scope_arr)
-{
-	require(2);
-	V set = popS();
-	if (getType(set) != T_DICT)
-	{
-		clear_ref(set);
-		return TypeError;
-	}
-	V item = popS();
-	set_hashmap(toHashMap(set), item, v_true);
-	clear_ref(set);
-	clear_ref(item);
-	return Nothing;
-}
-
-Error remove_set(Header *h, Stack *S, Stack *scope_arr)
-{
-	require(2);
-	V set = popS();
-	if (getType(set) != T_DICT)
-	{
-		clear_ref(set);
-		return TypeError;
-	}
-	V item = popS();
-	set_hashmap(toHashMap(set), item, v_false);
-	clear_ref(set);
-	clear_ref(item);
-	return Nothing;
-}
-
 Error plus_one(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -1900,9 +1852,6 @@ static CFunc stdlib[] = {
 	{"ceil", ceil_},
 	{"round", round_},
 	{"set{", produce_set},
-	{"in-set?", in_set},
-	{"add-set", add_set},
-	{"remove-set", remove_set},
 	{"++", plus_one},
 	{"--", minus_one},
 	{"undef", undef},
