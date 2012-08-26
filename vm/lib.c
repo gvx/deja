@@ -1247,7 +1247,7 @@ Error print_var(Header *h, Stack *S, Stack *scope_arr)
 	{
 		require(1);
 		V head = get_head(S);
-		if (getType(head) == T_IDENT && toString(head)->length == 1 && getChars(head)[0] == ')')
+		if (getType(head) == T_IDENT && head == get_ident(")"))
 		{
 			clear_ref(popS());
 			return Nothing;
@@ -1456,14 +1456,12 @@ Error produce_set(Header *h, Stack *S, Stack *scope_arr)
 {
 	V v = new_dict();
 	V val;
-	String *s;
 	while (stack_size(S) > 0)
 	{
 		val = popS();
 		if (getType(val) == T_IDENT)
 		{
-			s = toString(val);
-			if (s->length == 1 && toCharArr(s)[0] == '}')
+			if (val == get_ident("}"))
 			{
 				clear_ref(val);
 				pushS(v);
@@ -1639,7 +1637,7 @@ Error print_f_var(Header *h, Stack *S, Stack *scope_arr)
 	{
 		require(1);
 		V head = get_head(S);
-		if (getType(head) == T_IDENT && toString(head)->length == 1 && getChars(head)[0] == ')')
+		if (getType(head) == T_IDENT && head == get_ident(")"))
 		{
 			clear_ref(popS());
 			return Nothing;

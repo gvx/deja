@@ -114,7 +114,6 @@ bool truthy(V t)
 		case T_NUM:
 			return toNumber(t) != 0.0;
 		case T_STR:
-		case T_IDENT:
 			return toString(t)->length > 0;
 		case T_STACK:
 			return toStack(t)->size > 0;
