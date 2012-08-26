@@ -25,7 +25,11 @@ V lookup_ident_at(ITreeNode **loc, size_t length, const char *data)
 		*loc = create_ident(length, data);
 		return (V)(*loc);
 	}
-	int cmp = memcmp(data, toIdent((V)(*loc))->data, length);
+	int cmp = memcmp(data, (*loc)->data, length <= (*loc)->length ? length : (*loc)->length);
+	if (!cmp)
+	{ // to prevent :he to compare equal to :hello
+		cmp = length - (*loc)->length;
+	}
 	if (cmp == 0)
 	{
 		return (V)(*loc);
