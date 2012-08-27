@@ -45,6 +45,13 @@ void run(V file_name)
 			{ //Let error be handled by code
 				pushS(add_ref(error_to_ident(e)));
 				e = Nothing;
+
+				//The rest of the call stack is discarded.
+				//This needs to be changed if we let modules deal with tracebacks.
+				while (stack_size(save_scopes) > 0)
+				{
+					clear_ref(pop(save_scopes));
+				}
 			}
 			else
 			{ //Error slips away, uncaught
@@ -53,6 +60,7 @@ void run(V file_name)
 					push(scope, pop(save_scopes));
 				}
 			}
+			free(save_scopes);
 		}
 	}
 	if (e != Exit) //uh oh
