@@ -47,8 +47,9 @@ V find_file(V module_name)
 		{
 			set_hashmap(loaded, module_name, int_to_value(1));
 			clear_ref(module_name);
-			return str_to_value(length, fname);
-			break;
+			V s = str_to_value(length, fname);
+			free(fname);
+			return s;
 		}
 		free(fname);
 	}
