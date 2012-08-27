@@ -378,6 +378,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			set_hashmap(toHashMap(container), key, v);
+			clear_ref(key);
 			clear_ref(v);
 			clear_ref(container);
 			break;
