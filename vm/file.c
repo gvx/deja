@@ -29,5 +29,6 @@ V load_file(V file_name, V global)
 	else
 		error_msg = "Not a valid Déjà Vu bytecode file.";
 	fclose(f);
+	clear_ref(file_name);
 	return new_file;
 }
