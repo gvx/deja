@@ -634,15 +634,10 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	V v1;
 	V v2;
 	V v = popS();
-	if (getType(v) == T_STACK)
+	if (getType(v) == T_PAIR)
 	{
-		if (stack_size(toStack(v)) < 2)
-		{
-			clear_ref(v);
-			return StackEmpty;
-		}
-		v1 = pop(toStack(v));
-		v2 = pop(toStack(v));
+		v1 = add_ref(toFirst(v));
+		v2 = add_ref(toSecond(v));
 		clear_ref(v);
 	}
 	else
@@ -662,10 +657,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 		else
 		{
 			pushS(v1);
-			V list = new_list();
-			push(toStack(list), v2);
-			push(toStack(list), double_to_value(toNumber(v1) + 1.0));
-			pushS(list);
+			pushS(new_pair(double_to_value(toNumber(v1) + 1.0), v2));
 			/* METHOD 1: look up
 			   more computation
 			   fails if the global "range" is overwritten
