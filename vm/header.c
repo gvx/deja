@@ -2,7 +2,7 @@
 
 Header read_header(FILE *f)
 {
-	Header header;
+	Header header = {0};
 	fread(&header, 8, 1, f);
 	header.size = ntohl(header.size);
 	return header;
