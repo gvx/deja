@@ -48,10 +48,12 @@ uint32_t get_hash(V v)
 	}
 	else
 	{
-		return (unsigned long)v >> 3;
-		/* This discards 3 bits.
-		 * On 64-bit platforms, that's perfect.
-		 * On 32-bit platforms, we lose 1 bit of entropy.
+		return (unsigned long)v >> 4;
+		/* This discards 4 bits.
+		 * The reason is that allocated addresses are usually
+		 * aligned to some extent.
+		 * It might get rid of some entropy, though the original
+		 * amount was probably low enough already.
 		 * If you have a better solution, please share.
 		 */
 	}
