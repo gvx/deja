@@ -1,6 +1,8 @@
 all: vu
+all: std.vu
 debug: vu-dbg
 debug: CC += -ggdb
+debug: std.vu
 
 clean:
 	rm *.o
@@ -13,3 +15,6 @@ vu vu-dbg: $(OFILES)
 
 %.o: %.c %.h
 	$(CC) -c -o $@ $< $(CFLAGS)
+
+std.vu: std.dva
+	python ../dvasm.py < $^ > $@

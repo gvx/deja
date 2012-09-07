@@ -1,0 +1,41 @@
+labda $endfor
+$startloop
+dup
+jmpz $endloop
+push_word 2
+jmp $startloop
+$endloop
+drop
+return
+$endfor
+set_global 3
+labda $endwhile
+set_local 0
+set_local 1
+$startloop2
+push_word 0
+jmpz $endloop2
+push_word 1
+jmp $startloop2
+$endloop2
+return
+$endwhile
+set_global 4
+labda $endcompose
+set_local 0
+set_local 1
+labda $endcomposed
+push_word 1
+push_word 0
+$endcomposed
+return
+$endcompose
+set_global 5
+return
+...
+ia
+ib
+icall
+ifor:
+iwhile
+i$
