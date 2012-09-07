@@ -27,6 +27,12 @@ void run(V file_name)
 	Stack *scope = new_stack();
 	Scope *sc;
 	push(scope, new_file_scope(file));
+	//loading the dva part of the standard library
+	V stdlib = find_file(get_ident("std"));
+	if (getType(stdlib) == T_STR)
+	{
+		push(scope, new_file_scope(load_file(stdlib, global)));
+	}
 	while (e == Nothing)
 	{
 		sc = toScope(get_head(scope));
