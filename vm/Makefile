@@ -18,3 +18,6 @@ vu vu-dbg: $(OFILES)
 
 std.vu: std.dva
 	python ../dvasm.py < $^ > $@
+
+std.c: std.vu
+	python ../genstdc.py

@@ -11,6 +11,7 @@
 #include "scope.h"
 #include "lib.h"
 #include "module.h"
+#include "std.h"
 
 void run(V file_name)
 {
@@ -28,11 +29,7 @@ void run(V file_name)
 	Scope *sc;
 	push(scope, new_file_scope(file));
 	//loading the dva part of the standard library
-	V stdlib = find_file(get_ident("std"));
-	if (getType(stdlib) == T_STR)
-	{
-		push(scope, new_file_scope(load_file(stdlib, global)));
-	}
+	push(scope, new_file_scope(load_std(global)));
 	while (e == Nothing)
 	{
 		sc = toScope(get_head(scope));
