@@ -1,9 +1,10 @@
 #include "header.h"
 
-Header read_header(FILE *f)
+Header read_header(char *data, size_t size)
 {
 	Header header = {0};
-	fread(&header, 8, 1, f);
+	if (size < sizeof header) return header;
+	memcpy(&header, data, sizeof header);
 	header.size = ntohl(header.size);
 	return header;
 }

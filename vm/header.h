@@ -21,7 +21,7 @@ typedef struct
 	uint32_t n_literals;
 } Header;
 
-Header read_header(FILE*);
+Header read_header(char*, size_t);
 bool header_correct(Header*);
 
 #endif

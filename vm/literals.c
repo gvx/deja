@@ -22,70 +22,72 @@ uint64_t ntohll(uint64_t i)
 }
 #endif
 
-void read_literals(FILE* f, Header* h)
+#define eofreached ((8 + curpos - oldpos) >= size)
+
+void read_literals(char *oldpos, size_t size, Header* h)
 {
-	long oldpos = ftell(f);
-	long startpos;
 	int i;
 	int n = 0;
 	char type;
 	uint32_t str_length;
-	fseek(f, h->size * 4, SEEK_CUR);
-	startpos = ftell(f);
-	while (!feof(f))
+	char *startpos = oldpos + h->size * 4;
+	char *curpos = startpos;
+	while (!eofreached)
 	{
-		fread(&type, sizeof(type), 1, f);
-		if (feof(f))
+		type = *curpos++;
+		if (eofreached)
 		{
 			break;
 		}
 		n++;
 		if (type == TYPE_NUM)
 		{
-			fseek(f, 8, SEEK_CUR);
+			curpos += 8;
 		}
 		else if (type == TYPE_STR || type == TYPE_IDENT)
 		{
-			fread(&str_length, sizeof(str_length), 1, f);
-			fseek(f, ntohl(str_length), SEEK_CUR);
+			memcpy(&str_length, curpos, 4);
+			curpos += 4 + ntohl(str_length);
 		}
 	}
 	V* arr = calloc(n, sizeof(V));
 	V t;
-	fseek(f, startpos, SEEK_SET);
+	curpos = startpos;
 	for (i = 0; i < n; i++)
 	{
-		fread(&type, sizeof(type), 1, f);
+		type = *curpos++;
 		if (type == TYPE_NUM)
 		{
 			uint64_t d;
-			fread(&d, sizeof(d), 1, f);
+			memcpy(&d, curpos, 8);
+			curpos += 8;
 			d = ntohll(d);
 			t = double_to_value(*(double*)&d);
 		}
 		else if (type == TYPE_STR)
 		{
-			fread(&str_length, sizeof(str_length), 1, f);
+			memcpy(&str_length, curpos, 4);
+			curpos += 4;
 			str_length = ntohl(str_length);
-			char data[str_length];
-			fread(data, str_length, 1, f);
-			t = str_to_value(str_length, data);
+			t = str_to_value(str_length, curpos);
+			curpos += str_length;
 			t->type = T_STR;
 		}
 		else // if (type == TYPE_IDENT)
 		{
-			fread(&str_length, sizeof(str_length), 1, f);
+			memcpy(&str_length, curpos, 4);
+			curpos += 4;
 			str_length = ntohl(str_length);
 			char data[str_length + 1];
-			fread(data, str_length, 1, f);
+			memcpy(&data, curpos, str_length);
 			data[str_length] = '\0';
 			t = lookup_ident(str_length, data);
+			curpos += str_length;
 		}
 		arr[i] = t;
 	}
 	h->n_literals = n;
 	h->literals = arr;
-	fseek(f, oldpos, SEEK_SET);
 }
 
 V get_literal(Header* h, uint32_t index)
