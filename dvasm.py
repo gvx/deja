@@ -57,7 +57,7 @@ def asm(intext):
 		if l not in labels:
 			raise Exception("Label %s used but not defined." % l)
 		for i, loc in label_reqs[l]:
-			acc[loc] |= (labels[l] - i) & 0xFFFFFF
+			acc[loc] |= (labels[l] - i + 1) & 0xFFFFFF
 	for i in range(3, last_code):
 		acc[i] = unsigned_int(acc[i])
 	return acc
