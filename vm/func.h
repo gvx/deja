@@ -11,12 +11,6 @@ typedef struct Func
 	uint32_t *start;
 } Func;
 
-typedef struct
-{
-	Value v;
-	Func f;
-} ValueFunc;
-
 V new_func(V, uint32_t*);
 
 #endif
