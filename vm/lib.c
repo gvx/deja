@@ -1,6 +1,6 @@
 #include "lib.h"
 
-void print_list_value(Node*, int);
+void print_list_value(Stack*, int, int);
 
 void print_value(V v, int depth)
 {
@@ -34,7 +34,7 @@ void print_value(V v, int depth)
 			if (depth < 4)
 			{
 				fputs("[ ", stdout);
-				print_list_value(toStack(v)->head, depth);
+				print_list_value(toStack(v), 0, depth);
 				fputs("]", stdout);
 			}
 			else
@@ -86,12 +86,12 @@ void print_value(V v, int depth)
 	};
 }
 
-void print_list_value(Node *n, int depth)
+void print_list_value(Stack *s, int n, int depth)
 {
-	if (!n)
+	if (n >= s->used)
 		return;
-	print_list_value(n->next, depth);
-	print_value(n->data, depth + 1);
+	print_list_value(s, n + 1, depth);
+	print_value(s->nodes[n], depth + 1);
 	fputs(" ", stdout);
 }
 
@@ -725,14 +725,8 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 
 Error print_stack(Header* h, Stack* S, Stack* scope_arr)
 {
-	Node* n = S->head;
 	fputs("[ ", stdout);
-	while (n != NULL)
-	{
-		print_value(n->data, 0);
-		putchar(' ');
-		n = n->next;
-	}
+	print_list_value(S, 0, 0);
 	puts("]");
 	return Nothing;
 }
@@ -966,19 +960,17 @@ Error drop(Header* h, Stack* S, Stack* scope_arr)
 Error over(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(2);
-	pushS(add_ref(S->head->next->data));
+	pushS(add_ref(S->nodes[S->used - 2]));
 	return Nothing;
 }
 
 Error rotate(Header* h, Stack* S, Stack* scope_arr)
 {
 	require(3);
-	Node *a = S->head;
-	Node *b = a->next;
-	Node *c = b->next;
-	a->next = c->next;
-	c->next = a;
-	S->head = b;
+	V v = S->nodes[S->used-3];
+	S->nodes[S->used-3] = S->nodes[S->used-2];
+	S->nodes[S->used-2] = S->nodes[S->used-1];
+	S->nodes[S->used-1] = v;
 	return Nothing;
 }
 
@@ -1454,12 +1446,8 @@ Error choose(Header* h, Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	int n = stack_size(toStack(v)) - 1;
-	Node *node = toStack(v)->head;
-	for (n = (int)floor(rand() / (RAND_MAX + 1.0) * n); n >= 0; n--)
-	{
-		node = node->next;
-	}
-	pushS(add_ref(node->data));
+	n = (int)floor(rand() / (RAND_MAX + 1.0) * n);
+	pushS(add_ref(toStack(v)->nodes[n]));
 	clear_ref(v);
 	return Nothing;
 }
@@ -1473,11 +1461,11 @@ Error flatten(Header* h, Stack* S, Stack* scope_arr)
 		clear_ref(list);
 		return TypeError;
 	}
-	Node *n = toStack(list)->head;
-	while (n)
+	int n;
+	Stack *s = toStack(list);
+	for (n = 0; n < s->used; n++)
 	{
-		pushS(add_ref(n->data));
-		n = n->next;
+		pushS(add_ref(s->nodes[n]));
 	}
 	return Nothing;
 }

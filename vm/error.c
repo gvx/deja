@@ -69,18 +69,17 @@ void handle_error(Error e, Stack *scope_arr)
 	{
 		return;
 	}
-	Node *n = scope_arr->head;
 	Scope *sc;
 	bool show_next = true;
-	while (n != NULL)
+	int n;
+	for (n = 0; n < scope_arr->used; n++)
 	{
-		sc = toScope(n->data);
+		sc = toScope(scope_arr->nodes[n]);
 		if (show_next)
 		{
 			String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
 			printf("%s:%d\n", toCharArr(s), sc->linenr);
 		}
-		n = n->next;
-		show_next = sc->is_func_scope || (n && n->next == NULL);
+		show_next = sc->is_func_scope || (n == scope_arr->used - 2);
 	}
 }

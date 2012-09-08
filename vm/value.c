@@ -86,7 +86,8 @@ V new_list(void)
 {
 	V t = make_new_value(T_STACK, false, sizeof(Stack));
 	toStack(t)->size = 0;
-	toStack(t)->head = NULL;
+	toStack(t)->used = 0;
+	toStack(t)->nodes = NULL;
 	return t;
 }
 

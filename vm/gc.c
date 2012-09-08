@@ -79,8 +79,7 @@ void free_value(V t)
 		case T_FUNC:
 			break;
 		case T_STACK:
-			s = toStack(t);
-			while (pop(s));
+			free(toStack(t)->nodes);
 			break;
 		case T_DICT:
 			hm = toHashMap(t);
@@ -149,7 +148,6 @@ void iter_children(V t, void (*iter)(V))
 		return;
 
 	Stack* s;
-	Node* c;
 	Scope* sc;
 	Bucket* b;
 	File* f;
@@ -167,12 +165,9 @@ void iter_children(V t, void (*iter)(V))
 			break;
 		case T_STACK:
 			s = toStack(t);
-			c = s->head;
-			for (i = 0; i < s->size; i++)
+			for (i = 0; i < s->used; i++)
 			{
-				child = c->data;
-				c = c->next;
-				iter(child);
+				iter(s->nodes[i]);
 			}
 			break;
 		case T_DICT:

@@ -8,62 +8,70 @@ Stack* new_stack()
 {
 	Stack* nstack = malloc(sizeof(Stack));
 	nstack->size = 0;
-	nstack->head = NULL;
+	nstack->used = 0;
+	nstack->nodes = NULL;
 	return nstack;
 }
 
 void copy_stack(Stack *old, Stack *new)
 {
-	Node *cur = old->head;
-	Node **to = &new->head;
-	while (cur != NULL)
+	if (old->nodes != NULL)
 	{
-		*to = malloc(sizeof(Node));
-		(*to)->data = add_ref(cur->data);
-		cur = cur->next;
-		to = &(*to)->next;
+		new->nodes = calloc(old->size, sizeof(V));
+		int i;
+		for (i = 0; i < old->used; i++)
+		{
+			new->nodes[i] = add_ref(old->nodes[i]);
+		}
 	}
-	*to = NULL;
+	else
+	{
+		new->nodes = NULL;
+	}
+	new->used = old->used;
 	new->size = old->size;
 }
 
 void push(Stack *stack, V v)
 {
-	Node *new_node = malloc(sizeof(Node));
-	if (new_node != NULL)
+	if (stack->nodes == NULL)
 	{
-		new_node->data = v;
-		new_node->next = (stack->size++ > 0) ? stack->head : NULL;
-		stack->head = new_node;
+		stack->size = 64;
+		stack->nodes = calloc(stack->size, sizeof(V));
 	}
+	if (stack->used == stack->size)
+	{
+		stack->size *= 2;
+		stack->nodes = realloc(stack->nodes, stack->size);
+	}
+	stack->nodes[stack->used++] = v;
 }
 
-void append(Stack *stack, V v)
+void reverse(Stack *stack)
 {
-	Node *new_node = malloc(sizeof(Node));
-	if (new_node != NULL)
+	if (stack->nodes)
 	{
-		Node **nptr = &stack->head;
-		while (*nptr != NULL)
+		int i;
+		int u = stack->used;
+		for (i = 0; i < u / 2; i++)
 		{
-			nptr = &(*nptr)->next;
+			V v = stack->nodes[i];
+			stack->nodes[i] = stack->nodes[u - i - 1];
+			stack->nodes[u - i] = v;
 		}
-		*nptr = new_node;
-		new_node->data = v;
-		new_node->next = NULL;
-		stack->size++;
 	}
 }
 
 V pop(Stack *stack)
 {
-	if (stack->size > 0)
+	if (stack->used > 0)
 	{
-		Node *top = stack->head;
-		V v = top->data;
-		stack->size--;
-		stack->head = top->next;
-		free(top);
+		V v = stack->nodes[--stack->used];
+		if (stack->used < (stack->size / 4) && stack->size > 64)
+		{
+			stack->size /= 2;
+			stack->nodes = realloc(stack->nodes, stack->size);
+		}
 		return v;
 	}
 	return NULL;
@@ -71,9 +79,9 @@ V pop(Stack *stack)
 
 void clear_stack(Stack *stack)
 {
-	while (stack_size(stack) > 0)
+	int i;
+	for (i = 0; i < stack->used; i++)
 	{
-		clear_ref(pop(stack));
+		clear_ref(stack->nodes[i]);
 	}
-	free(stack);
 }

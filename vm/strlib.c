@@ -4,6 +4,7 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 {
 	String *s1;
 	String *s2;
+	int i;
 	require(1);
 	V v1 = popS();
 	if (getType(v1) == T_STR)
@@ -27,28 +28,26 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_STACK)
 	{
 		int newlength = 0;
-		Node *n = toStack(v1)->head;
-		while (n != NULL)
+		int u = toStack(v1)->used;
+		V *n = toStack(v1)->nodes;
+		for (i = u - 1; i >= 0; i--)
 		{
-			if (getType(n->data) != T_STR)
+			if (getType(n[i]) != T_STR)
 			{
 				clear_ref(v1);
 				return TypeError;
 			}
-			newlength += toString(n->data)->length;
-			n = n->next;
+			newlength += toString(n[i])->length;
 		}
 
 		char *new = malloc(newlength + 1);
 		char *currpoint = new;
 
-		n = toStack(v1)->head;
-		while (n != NULL)
+		for (i = u - 1; i >= 0; i--)
 		{
-			s1 = toString(n->data);
+			s1 = toString(n[i]);
 			memcpy(currpoint, toCharArr(s1), s1->length);
 			currpoint += s1->length;
-			n = n->next;
 		}
 		*currpoint = '\0';
 		pushS(str_to_value(newlength, new));
@@ -58,11 +57,10 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_IDENT && v1 == get_ident("("))
 	{
 		int newlength = 0;
-		Node *n = S->head;
-		while (n != NULL)
+		for (i = S->used - 1; i >= 0; i--)
 		{
-			int t = getType(n->data);
-			if (t == T_IDENT && n->data == get_ident(")"))
+			int t = getType(S->nodes[i]);
+			if (t == T_IDENT && S->nodes[i] == get_ident(")"))
 			{
 				break;
 			}
@@ -71,24 +69,21 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 				clear_ref(v1);
 				return TypeError;
 			}
-			newlength += toString(n->data)->length;
-			n = n->next;
+			newlength += toString(S->nodes[i])->length;
 		}
 
 		char *new = malloc(newlength + 1);
 		char *currpoint = new;
 
-		n = S->head;
-		while (n != NULL)
+		for (i = S->used - 1; i >= 0; i--)
 		{
-			if (getType(n->data) == T_IDENT && n->data == get_ident(")"))
+			if (getType(S->nodes[i]) == T_IDENT && S->nodes[i] == get_ident(")"))
 			{
 				break;
 			}
-			s1 = toString(n->data);
+			s1 = toString(S->nodes[i]);
 			memcpy(currpoint, toCharArr(s1), s1->length);
 			currpoint += s1->length;
-			n = n->next;
 		}
 		*currpoint = '\0';
 		pushS(str_to_value(newlength, new));
@@ -195,6 +190,7 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 {
 	String *s1;
 	String *s2;
+	int i;
 	require(2);
 	V v1 = popS();
 	V v2 = popS();
@@ -203,30 +199,26 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 		s1 = toString(v1);
 		int len = stack_size(toStack(v2));
 		int newlength = s1->length * (len > 0 ? len - 1 : 0);
-		Node *n = toStack(v2)->head;
-		while (n != NULL)
+		for (i = toStack(v2)->used - 1; i >= 0; i--)
 		{
-			if (getType(n->data) != T_STR)
+			if (getType(toStack(v2)->nodes[i]) != T_STR)
 			{
 				clear_ref(v1);
 				clear_ref(v2);
 				return TypeError;
 			}
-			newlength += toString(n->data)->length;
-			n = n->next;
+			newlength += toString(toStack(v2)->nodes[i])->length;
 		}
 
 		char *new = malloc(newlength + 1);
 		char *currpoint = new;
 
-		n = toStack(v2)->head;
-		while (n != NULL)
+		for (i = toStack(v2)->used - 1; i >= 0; i--)
 		{
-			s2 = toString(n->data);
+			s2 = toString(toStack(v2)->nodes[i]);
 			memcpy(currpoint, toCharArr(s2), s2->length);
 			currpoint += s2->length;
-			n = n->next;
-			if (n != NULL)
+			if (i > 0)
 			{
 				memcpy(currpoint, toCharArr(s1), s1->length);
 				currpoint += s1->length;
@@ -266,10 +258,11 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 			{
 				V new = str_to_value(start - laststart, toCharArr(s2) + laststart);
 				laststart = start + s1->length;
-				append(rs, new);
+				push(rs, new);
 			}
 		}
-		append(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
+		push(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
+		reverse(rs);
 		pushS(r);
 		clear_ref(v1);
 		clear_ref(v2);
@@ -469,10 +462,11 @@ Error split_any(Header* h, Stack* S, Stack* scope_arr)
 			{
 				V new = str_to_value(start - laststart, toCharArr(s2) + laststart);
 				laststart = start + 1;
-				append(rs, new);
+				push(rs, new);
 			}
 		}
-		append(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
+		push(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
+		reverse(rs);
 		pushS(r);
 		clear_ref(v1);
 		clear_ref(v2);
