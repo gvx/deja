@@ -62,7 +62,8 @@ V find_file(V module_name)
 void init_path()
 {
 	loaded = new_hashmap(32);
-	int i = 0;
+	search_path[0] = ""; //absolute path
+	int i = 1;
 	char *env = getenv("DEJAVUPATH");
 	if (env == NULL)
 	{
