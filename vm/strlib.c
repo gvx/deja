@@ -1,6 +1,6 @@
 #include "lib.h"
 
-Error concat(Header* h, Stack* S, Stack* scope_arr)
+Error concat(Stack* S, Stack* scope_arr)
 {
 	String *s1;
 	String *s2;
@@ -97,7 +97,7 @@ Error concat(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error contains(Header* h, Stack* S, Stack* scope_arr)
+Error contains(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -134,7 +134,7 @@ Error contains(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error starts_with(Header* h, Stack* S, Stack* scope_arr)
+Error starts_with(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -160,7 +160,7 @@ Error starts_with(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error ends_with(Header* h, Stack* S, Stack* scope_arr)
+Error ends_with(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -186,7 +186,7 @@ Error ends_with(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error join(Header* h, Stack* S, Stack* scope_arr)
+Error join(Stack* S, Stack* scope_arr)
 {
 	String *s1;
 	String *s2;
@@ -238,7 +238,7 @@ Error join(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error split(Header* h, Stack* S, Stack* scope_arr)
+Error split(Stack* S, Stack* scope_arr)
 {
 	String *s1;
 	String *s2;
@@ -276,7 +276,7 @@ Error split(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error slice(Header* h, Stack* S, Stack* scope_arr)
+Error slice(Stack* S, Stack* scope_arr)
 {
 	require(3);
 	V str = popS();
@@ -312,7 +312,7 @@ Error slice(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error ord(Header* h, Stack* S, Stack* scope_arr)
+Error ord(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -332,7 +332,7 @@ Error ord(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error chr(Header* h, Stack* S, Stack* scope_arr)
+Error chr(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -347,7 +347,7 @@ Error chr(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error find(Header* h, Stack* S, Stack* scope_arr)
+Error find(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -380,7 +380,7 @@ Error find(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error chars(Header* h, Stack* S, Stack* scope_arr)
+Error chars(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V source = popS();
@@ -401,7 +401,7 @@ Error chars(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error count(Header* h, Stack* S, Stack* scope_arr)
+Error count(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V haystack = popS();
@@ -442,7 +442,7 @@ Error count(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error split_any(Header* h, Stack* S, Stack* scope_arr)
+Error split_any(Stack* S, Stack* scope_arr)
 {
 	String *s1;
 	String *s2;

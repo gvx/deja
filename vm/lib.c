@@ -95,7 +95,7 @@ void print_list_value(Stack *s, int n, int depth)
 	fputs(" ", stdout);
 }
 
-Error get(Header* h, Stack* S, Stack* scope_arr)
+Error get(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V key = popS();
@@ -121,7 +121,7 @@ Error get(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error getglobal(Header* h, Stack* S, Stack* scope_arr)
+Error getglobal(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V key = popS();
@@ -140,7 +140,7 @@ Error getglobal(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error set(Header* h, Stack* S, Stack* scope_arr)
+Error set(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V key = popS();
@@ -169,7 +169,7 @@ Error set(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error setglobal(Header* h, Stack* S, Stack* scope_arr)
+Error setglobal(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V key = popS();
@@ -185,7 +185,7 @@ Error setglobal(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error setlocal(Header* h, Stack* S, Stack* scope_arr)
+Error setlocal(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V key = popS();
@@ -201,7 +201,7 @@ Error setlocal(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error add(Header* h, Stack* S, Stack* scope_arr)
+Error add(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -222,7 +222,7 @@ Error add(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error sub(Header* h, Stack* S, Stack* scope_arr)
+Error sub(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -243,7 +243,7 @@ Error sub(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error mul(Header* h, Stack* S, Stack* scope_arr)
+Error mul(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -264,7 +264,7 @@ Error mul(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error div_(Header* h, Stack* S, Stack* scope_arr)
+Error div_(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -291,7 +291,7 @@ Error div_(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error mod_(Header* h, Stack* S, Stack* scope_arr)
+Error mod_(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -343,7 +343,7 @@ const char* gettype(V r)
 
 }
 
-Error type(Header* h, Stack* S, Stack* scope_arr)
+Error type(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -353,7 +353,7 @@ Error type(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print(Header* h, Stack* S, Stack* scope_arr)
+Error print(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -362,27 +362,27 @@ Error print(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print_nl(Header* h, Stack* S, Stack* scope_arr)
+Error print_nl(Stack* S, Stack* scope_arr)
 {
 	require(1);
-	print(h, S, scope_arr);
+	print(S, scope_arr);
 	putchar('\n');
 	return Nothing;
 }
 
-Error make_new_list(Header* h, Stack* S, Stack* scope_arr)
+Error make_new_list(Stack* S, Stack* scope_arr)
 {
 	pushS(new_list());
 	return Nothing;
 }
 
-Error make_new_dict(Header* h, Stack* S, Stack* scope_arr)
+Error make_new_dict(Stack* S, Stack* scope_arr)
 {
 	pushS(new_dict());
 	return Nothing;
 }
 
-Error produce_list(Header* h, Stack* S, Stack* scope_arr)
+Error produce_list(Stack* S, Stack* scope_arr)
 {
 	V v = new_list();
 	V p;
@@ -403,7 +403,7 @@ Error produce_list(Header* h, Stack* S, Stack* scope_arr)
 	return StackEmpty;
 }
 
-Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
+Error produce_dict(Stack* S, Stack* scope_arr)
 {
 	V v = new_dict();
 	V key;
@@ -431,7 +431,7 @@ Error produce_dict(Header* h, Stack* S, Stack* scope_arr)
 }
 
 
-Error if_(Header* h, Stack* S, Stack* scope_arr)
+Error if_(Stack* S, Stack* scope_arr)
 {
 	require(3);
 	V v0 = popS();
@@ -451,7 +451,7 @@ Error if_(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error return_(Header* h, Stack* S, Stack* scope_arr)
+Error return_(Stack* S, Stack* scope_arr)
 {
 	V v = NULL;
 	V file = toScope(get_head(scope_arr))->file;
@@ -473,12 +473,12 @@ Error return_(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error exit_(Header* h, Stack* S, Stack* scope_arr)
+Error exit_(Stack* S, Stack* scope_arr)
 {
 	return Exit;
 }
 
-Error lt(Header* h, Stack* S, Stack* scope_arr)
+Error lt(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -499,7 +499,7 @@ Error lt(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error gt(Header* h, Stack* S, Stack* scope_arr)
+Error gt(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -520,7 +520,7 @@ Error gt(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error le(Header* h, Stack* S, Stack* scope_arr)
+Error le(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -541,7 +541,7 @@ Error le(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error ge(Header* h, Stack* S, Stack* scope_arr)
+Error ge(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -562,7 +562,7 @@ Error ge(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error eq(Header* h, Stack* S, Stack* scope_arr)
+Error eq(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -573,7 +573,7 @@ Error eq(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error ne(Header* h, Stack* S, Stack* scope_arr)
+Error ne(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -584,7 +584,7 @@ Error ne(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error not(Header* h, Stack* S, Stack* scope_arr)
+Error not(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -593,7 +593,7 @@ Error not(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error and(Header* h, Stack* S, Stack* scope_arr)
+Error and(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -604,7 +604,7 @@ Error and(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error or(Header* h, Stack* S, Stack* scope_arr)
+Error or(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -615,7 +615,7 @@ Error or(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error xor(Header* h, Stack* S, Stack* scope_arr)
+Error xor(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -628,7 +628,7 @@ Error xor(Header* h, Stack* S, Stack* scope_arr)
 
 V v_range;
 
-Error range(Header* h, Stack* S, Stack* scope_arr)
+Error range(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v1;
@@ -682,7 +682,7 @@ Error range(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error in(Header* h, Stack* S, Stack* scope_arr)
+Error in(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
@@ -705,7 +705,7 @@ Error in(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error reversed(Header* h, Stack* S, Stack* scope_arr)
+Error reversed(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
@@ -723,7 +723,7 @@ Error reversed(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print_stack(Header* h, Stack* S, Stack* scope_arr)
+Error print_stack(Stack* S, Stack* scope_arr)
 {
 	fputs("[ ", stdout);
 	print_list_value(S, 0, 0);
@@ -731,7 +731,7 @@ Error print_stack(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error swap(Header* h, Stack* S, Stack* scope_arr)
+Error swap(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v1 = popS();
@@ -741,7 +741,7 @@ Error swap(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error push_to(Header* h, Stack* S, Stack* scope_arr)
+Error push_to(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V list = popS();
@@ -756,7 +756,7 @@ Error push_to(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error push_through(Header* h, Stack* S, Stack* scope_arr)
+Error push_through(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V list = popS();
@@ -771,7 +771,7 @@ Error push_through(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error pop_from(Header* h, Stack* S, Stack* scope_arr)
+Error pop_from(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
@@ -791,14 +791,14 @@ Error pop_from(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error tail_call(Header* h, Stack* S, Stack* scope_arr)
+Error tail_call(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	if (getType(get_head(S)) != T_IDENT)
 	{
 		return TypeError;
 	}
-	Error e = get(h, S, scope_arr);
+	Error e = get(S, scope_arr);
 	if (e != Nothing)
 	{
 		return e;
@@ -823,7 +823,7 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 	}
 	else if (getType(v) == T_CFUNC)
 	{
-		e = toCFunc(v)(h, S, scope_arr);
+		e = toCFunc(v)(S, scope_arr);
 		clear_ref(v);
 		return e;
 	}
@@ -834,7 +834,7 @@ Error tail_call(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error self_tail(Header* h, Stack* S, Stack* scope_arr)
+Error self_tail(Stack* S, Stack* scope_arr)
 {
 	V v = NULL;
 	V file = toScope(get_head(scope_arr))->file;
@@ -854,13 +854,13 @@ Error self_tail(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print_depth(Header* h, Stack* S, Stack* scope_arr)
+Error print_depth(Stack* S, Stack* scope_arr)
 {
 	printf("(depth:%d)\n", stack_size(scope_arr));
 	return Nothing;
 }
 
-Error input(Header* h, Stack* S, Stack* scope_arr)
+Error input(Stack* S, Stack* scope_arr)
 {
 	char line[256];
 	if (!fgets(line, 256, stdin))
@@ -876,7 +876,7 @@ Error input(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error copy(Header* h, Stack* S, Stack* scope_arr)
+Error copy(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -891,7 +891,7 @@ Error copy(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error use(Header* h, Stack* S, Stack* scope_arr)
+Error use(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V fname = popS();
@@ -912,13 +912,13 @@ Error use(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error call(Header* h, Stack* S, Stack* scope_arr)
+Error call(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = get_head(S);
 	if (getType(v) == T_IDENT)
 	{
-		Error e = get(h, S, scope_arr);
+		Error e = get(S, scope_arr);
 		if (e != Nothing)
 		{
 			return e;
@@ -932,7 +932,7 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 	}
 	else if (getType(v) == T_CFUNC)
 	{
-		Error e = toCFunc(v)(h, S, scope_arr);
+		Error e = toCFunc(v)(S, scope_arr);
 		clear_ref(v);
 		return e;
 	}
@@ -943,28 +943,28 @@ Error call(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error dup(Header* h, Stack* S, Stack* scope_arr)
+Error dup(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	pushS(add_ref(get_head(S)));
 	return Nothing;
 }
 
-Error drop(Header* h, Stack* S, Stack* scope_arr)
+Error drop(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	clear_ref(popS());
 	return Nothing;
 }
 
-Error over(Header* h, Stack* S, Stack* scope_arr)
+Error over(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	pushS(add_ref(S->nodes[S->used - 2]));
 	return Nothing;
 }
 
-Error rotate(Header* h, Stack* S, Stack* scope_arr)
+Error rotate(Stack* S, Stack* scope_arr)
 {
 	require(3);
 	V v = S->nodes[S->used-3];
@@ -974,12 +974,12 @@ Error rotate(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error error(Header* h, Stack* S, Stack* scope_arr)
+Error error(Stack* S, Stack* scope_arr)
 {
 	return UserError;
 }
 
-Error raise_(Header* h, Stack* S, Stack* scope_arr)
+Error raise_(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -990,12 +990,12 @@ Error raise_(Header* h, Stack* S, Stack* scope_arr)
 	return ident_to_error(v);
 }
 
-Error catch_if(Header* h, Stack* S, Stack* scope_arr)
+Error catch_if(Stack* S, Stack* scope_arr)
 {
 	require(2);
-	over(h, S, scope_arr);
+	over(S, scope_arr);
 	V err = popS();
-	eq(h, S, scope_arr);
+	eq(S, scope_arr);
 	V res = popS();
 	if (truthy(res))
 	{
@@ -1007,7 +1007,7 @@ Error catch_if(Header* h, Stack* S, Stack* scope_arr)
 	return ident_to_error(err);
 }
 
-Error len(Header* h, Stack* S, Stack* scope_arr)
+Error len(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1027,15 +1027,15 @@ Error len(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error yield(Header* h, Stack* S, Stack* scope_arr)
+Error yield(Stack* S, Stack* scope_arr)
 {
 	pushS(toScope(get_head(scope_arr))->func);
-	return return_(h, S, scope_arr);
+	return return_(S, scope_arr);
 }
 
 void open_lib(CFunc[], HashMap*);
 
-Error loadlib(Header* h, Stack* S, Stack* scope_arr)
+Error loadlib(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V name = popS();
@@ -1059,12 +1059,12 @@ Error loadlib(Header* h, Stack* S, Stack* scope_arr)
 	CFuncP initfunc = dlsym(lib_handle, "deja_vu_init");
 	if (initfunc != NULL)
 	{
-		return initfunc(h, S, scope_arr);
+		return initfunc(S, scope_arr);
 	}
 	return Nothing;
 }
 
-Error has(Header* h, Stack* S, Stack* scope_arr)
+Error has(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V container = popS();
@@ -1082,7 +1082,7 @@ Error has(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error get_from(Header* h, Stack* S, Stack* scope_arr)
+Error get_from(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V container = popS();
@@ -1106,7 +1106,7 @@ Error get_from(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error set_to(Header* h, Stack* S, Stack* scope_arr)
+Error set_to(Stack* S, Stack* scope_arr)
 {
 	require(3);
 	V container = popS();
@@ -1126,7 +1126,7 @@ Error set_to(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error delete_from(Header* h, Stack* S, Stack* scope_arr)
+Error delete_from(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V container = popS();
@@ -1143,7 +1143,7 @@ Error delete_from(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error rep(Header* h, Stack* S, Stack* scope_arr)
+Error rep(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V num = popS();
@@ -1163,7 +1163,7 @@ Error rep(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print_var(Header *h, Stack *S, Stack *scope_arr)
+Error print_var(Stack *S, Stack *scope_arr)
 {
 	while (true)
 	{
@@ -1174,14 +1174,14 @@ Error print_var(Header *h, Stack *S, Stack *scope_arr)
 			clear_ref(popS());
 			return Nothing;
 		}
-		print(h, S, scope_arr);
+		print(S, scope_arr);
 		putchar(' ');
 	}
 }
 
-Error print_var_nl(Header *h, Stack *S, Stack *scope_arr)
+Error print_var_nl(Stack *S, Stack *scope_arr)
 {
-	Error e = print_var(h, S, scope_arr);
+	Error e = print_var(S, scope_arr);
 	if (e == Nothing)
 	{
 		putchar('\n');
@@ -1189,7 +1189,7 @@ Error print_var_nl(Header *h, Stack *S, Stack *scope_arr)
 	return e;
 }
 
-Error to_num(Header *h, Stack *S, Stack *scope_arr)
+Error to_num(Stack *S, Stack *scope_arr)
 {
 	char *end;
 	double r;
@@ -1216,7 +1216,7 @@ Error to_num(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error to_str(Header *h, Stack *S, Stack *scope_arr)
+Error to_str(Stack *S, Stack *scope_arr)
 {
 	V v = popS();
 	int type = getType(v);
@@ -1248,12 +1248,12 @@ Error to_str(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error pass(Header *h, Stack *S, Stack *scope_arr)
+Error pass(Stack *S, Stack *scope_arr)
 {
 	return Nothing;
 }
 
-Error rand_(Header* h, Stack* S, Stack* scope_arr)
+Error rand_(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V v_min = popS();
@@ -1273,7 +1273,7 @@ Error rand_(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error keys(Header* h, Stack* S, Stack* scope_arr)
+Error keys(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V dict = popS();
@@ -1303,7 +1303,7 @@ Error keys(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error exists_(Header* h, Stack* S, Stack* scope_arr)
+Error exists_(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V key = popS();
@@ -1332,7 +1332,7 @@ Error exists_(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error floor_(Header *h, Stack *S, Stack *scope_arr)
+Error floor_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1346,7 +1346,7 @@ Error floor_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error ceil_(Header *h, Stack *S, Stack *scope_arr)
+Error ceil_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1360,7 +1360,7 @@ Error ceil_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error round_(Header *h, Stack *S, Stack *scope_arr)
+Error round_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1374,7 +1374,7 @@ Error round_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error produce_set(Header *h, Stack *S, Stack *scope_arr)
+Error produce_set(Stack *S, Stack *scope_arr)
 {
 	V v = new_dict();
 	V val;
@@ -1395,7 +1395,7 @@ Error produce_set(Header *h, Stack *S, Stack *scope_arr)
 	return StackEmpty;
 }
 
-Error plus_one(Header* h, Stack* S, Stack* scope_arr)
+Error plus_one(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1413,7 +1413,7 @@ Error plus_one(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error minus_one(Header* h, Stack* S, Stack* scope_arr)
+Error minus_one(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1431,12 +1431,12 @@ Error minus_one(Header* h, Stack* S, Stack* scope_arr)
 	}
 }
 
-Error undef(Header* h, Stack* S, Stack* scope_arr)
+Error undef(Stack* S, Stack* scope_arr)
 {
 	return UnknownError;
 }
 
-Error choose(Header* h, Stack* S, Stack* scope_arr)
+Error choose(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1452,7 +1452,7 @@ Error choose(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error flatten(Header* h, Stack* S, Stack* scope_arr)
+Error flatten(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
@@ -1470,7 +1470,7 @@ Error flatten(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error make_pair(Header* h, Stack* S, Stack* scope_arr)
+Error make_pair(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V first = popS();
@@ -1485,7 +1485,7 @@ Error make_pair(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error get_first(Header* h, Stack* S, Stack* scope_arr)
+Error get_first(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V pair = popS();
@@ -1499,7 +1499,7 @@ Error get_first(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error get_second(Header* h, Stack* S, Stack* scope_arr)
+Error get_second(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V pair = popS();
@@ -1513,16 +1513,17 @@ Error get_second(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error file_info(Header* h, Stack* S, Stack* scope_arr)
+Error file_info(Stack* S, Stack* scope_arr)
 {
 	File *f = toFile(toScope(get_head(scope_arr))->file);
+	Header *h = &f->header;
 	printf("(source size:%d, literals:%d, filename:%s, source:%s, globals:%d)\n",
 		h->size, h->n_literals, getChars(f->name), getChars(f->source),
 		toScope(f->global)->hm.used);
 	return Nothing;
 }
 
-Error print_f(Header* h, Stack* S, Stack* scope_arr)
+Error print_f(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1541,15 +1542,15 @@ Error print_f(Header* h, Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print_f_nl(Header* h, Stack* S, Stack* scope_arr)
+Error print_f_nl(Stack* S, Stack* scope_arr)
 {
 	require(1);
-	print_f(h, S, scope_arr);
+	print_f(S, scope_arr);
 	putchar('\n');
 	return Nothing;
 }
 
-Error print_f_var(Header *h, Stack *S, Stack *scope_arr)
+Error print_f_var(Stack *S, Stack *scope_arr)
 {
 	while (true)
 	{
@@ -1560,13 +1561,13 @@ Error print_f_var(Header *h, Stack *S, Stack *scope_arr)
 			clear_ref(popS());
 			return Nothing;
 		}
-		print_f(h, S, scope_arr);
+		print_f(S, scope_arr);
 	}
 }
 
-Error print_f_var_nl(Header *h, Stack *S, Stack *scope_arr)
+Error print_f_var_nl(Stack *S, Stack *scope_arr)
 {
-	Error e = print_f_var(h, S, scope_arr);
+	Error e = print_f_var(S, scope_arr);
 	if (e == Nothing)
 	{
 		putchar('\n');
@@ -1574,7 +1575,7 @@ Error print_f_var_nl(Header *h, Stack *S, Stack *scope_arr)
 	return e;
 }
 
-Error abs_(Header *h, Stack *S, Stack *scope_arr)
+Error abs_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1588,7 +1589,7 @@ Error abs_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error sin_(Header *h, Stack *S, Stack *scope_arr)
+Error sin_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1602,7 +1603,7 @@ Error sin_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error cos_(Header *h, Stack *S, Stack *scope_arr)
+Error cos_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1616,7 +1617,7 @@ Error cos_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error tan_(Header *h, Stack *S, Stack *scope_arr)
+Error tan_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1630,7 +1631,7 @@ Error tan_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error asin_(Header *h, Stack *S, Stack *scope_arr)
+Error asin_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1644,7 +1645,7 @@ Error asin_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error acos_(Header *h, Stack *S, Stack *scope_arr)
+Error acos_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1658,7 +1659,7 @@ Error acos_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error atan_(Header *h, Stack *S, Stack *scope_arr)
+Error atan_(Stack *S, Stack *scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -1672,13 +1673,13 @@ Error atan_(Header *h, Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error print_ident_count(Header *h, Stack *S, Stack *scope_arr)
+Error print_ident_count(Stack *S, Stack *scope_arr)
 {
 	printf("(idents:%d)\n", ident_count());
 	return Nothing;
 }
 
-Error print_ident_depth(Header *h, Stack *S, Stack *scope_arr)
+Error print_ident_depth(Stack *S, Stack *scope_arr)
 {
 	printf("(ident-depth:%d)\n", ident_depth());
 	return Nothing;

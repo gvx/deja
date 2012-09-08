@@ -73,7 +73,7 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			else if (getType(v) == T_CFUNC)
 			{
-				return toCFunc(v)(h, S, scope_arr);
+				return toCFunc(v)(S, scope_arr);
 			}
 			else
 			{

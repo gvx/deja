@@ -1,15 +1,15 @@
 #include "lib.h"
 
-Error concat(Header*, Stack*, Stack*);
-Error contains(Header*, Stack*, Stack*);
-Error starts_with(Header*, Stack*, Stack*);
-Error ends_with(Header*, Stack*, Stack*);
-Error split(Header*, Stack*, Stack*);
-Error join(Header*, Stack*, Stack*);
-Error slice(Header*, Stack*, Stack*);
-Error ord(Header*, Stack*, Stack*);
-Error chr(Header*, Stack*, Stack*);
-Error find(Header*, Stack*, Stack*);
-Error chars(Header*, Stack*, Stack*);
-Error count(Header*, Stack*, Stack*);
-Error split_any(Header*, Stack*, Stack*);
+Error concat(Stack*, Stack*);
+Error contains(Stack*, Stack*);
+Error starts_with(Stack*, Stack*);
+Error ends_with(Stack*, Stack*);
+Error split(Stack*, Stack*);
+Error join(Stack*, Stack*);
+Error slice(Stack*, Stack*);
+Error ord(Stack*, Stack*);
+Error chr(Stack*, Stack*);
+Error find(Stack*, Stack*);
+Error chars(Stack*, Stack*);
+Error count(Stack*, Stack*);
+Error split_any(Stack*, Stack*);

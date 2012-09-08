@@ -21,7 +21,7 @@
 
 #include "strlib.h"
 
-typedef Error (*CFuncP)(Header*, Stack*, Stack*);
+typedef Error (*CFuncP)(Stack*, Stack*);
 
 typedef struct
 {
@@ -37,6 +37,6 @@ void open_std_lib(HashMap*);
 
 #define require(x) if (stack_size(S) < (x)) return StackEmpty;
 
-Error return_(Header*, Stack*, Stack*);
+Error return_(Stack*, Stack*);
 
 #endif
