@@ -34,7 +34,7 @@ void print_value(V v, int depth)
 			if (depth < 4)
 			{
 				fputs("[ ", stdout);
-				print_list_value(toStack(v), 0, depth);
+				print_list_value(toStack(v), toStack(v)->used - 1, depth);
 				fputs("]", stdout);
 			}
 			else
@@ -88,9 +88,9 @@ void print_value(V v, int depth)
 
 void print_list_value(Stack *s, int n, int depth)
 {
-	if (n >= s->used)
+	if (n < 0)
 		return;
-	print_list_value(s, n + 1, depth);
+	print_list_value(s, n - 1, depth);
 	print_value(s->nodes[n], depth + 1);
 	fputs(" ", stdout);
 }
