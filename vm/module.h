@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "value.h"
 #include "gc.h"
 #include "hashmap.h"
 #include "error.h"

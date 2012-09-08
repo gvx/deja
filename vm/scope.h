@@ -1,7 +1,6 @@
 #ifndef SCOPE_DEF
 #define SCOPE_DEF
 
-#include "value.h"
 #include "hashmap.h"
 
 #include <stdint.h>

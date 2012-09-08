@@ -1,7 +1,6 @@
+#include "func.h"
 #include "types.h"
 #include "gc.h"
-#include "value.h"
-#include "func.h"
 
 V new_func(V scope, uint32_t *pc)
 {

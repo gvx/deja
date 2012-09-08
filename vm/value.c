@@ -1,6 +1,3 @@
-#include "types.h"
-#include "value.h"
-#include "gc.h"
 #include "stack.h"
 #include "hashmap.h"
 #include "idents.h"

@@ -1,6 +1,3 @@
-#include "gc.h"
-#include "value.h"
-#include "types.h"
 #include "stack.h"
 #include "scope.h"
 #include "func.h"

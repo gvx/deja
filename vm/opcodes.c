@@ -3,18 +3,9 @@
 #include <stdint.h>
 #include <netinet/in.h>
 
-#include "opcodes.h"
-#include "value.h"
 #include "types.h"
-#include "stack.h"
 #include "literals.h"
-#include "scope.h"
-#include "gc.h"
-#include "func.h"
-#include "hashmap.h"
-#include "header.h"
 #include "lib.h"
-#include "func.h"
 
 extern V lastCall;
 

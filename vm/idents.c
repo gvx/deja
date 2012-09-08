@@ -1,7 +1,4 @@
 #include "idents.h"
-#include "value.h"
-#include "types.h"
-#include "gc.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>

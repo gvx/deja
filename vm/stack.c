@@ -1,7 +1,6 @@
 #include <stdlib.h>
 
 #include "gc.h"
-#include "value.h"
 #include "stack.h"
 
 Stack* new_stack()

@@ -1,7 +1,6 @@
 #ifndef OPCODES_DEF
 #define OPCODES_DEF
 
-#include "error.h"
 #include "header.h"
 #include "stack.h"
 #include "file.h"

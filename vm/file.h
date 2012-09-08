@@ -1,9 +1,7 @@
 #ifndef FILE_DEF
 #define FILE_DEF
 
-#include "header.h"
 #include "literals.h"
-#include "value.h"
 #include "types.h"
 #include "gc.h"
 #include "error.h"

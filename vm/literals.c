@@ -1,6 +1,4 @@
 #include "literals.h"
-#include "gc.h"
-#include "types.h"
 #include "idents.h"
 
 #include <stdlib.h>

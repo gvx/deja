@@ -1,10 +1,7 @@
 #include <stdlib.h>
 
-#include "gc.h"
-#include "value.h"
 #include "scope.h"
 #include "func.h"
-#include "types.h"
 #include "file.h"
 
 V create_scope()

@@ -2,15 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "opcodes.h"
 #include "stack.h"
-#include "value.h"
-#include "header.h"
-#include "error.h"
-#include "file.h"
-#include "scope.h"
 #include "lib.h"
-#include "module.h"
 #include "std.h"
 
 void run(V file_name)
