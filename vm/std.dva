@@ -31,6 +31,50 @@ $endcomposed
 return
 $endcompose
 set_global 5
+labda $endarr
+$startarr
+new_dict
+$startloop3
+rot
+dup
+push_literal 7
+push_word 9
+jmpz $endloop3
+push_word 8
+push_word 8
+set_dict
+swap
+push_word 10
+swap
+jmp $startloop3
+$endloop3
+drop
+swap
+drop
+return
+$endarr
+set_global 6
+labda $endover3
+set_local 0
+set_local 1
+set_local 7
+get 7
+get 1
+get 0
+get 7
+return
+$endover3
+set_global 8
+labda $endarr0
+push_integer 0
+jmp $startarr
+$endarr0
+set_global 11
+labda $endarr1
+push_integer 1
+jmp $startarr
+$endarr1
+set_global 12
 return
 ...
 ia
@@ -39,3 +83,10 @@ icall
 ifor:
 iwhile
 i$
+iarr(
+i)
+iover-3
+i!=
+i++
+iarr0(
+iarr1(
