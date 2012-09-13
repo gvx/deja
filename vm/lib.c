@@ -95,6 +95,15 @@ void print_list_value(Stack *s, int n, int depth)
 	fputs(" ", stdout);
 }
 
+void print_list_value_rev(Stack *s, int n, int depth)
+{
+	if (n >= s->used)
+		return;
+	print_list_value_rev(s, n + 1, depth);
+	print_value(s->nodes[n], depth + 1);
+	fputs(" ", stdout);
+}
+
 Error get(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -726,7 +735,7 @@ Error reversed(Stack* S, Stack* scope_arr)
 Error print_stack(Stack* S, Stack* scope_arr)
 {
 	fputs("[ ", stdout);
-	print_list_value(S, 0, 0);
+	print_list_value_rev(S, 0, 0);
 	puts("]");
 	return Nothing;
 }
