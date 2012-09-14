@@ -11,14 +11,11 @@ def parse_line(line):
 
 def parse(filename):
 	with open(filename) as f:
-		try:
-			filenode = File(filename)
-			filecontext = FileContext(filenode)
-			for i, line in enumerate(f):
-				filecontext.addline(LineContext(line.rstrip('\n'), filename, i+1).process())
-			return filenode
-		except DejaError as e:
-			print(e)
+		filenode = File(filename)
+		filecontext = FileContext(filenode)
+		for i, line in enumerate(f):
+			filecontext.addline(LineContext(line.rstrip('\n'), filename, i+1).process())
+		return filenode
 
 def parse_interactive(filename='(interactive)'):
 	try:

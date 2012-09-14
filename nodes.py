@@ -40,6 +40,9 @@ class Word(Node):
 		return self.__class__.__name__ + '(' + str(self.value) + ')'
 
 class String(Word):
+	def __init__(self, parent, value):
+		value.decode('utf-8')
+		Word.__init__(self, parent, value)
 	def convert(self, value):
 		return value[1:]
 	def __str__(self):
