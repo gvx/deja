@@ -199,6 +199,11 @@ bool equal(V v1, V v2)
 			// pairs count as simple datatypes, so this is safe
 			return equal(toFirst(v1), toFirst(v2)) && equal(toSecond(v1), toSecond(v2));
 		}
+		else if (getType(v1) == T_FRAC)
+		{
+			return toNumerator(v1) == toNumerator(v2) &&
+				toDenominator(v1) == toDenominator(v2);
+		}
 	}
 	return false;
 }
