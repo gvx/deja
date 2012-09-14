@@ -57,7 +57,7 @@ V str_to_value(int max, char* str)
 	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
 	String *s = &((StrValue*)t)->s;
 	s->length = max;
-	memcpy((char*)t + sizeof(StrValue), str, max + 1);
+	memcpy((char*)t + sizeof(StrValue), str, max);
 	max[(char*)t + sizeof(StrValue)] = '\0';
 	s->hash = string_hash(max, str);
 	return t;

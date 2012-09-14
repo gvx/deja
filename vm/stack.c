@@ -83,4 +83,6 @@ void clear_stack(Stack *stack)
 	{
 		clear_ref(stack->nodes[i]);
 	}
+	free(stack->nodes);
+	free(stack);
 }
