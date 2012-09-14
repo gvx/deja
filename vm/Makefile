@@ -1,4 +1,5 @@
 all: vu
+all: CC += -O2
 all: std.vu
 debug: vu-dbg
 debug: CC += -ggdb
