@@ -231,6 +231,20 @@ Error add(Stack* S, Stack* scope_arr)
 			toDenominator(v1) * toDenominator(v2)
 		);
 	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		r = new_frac(
+			toNumerator(v1) + toNumber(v2) * toDenominator(v1),
+			toDenominator(v1)
+		);
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumber(v1) * toDenominator(v2) + toNumerator(v2),
+			toDenominator(v2)
+		);
+	}
 	else
 	{
 		clear_ref(v1);
@@ -261,6 +275,20 @@ Error sub(Stack* S, Stack* scope_arr)
 			toDenominator(v1) * toDenominator(v2)
 		);
 	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		r = new_frac(
+			toNumerator(v1) - toNumber(v2) * toDenominator(v1),
+			toDenominator(v1)
+		);
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumber(v1) * toDenominator(v2) - toNumerator(v2),
+			toDenominator(v2)
+		);
+	}
 	else
 	{
 		clear_ref(v1);
@@ -288,6 +316,20 @@ Error mul(Stack* S, Stack* scope_arr)
 		r = new_frac(
 			toNumerator(v1) * toNumerator(v2),
 			toDenominator(v1) * toDenominator(v2)
+		);
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		r = new_frac(
+			toNumerator(v1) * toNumber(v2),
+			toDenominator(v1)
+		);
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumber(v1) * toNumerator(v2),
+			toDenominator(v2)
 		);
 	}
 	else
@@ -325,6 +367,26 @@ Error div_(Stack* S, Stack* scope_arr)
 			toDenominator(v1) * toNumerator(v2)
 		);
 	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		if (toNumber(v2) == 0.0)
+		{
+			clear_ref(v1);
+			clear_ref(v2);
+			return ValueError;
+		}
+		r = new_frac(
+			toNumerator(v1),
+			toDenominator(v1) * toNumber(v2)
+		);
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumber(v1) * toDenominator(v2),
+			toNumerator(v2)
+		);
+	}
 	else
 	{
 		clear_ref(v1);
@@ -359,6 +421,28 @@ Error mod_(Stack* S, Stack* scope_arr)
 			(toNumerator(v1) * toDenominator(v2)) %
 			(toNumerator(v2) * toDenominator(v1)),
 			toDenominator(v1) * toDenominator(v2)
+		);
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		if (toNumber(v2) == 0.0)
+		{
+			clear_ref(v1);
+			clear_ref(v2);
+			return ValueError;
+		}
+		r = new_frac(
+			toNumerator(v1) %
+			((long int)toNumber(v2) * toDenominator(v1)),
+			toDenominator(v1)
+		);
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			((long int)toNumber(v1) * toDenominator(v2)) %
+			toNumerator(v2),
+			toDenominator(v2)
 		);
 	}
 	else
@@ -548,6 +632,16 @@ Error lt(Stack* S, Stack* scope_arr)
 		r = toNumerator(v1) * toDenominator(v2) <
 			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		r = toNumerator(v1) <
+			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = toNumber(v1) * toDenominator(v2) <
+			toNumerator(v2) ? v_true : v_false;
+	}
 	else
 	{
 		clear_ref(v1);
@@ -575,6 +669,16 @@ Error gt(Stack* S, Stack* scope_arr)
 		r = toNumerator(v1) * toDenominator(v2) >
 			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		r = toNumerator(v1) >
+			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = toNumber(v1) * toDenominator(v2) >
+			toNumerator(v2) ? v_true : v_false;
+	}
 	else
 	{
 		clear_ref(v1);
@@ -597,6 +701,16 @@ Error le(Stack* S, Stack* scope_arr)
 	{
 		r = toNumerator(v1) * toDenominator(v2) <=
 			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		r = toNumerator(v1) <=
+			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = toNumber(v1) * toDenominator(v2) <=
+			toNumerator(v2) ? v_true : v_false;
 	}
 	else
 	{
@@ -624,6 +738,16 @@ Error ge(Stack* S, Stack* scope_arr)
 	{
 		r = toNumerator(v1) * toDenominator(v2) >=
 			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
+	{
+		r = toNumerator(v1) >=
+			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+	}
+	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
+	{
+		r = toNumber(v1) * toDenominator(v2) >=
+			toNumerator(v2) ? v_true : v_false;
 	}
 	else
 	{
