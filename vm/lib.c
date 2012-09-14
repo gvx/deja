@@ -222,10 +222,6 @@ Error add(Stack* S, Stack* scope_arr)
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		r = double_to_value(toNumber(v1) + toNumber(v2));
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -234,10 +230,6 @@ Error add(Stack* S, Stack* scope_arr)
 			toNumerator(v2) * toDenominator(v1),
 			toDenominator(v1) * toDenominator(v2)
 		);
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else
 	{
@@ -245,6 +237,10 @@ Error add(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(r);
+	return Nothing;
 }
 
 Error sub(Stack* S, Stack* scope_arr)
@@ -256,10 +252,6 @@ Error sub(Stack* S, Stack* scope_arr)
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		r = double_to_value(toNumber(v1) - toNumber(v2));
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -268,10 +260,6 @@ Error sub(Stack* S, Stack* scope_arr)
 			toNumerator(v2) * toDenominator(v1),
 			toDenominator(v1) * toDenominator(v2)
 		);
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else
 	{
@@ -279,6 +267,10 @@ Error sub(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(r);
+	return Nothing;
 }
 
 Error mul(Stack* S, Stack* scope_arr)
@@ -290,10 +282,6 @@ Error mul(Stack* S, Stack* scope_arr)
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		r = double_to_value(toNumber(v1) * toNumber(v2));
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -301,10 +289,6 @@ Error mul(Stack* S, Stack* scope_arr)
 			toNumerator(v1) * toNumerator(v2),
 			toDenominator(v1) * toDenominator(v2)
 		);
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else
 	{
@@ -312,6 +296,10 @@ Error mul(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(r);
+	return Nothing;
 }
 
 Error div_(Stack* S, Stack* scope_arr)
@@ -329,10 +317,6 @@ Error div_(Stack* S, Stack* scope_arr)
 			return ValueError;
 		}
 		r = double_to_value(toNumber(v1) / toNumber(v2));
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -340,10 +324,6 @@ Error div_(Stack* S, Stack* scope_arr)
 			toNumerator(v1) * toDenominator(v2),
 			toDenominator(v1) * toNumerator(v2)
 		);
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else
 	{
@@ -351,6 +331,10 @@ Error div_(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(r);
+	return Nothing;
 }
 
 Error mod_(Stack* S, Stack* scope_arr)
@@ -368,10 +352,6 @@ Error mod_(Stack* S, Stack* scope_arr)
 			return ValueError;
 		}
 		r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -380,10 +360,6 @@ Error mod_(Stack* S, Stack* scope_arr)
 			(toNumerator(v2) * toDenominator(v1)),
 			toDenominator(v1) * toDenominator(v2)
 		);
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(r);
-		return Nothing;
 	}
 	else
 	{
@@ -391,6 +367,10 @@ Error mod_(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(r);
+	return Nothing;
 }
 
 const char* gettype(V r)
@@ -562,19 +542,11 @@ Error lt(Stack* S, Stack* scope_arr)
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		r = toNumber(v1) < toNumber(v2) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = toNumerator(v1) * toDenominator(v2) <
-		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
+			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 	}
 	else
 	{
@@ -582,6 +554,10 @@ Error lt(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(add_ref(r));
+	return Nothing;
 }
 
 Error gt(Stack* S, Stack* scope_arr)
@@ -593,19 +569,11 @@ Error gt(Stack* S, Stack* scope_arr)
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		r = toNumber(v1) > toNumber(v2) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = toNumerator(v1) * toDenominator(v2) >
-		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
+			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 	}
 	else
 	{
@@ -624,19 +592,11 @@ Error le(Stack* S, Stack* scope_arr)
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = toNumerator(v1) * toDenominator(v2) <=
-		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
+			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 	}
 	else
 	{
@@ -644,6 +604,10 @@ Error le(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(add_ref(r));
+	return Nothing;
 }
 
 Error ge(Stack* S, Stack* scope_arr)
@@ -655,19 +619,11 @@ Error ge(Stack* S, Stack* scope_arr)
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
 		r = toNumber(v1) >= toNumber(v2) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = toNumerator(v1) * toDenominator(v2) >=
-		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
-		clear_ref(v1);
-		clear_ref(v2);
-		pushS(add_ref(r));
-		return Nothing;
+			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 	}
 	else
 	{
@@ -675,6 +631,10 @@ Error ge(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(add_ref(r));
+	return Nothing;
 }
 
 Error eq(Stack* S, Stack* scope_arr)
