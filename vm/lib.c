@@ -78,7 +78,7 @@ void print_value(V v, int depth)
 			print_value(toSecond(v), depth);
 			break;
 		case T_FRAC:
-			printf("// %ld %ld", toNumerator(v), toDenominator(v));
+			printf("%ld/%ld", toNumerator(v), toDenominator(v));
 			break;
 		case T_CFUNC:
 			printf("<func:%p>", toCFunc(v));
