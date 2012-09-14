@@ -56,7 +56,7 @@ void run(V file_name)
 					push(scope, pop(save_scopes));
 				}
 			}
-			free(save_scopes);
+			clear_stack(save_scopes);
 		}
 	}
 	if (e != Exit) //uh oh
