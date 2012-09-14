@@ -1075,6 +1075,10 @@ Error input(Stack* S, Stack* scope_arr)
 	{
 		line[strlen(line) - 1] = '\0'; //removes trailing newline
 	}
+	if (!valid_utf8(strlen(line), line))
+	{
+		return UnicodeError;
+	}
 	pushS(a_to_value(line));
 	return Nothing;
 }
