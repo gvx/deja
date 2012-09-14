@@ -2,7 +2,7 @@ all: vu
 all: CC += -O2
 all: std.vu
 debug: vu-dbg
-debug: CC += -ggdb
+debug: CC += -ggdb3
 debug: std.vu
 
 clean:
