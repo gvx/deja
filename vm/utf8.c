@@ -4,32 +4,32 @@ unichar decode_codepoint(utf8 source, utf8index *ix)
 {
 	char a, b, c, d, e, f;
 
-	a = source[*ix++];
+	a = source[(*ix)++];
 	if (!(a >> 7))
 		return a;
 		// 0aaaaaaa
 
-	b = source[*ix++] & 63;
+	b = source[(*ix)++] & 63;
 	if (!(a & 32))
 		return (a & 31) << 6 | b;
 		// 110aaaaa 10bbbbbb
 
-	c = source[*ix++] & 63;
+	c = source[(*ix)++] & 63;
 	if (!(a & 16))
 		return (a & 15) << 12 | b << 6 | c;
 		// 1110aaaa 10bbbbbb 10cccccc
 
-	d = source[*ix++] & 63;
+	d = source[(*ix)++] & 63;
 	if (!(a & 8))
 		return (a & 7) << 18 | b << 12 | c << 6 | d;
 		// 11110aaa 10bbbbbb 10cccccc 10dddddd
 
-	e = source[*ix++] & 63;
+	e = source[(*ix)++] & 63;
 	if (!(a & 4))
 		return (a & 3) << 24 | b << 18 | c << 12 | d << 6 | e;
 		// 111110aa 10bbbbbb 10cccccc 10dddddd 10eeeeee
 
-	f = source[*ix++] & 63;
+	f = source[(*ix)++] & 63;
 	if (true)
 		return (a & 1) << 30 | b << 24 | c << 18 | d << 12 | e << 6 | f;
 		// 1111110a 10bbbbbb 10cccccc 10dddddd 10eeeeee 10ffffff
@@ -63,11 +63,11 @@ utf8byte encode_first_byte(unichar source)
 	}
 }
 
-bool valid_utf8(utf8 source)
+bool valid_utf8(size_t size, utf8 source)
 {
 	utf8index index = 0;
 	unichar cp = 1;
-	while (cp)
+	while (index < size)
 	{
 		// first check whether numbers are correct
 		utf8byte c = source[index];

@@ -17,6 +17,7 @@ typedef enum
 	TypeError,
 	StackEmpty,
 	IllegalFile,
+	UnicodeError,
 	UserError,
 	UnknownError,
 } Error;

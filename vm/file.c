@@ -28,7 +28,11 @@ V load_memfile(char *data, size_t length, V file_name, V global)
 	data += 8;
 	if (header_correct(&h))
 	{
-		read_literals(data, length, &h);
+		if (!read_literals(data, length, &h))
+		{
+			error_msg = "Wrong encoding for string literal, should be UTF-8.";
+			return NULL;
+		}
 		new_file = make_new_value(T_FILE, false, sizeof(File));
 		File* f_obj = toFile(new_file);
 		f_obj->name = add_ref(file_name);

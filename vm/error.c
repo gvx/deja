@@ -12,7 +12,8 @@ void init_errors(void)
 	error_names[4] = get_ident("type-error");
 	error_names[5] = get_ident("stack-empty");
 	error_names[6] = get_ident("illegal-file");
-	error_names[7] = get_ident("error");
+	error_names[7] = get_ident("unicode-error");
+	error_names[8] = get_ident("error");
 }
 
 char* error_name(Error e)
@@ -29,6 +30,8 @@ char* error_name(Error e)
 			return "The stack is empty";
 		case IllegalFile:
 			return "Not a valid program";
+		case UnicodeError:
+			return "Error decoding string";
 		case UserError:
 			return "Error";
 		default:

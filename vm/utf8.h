@@ -11,6 +11,6 @@ typedef size_t utf8index;
 typedef uint32_t unichar;
 
 unichar decode_codepoint(utf8, utf8index*);
-bool valid_utf8(utf8);
+bool valid_utf8(size_t, utf8);
 
 #endif

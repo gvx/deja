@@ -1,9 +1,8 @@
 #include "literals.h"
 #include "idents.h"
+#include "utf8.h"
 
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 
@@ -22,7 +21,7 @@ uint64_t ntohll(uint64_t i)
 
 #define eofreached ((unsigned)(8 + curpos - oldpos) >= size)
 
-void read_literals(char *oldpos, size_t size, Header* h)
+bool read_literals(char *oldpos, size_t size, Header* h)
 {
 	int i;
 	int n = 0;
@@ -67,6 +66,10 @@ void read_literals(char *oldpos, size_t size, Header* h)
 			memcpy(&str_length, curpos, 4);
 			curpos += 4;
 			str_length = ntohl(str_length);
+			if (!valid_utf8(str_length, curpos))
+			{
+				return false;
+			}
 			t = str_to_value(str_length, curpos);
 			curpos += str_length;
 			t->type = T_STR;
@@ -86,6 +89,7 @@ void read_literals(char *oldpos, size_t size, Header* h)
 	}
 	h->n_literals = n;
 	h->literals = arr;
+	return true;
 }
 
 V get_literal(Header* h, uint32_t index)
