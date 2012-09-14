@@ -20,7 +20,7 @@ uint64_t ntohll(uint64_t i)
 }
 #endif
 
-#define eofreached ((8 + curpos - oldpos) >= size)
+#define eofreached ((unsigned)(8 + curpos - oldpos) >= size)
 
 void read_literals(char *oldpos, size_t size, Header* h)
 {

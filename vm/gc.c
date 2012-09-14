@@ -213,7 +213,7 @@ void iter_children(V t, void (*iter)(V))
 			break;
 		case T_FILE:
 			f = toFile(t);
-			for (i = 0; i < f->header.n_literals; i++)
+			for (i = 0; (unsigned)i < f->header.n_literals; i++)
 			{
 				iter(f->header.literals[i]);
 			}

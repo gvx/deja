@@ -12,7 +12,7 @@ V load_file(V file_name, V global)
 	size_t length = ftell(f);
 	rewind(f);
 	char *data = malloc(length * sizeof(char));
-	int read = fread(data, sizeof(char), length, f);
+	size_t read = fread(data, sizeof(char), length, f);
 	assert (read == length);
 	V new_file = load_memfile(data, length, file_name, global);
 	free(data);

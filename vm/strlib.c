@@ -116,7 +116,7 @@ Error contains(Stack* S, Stack* scope_arr)
 	}
 	else
 	{
-		int i;
+		uint32_t i;
 		for (i = 0; i <= s2->length - s1->length; i++)
 		{
 			if (!memcmp(toCharArr(s2) + i, toCharArr(s1), s1->length))
@@ -251,7 +251,7 @@ Error split(Stack* S, Stack* scope_arr)
 		s2 = toString(v2);
 		V r = new_list();
 		Stack *rs = toStack(r);
-		int start, laststart = 0;
+		uint32_t start, laststart = 0;
 		for (start = 0; start <= s2->length - s1->length; start++)
 		{
 			if (!memcmp(toCharArr(s1), toCharArr(s2) + start, s1->length))
@@ -362,7 +362,7 @@ Error find(Stack* S, Stack* scope_arr)
 	String *s2 = toString(v2);
 	if (s1->length <= s2->length)
 	{
-		int i;
+		uint32_t i;
 		for (i = 0; i <= s2->length - s1->length; i++)
 		{
 			if (!memcmp(toCharArr(s2) + i, toCharArr(s1), s1->length))
@@ -455,7 +455,7 @@ Error split_any(Stack* S, Stack* scope_arr)
 		s2 = toString(v2);
 		V r = new_list();
 		Stack *rs = toStack(r);
-		int start, laststart = 0;
+		uint32_t start, laststart = 0;
 		for (start = 0; start < s2->length; start++)
 		{
 			if (memchr(toCharArr(s1), toCharArr(s2)[start], s1->length))
