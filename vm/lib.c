@@ -356,6 +356,7 @@ Error div_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
+			error_msg = "Division by zero.";
 			return ValueError;
 		}
 		r = double_to_value(toNumber(v1) / toNumber(v2));
@@ -373,6 +374,7 @@ Error div_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
+			error_msg = "Division by zero.";
 			return ValueError;
 		}
 		r = new_frac(
@@ -411,6 +413,7 @@ Error mod_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
+			error_msg = "Division by zero.";
 			return ValueError;
 		}
 		r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
@@ -429,6 +432,7 @@ Error mod_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
+			error_msg = "Division by zero.";
 			return ValueError;
 		}
 		r = new_frac(
@@ -1894,6 +1898,11 @@ Error make_frac(Stack* S, Stack* scope_arr)
 		clear_ref(n);
 		clear_ref(d);
 		return TypeError;
+	}
+	if (toInt(d) == 0)
+	{
+		error_msg = "Division by zero.";
+		return ValueError;
 	}
 	pushS(new_frac(toInt(n), toInt(d)));
 	return Nothing;
