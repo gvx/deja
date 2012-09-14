@@ -1819,7 +1819,9 @@ void open_lib(CFunc lib[], HashMap* hm)
 	int i = 0;
 	while (lib[i].name != NULL)
 	{
-		set_hashmap(hm, get_ident(lib[i].name), new_cfunc(lib[i].cfunc));
+		V v = new_cfunc(lib[i].cfunc);
+		set_hashmap(hm, get_ident(lib[i].name), v);
+		clear_ref(v);
 		i++;
 	}
 }
