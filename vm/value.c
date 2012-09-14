@@ -103,6 +103,57 @@ V new_pair(V first, V second)
 	return t;
 }
 
+unsigned long int gcd(unsigned long int u, unsigned long int v)
+{
+  // simple cases (termination)
+  if (u == v)
+    return u;
+  if (u == 0)
+    return v;
+  if (v == 0)
+    return u;
+
+  // look for factors of 2
+  if (~u & 1) // u is even
+    if (v & 1) // v is odd
+      return gcd(u >> 1, v);
+    else // both u and v are even
+      return gcd(u >> 1, v >> 1) << 1;
+  if (~v & 1) // u is odd, v is even
+    return gcd(u, v >> 1);
+
+  // reduce larger argument
+  if (u > v)
+    return gcd((u - v) >> 1, v);
+  return gcd((v - u) >> 1, u);
+}
+
+V new_frac(long int numerator, long int denominator)
+{
+	if (numerator == 0)
+		return intToV(0);
+	long int m = 1;
+	if (numerator < 0)
+	{
+		numerator = -numerator;
+		m = -m;
+	}
+	if (denominator < 0)
+	{
+		denominator = -denominator;
+		m = -m;
+	}
+	long int divisor = gcd(numerator, denominator);
+	numerator = m * (numerator / divisor);
+	denominator = denominator / divisor;
+	if (denominator == 1)
+		return int_to_value(numerator);
+	V t = make_new_value(T_FRAC, true, sizeof(Frac));
+	toNumerator(t) = numerator;
+	toDenominator(t) = denominator;
+	return t;
+}
+
 bool truthy(V t)
 {
 	switch(getType(t))

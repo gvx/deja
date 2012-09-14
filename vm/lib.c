@@ -77,6 +77,9 @@ void print_value(V v, int depth)
 			fputs(" ", stdout);
 			print_value(toSecond(v), depth);
 			break;
+		case T_FRAC:
+			printf("// %ld %ld", toNumerator(v), toDenominator(v));
+			break;
 		case T_CFUNC:
 			printf("<func:%p>", toCFunc(v));
 			break;
@@ -1694,6 +1697,22 @@ Error print_ident_depth(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error make_frac(Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V n = popS();
+	V d = popS();
+	if (!isInt(n) || !isInt(d))
+	{
+		clear_ref(n);
+		clear_ref(d);
+		return TypeError;
+	}
+	pushS(new_frac(toInt(n), toInt(d)));
+	return Nothing;
+}
+
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -1795,6 +1814,7 @@ static CFunc stdlib[] = {
 	{"atan", atan_},
 	{"(ident-count)", print_ident_count},
 	{"(ident-depth)", print_ident_depth},
+	{"//", make_frac},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},

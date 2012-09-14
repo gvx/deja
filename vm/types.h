@@ -9,6 +9,7 @@
 #define T_FUNC 0x04
 #define T_DICT 0x05
 #define T_PAIR 0x06
+#define T_FRAC 0x07
 // Section 0x1*: internal types
 #define T_SCOPE 0x10
 #define T_FILE 0x11

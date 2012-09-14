@@ -24,6 +24,8 @@
 #define getType(x) (isInt(x) ? T_NUM : x->type)
 #define toFirst(x) (*((V*)(x + 1)))
 #define toSecond(x) (*((V*)(x + 2)))
+#define toNumerator(x) (((Frac*)(x + 1))->numerator)
+#define toDenominator(x) (((Frac*)(x + 1))->denominator)
 
 #define new_dict() new_sized_dict(16)
 
@@ -64,6 +66,12 @@ typedef struct
 	String s;
 } StrValue;
 
+typedef struct
+{
+	long int numerator;
+	long int denominator;
+} Frac;
+
 typedef struct TreeNode {
 	uint8_t type;
 	uint32_t length;
@@ -83,6 +91,7 @@ V get_ident(const char*);
 V new_list();
 V new_sized_dict();
 V new_pair(V, V);
+V new_frac(long int, long int);
 
 bool truthy(V);
 bool equal(V, V);
