@@ -19,8 +19,6 @@ typedef struct HashMap
 	Bucket** map;
 } HashMap;
 
-#include "scope.h"
-
 HashMap* new_hashmap(int);
 void hashmap_from_scope(V, int);
 V get_hashmap(HashMap*, V);

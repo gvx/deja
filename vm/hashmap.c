@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "gc.h"
-#include "hashmap.h"
 #include "types.h"
+#include "scope.h"
 
 HashMap* new_hashmap(int initialsize)
 {
