@@ -1,70 +1,7 @@
-class DejaError(Exception):
-	dj_str = 'error'
-	info = ''
-	name = 'Error'
-	def __init__(self, env, dj_str=None, dj_info=None):
-		self.env = env
-		if dj_str:
-			self.dj_str = dj_str
-		self.dj_info = dj_info or [self.node_info(x) for x in env.call_stack]
-	@staticmethod
-	def node_info(node):
-		if hasattr(node, 'node'): #not a node, but a closure
-			return '%s:%d' % (node.node.getfile().filename, node.node.linenr)
-		elif hasattr(node, 'value'): #a Word
-			if hasattr(node.parent, 'linenr'):
-				return '%s:%d:%s' % (node.getfile().filename, node.parent.linenr, node.value)
-			if node.parent and hasattr(node.parent.parent, 'linenr'):
-				return '%s:%d:%s' % (node.getfile().filename, node.parent.parent.linenr, node.value)
-			return node.value
-		else:
-			return str(node) #??
-		
-	def __str__(self):
-		return '%s: %s\n ' % (self.name, self.info) + '\n '.join(str(x) for x in reversed(self.dj_info))
-
-class DejaSyntaxError(DejaError):
-	dj_str = 'syntax-error'
+class DejaSyntaxError(Exception):
 	def __init__(self, error, context, index):
 		self.error = error
 		self.context = context
 		self.index = index
 	def __str__(self):
 		return "Syntax error:\n %s:%d: %s\n %s\n %s" % (self.context.filename, self.context.linenr, self.error, self.context.origtext, '\t' * self.context.indent + ' ' * self.index + '^')
-
-class DejaStackEmpty(DejaError):
-	dj_str = 'empty-stack'
-	name = 'Stack empty'
-
-class DejaNameError(DejaError):
-	dj_str = 'name-error'
-	name = 'Name error'
-	def __init__(self, env, ident):
-		DejaError.__init__(self, env)
-		self.ident = ident
-		self.dj_info.append(env.getident(ident))
-
-class DejaTypeError(DejaError):
-	dj_str = 'type-error'
-	name = 'Type error'
-	def __init__(self, env, value, expected):
-		DejaError.__init__(self, env)
-		self.value = value
-		self.expected = expected
-		self.info = 'Expected ' + expected + ', but got ' + str(value)
-		self.dj_info.append(expected)
-		self.dj_info.append(str(value))
-
-class DejaDivisionByZero(DejaError):
-	dj_str = 'divison-by-zero'
-	name = 'Division by zero'
-
-class DejaIOError(DejaError):
-	dj_str = 'io-error'
-	name = 'IO Error'
-	def __init__(self, env, msg, fname):
-		DejaError.__init__(self, env)
-		self.info = msg + ': ' + fname
-
-class ReturnException(Exception):
-	pass
