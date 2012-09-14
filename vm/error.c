@@ -83,7 +83,10 @@ void handle_error(Error e, Stack *scope_arr)
 		if (show_next)
 		{
 			String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
-			fprintf(stderr, "%s:%d\n", toCharArr(s), sc->linenr);
+			if (sc->linenr > 0)
+				fprintf(stderr, "%s:%d\n", toCharArr(s), sc->linenr);
+			else
+				fprintf(stderr, "%s\n", toCharArr(s));
 		}
 		show_next = sc->is_func_scope || (n == scope_arr->used - 2);
 	}
