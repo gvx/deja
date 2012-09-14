@@ -60,13 +60,15 @@ Error ident_to_error(V e)
 void handle_error(Error e, Stack *scope_arr)
 {
 	if (error_msg)
-		puts(error_msg);
+		fputs(error_msg, stderr);
 	else
-		puts(error_name(e));
+		fputs(error_name(e), stderr);
+	putc(10, stderr);
+
 	if (lastCall)
 	{
 		ITreeNode *s = toIdent(lastCall);
-		printf("In %*s:\n", s->length, s->data);
+		fprintf(stderr, "In %*s:\n", s->length, s->data);
 	}
 	if (scope_arr == NULL)
 	{
@@ -81,7 +83,7 @@ void handle_error(Error e, Stack *scope_arr)
 		if (show_next)
 		{
 			String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
-			printf("%s:%d\n", toCharArr(s), sc->linenr);
+			fprintf(stderr, "%s:%d\n", toCharArr(s), sc->linenr);
 		}
 		show_next = sc->is_func_scope || (n == scope_arr->used - 2);
 	}
