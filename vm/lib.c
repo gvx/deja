@@ -216,11 +216,24 @@ Error setlocal(Stack* S, Stack* scope_arr)
 Error add(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = double_to_value(toNumber(v1) + toNumber(v2));
+		r = double_to_value(toNumber(v1) + toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(r);
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumerator(v1) * toDenominator(v2) +
+			toNumerator(v2) * toDenominator(v1),
+			toDenominator(v1) * toDenominator(v2)
+		);
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(r);
@@ -237,11 +250,24 @@ Error add(Stack* S, Stack* scope_arr)
 Error sub(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = double_to_value(toNumber(v1) - toNumber(v2));
+		r = double_to_value(toNumber(v1) - toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(r);
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumerator(v1) * toDenominator(v2) -
+			toNumerator(v2) * toDenominator(v1),
+			toDenominator(v1) * toDenominator(v2)
+		);
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(r);
@@ -258,11 +284,23 @@ Error sub(Stack* S, Stack* scope_arr)
 Error mul(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = double_to_value(toNumber(v1) * toNumber(v2));
+		r = double_to_value(toNumber(v1) * toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(r);
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumerator(v1) * toNumerator(v2),
+			toDenominator(v1) * toDenominator(v2)
+		);
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(r);
@@ -279,6 +317,7 @@ Error mul(Stack* S, Stack* scope_arr)
 Error div_(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
@@ -289,7 +328,18 @@ Error div_(Stack* S, Stack* scope_arr)
 			clear_ref(v2);
 			return ValueError;
 		}
-		V r = double_to_value(toNumber(v1) / toNumber(v2));
+		r = double_to_value(toNumber(v1) / toNumber(v2));
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(r);
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			toNumerator(v1) * toDenominator(v2),
+			toDenominator(v1) * toNumerator(v2)
+		);
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(r);
@@ -306,6 +356,7 @@ Error div_(Stack* S, Stack* scope_arr)
 Error mod_(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
@@ -316,7 +367,19 @@ Error mod_(Stack* S, Stack* scope_arr)
 			clear_ref(v2);
 			return ValueError;
 		}
-		V r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
+		r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(r);
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = new_frac(
+			(toNumerator(v1) * toDenominator(v2)) %
+			(toNumerator(v2) * toDenominator(v1)),
+			toDenominator(v1) * toDenominator(v2)
+		);
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(r);
