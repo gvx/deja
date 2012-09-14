@@ -556,11 +556,21 @@ Error exit_(Stack* S, Stack* scope_arr)
 Error lt(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = toNumber(v1) < toNumber(v2) ? v_true : v_false;
+		r = toNumber(v1) < toNumber(v2) ? v_true : v_false;
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(r));
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = toNumerator(v1) * toDenominator(v2) <
+		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(add_ref(r));
@@ -577,11 +587,21 @@ Error lt(Stack* S, Stack* scope_arr)
 Error gt(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = toNumber(v1) > toNumber(v2) ? v_true : v_false;
+		r = toNumber(v1) > toNumber(v2) ? v_true : v_false;
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(r));
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = toNumerator(v1) * toDenominator(v2) >
+		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(add_ref(r));
@@ -598,11 +618,21 @@ Error gt(Stack* S, Stack* scope_arr)
 Error le(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
+		r = toNumber(v1) <= toNumber(v2) ? v_true : v_false;
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(r));
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = toNumerator(v1) * toDenominator(v2) <=
+		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(add_ref(r));
@@ -619,11 +649,21 @@ Error le(Stack* S, Stack* scope_arr)
 Error ge(Stack* S, Stack* scope_arr)
 {
 	require(2);
+	V r;
 	V v1 = popS();
 	V v2 = popS();
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		V r = toNumber(v1) >= toNumber(v2) ? v_true : v_false;
+		r = toNumber(v1) >= toNumber(v2) ? v_true : v_false;
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(r));
+		return Nothing;
+	}
+	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
+	{
+		r = toNumerator(v1) * toDenominator(v2) >=
+		toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
 		clear_ref(v1);
 		clear_ref(v2);
 		pushS(add_ref(r));
