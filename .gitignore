@@ -1,5 +1,7 @@
 *.pyc
 .*
 *.o
-std.c
-std.vu
+vm/std.c
+vm/std.vu
+vm/vu
+vm/vu-dbg
