@@ -21,6 +21,11 @@ uint64_t ntohll(uint64_t i)
 
 #define eofreached ((unsigned)(8 + curpos - oldpos) >= size)
 
+union double_or_uint64_t {
+	double d;
+	uint64_t i;
+};
+
 bool read_literals(char *oldpos, size_t size, Header* h)
 {
 	int i;
@@ -55,11 +60,11 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 		type = *curpos++;
 		if (type == TYPE_NUM)
 		{
-			uint64_t d;
+			union double_or_uint64_t d;
 			memcpy(&d, curpos, 8);
 			curpos += 8;
-			d = ntohll(d);
-			t = double_to_value(*(double*)&d);
+			d.i = ntohll(d.i);
+			t = double_to_value(d.d);
 		}
 		else if (type == TYPE_STR)
 		{
