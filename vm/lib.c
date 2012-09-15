@@ -1,4 +1,7 @@
 #include "lib.h"
+#include "utf8.h"
+
+#include <time.h>
 
 void print_list_value(Stack*, int, int);
 

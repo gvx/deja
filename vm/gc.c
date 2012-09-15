@@ -62,7 +62,6 @@ V add_rooted(V t)
 
 void free_value(V t)
 {
-	Stack* s;
 	Scope* sc;
 	Bucket* b;
 	Bucket* bb;
