@@ -1,0 +1,4 @@
+#!/bin/bash
+python ../dvc.py ../tests/$1.deja > ../tests/$1.vu
+python ../dis.py < ../tests/$1.vu > ../tests/$1.dis
+./vu $1
