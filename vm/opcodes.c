@@ -16,7 +16,6 @@ Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	V key;
 	V scope = get_head(scope_arr);
 	Scope *sc = toScope(scope);
-	Func* f;
 	V file;
 	uint32_t *pc;
 	int argument;
