@@ -480,6 +480,8 @@ const char* gettype(V r)
 			return "dict";
 		case T_PAIR:
 			return "pair";
+		case T_FRAC:
+			return "frac";
 		case T_FUNC:
 		case T_CFUNC:
 			return "func";
