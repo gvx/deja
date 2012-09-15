@@ -692,6 +692,10 @@ Error gt(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return TypeError;
 	}
+	clear_ref(v1);
+	clear_ref(v2);
+	pushS(add_ref(r));
+	return Nothing;
 }
 
 Error le(Stack* S, Stack* scope_arr)
