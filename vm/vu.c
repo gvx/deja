@@ -58,7 +58,20 @@ void run(V file_name, Stack *S)
 			clear_stack(save_scopes);
 		}
 	}
-	if (e != Exit) //uh oh
+	if (e == Exit)
+	{
+		int i;
+		if (stack_size(S))
+		{
+			puts("Result:");
+			for (i = stack_size(S) - 1; i >= 0; i--)
+			{
+				print_value(S->nodes[i], 0);
+				putchar(10);
+			}
+		}
+	}
+	else //uh oh
 	{
 		handle_error(e, scope);
 	}
