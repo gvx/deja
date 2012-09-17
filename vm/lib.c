@@ -1921,6 +1921,14 @@ Error make_frac(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error clear(Stack *S, Stack *scope_arr)
+{
+	while (stack_size(S))
+	{
+		clear_ref(popS());
+	}
+	return Nothing;
+}
 
 static CFunc stdlib[] = {
 	{"get", get},
@@ -2024,6 +2032,7 @@ static CFunc stdlib[] = {
 	{"(ident-count)", print_ident_count},
 	{"(ident-depth)", print_ident_depth},
 	{"//", make_frac},
+	{"clear", clear},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
