@@ -6,7 +6,7 @@
 #include "lib.h"
 #include "std.h"
 
-void run(V file_name)
+void run(V file_name, Stack *S)
 {
 	V global = new_global_scope();
 	open_std_lib(&toScope(global)->hm);
@@ -17,7 +17,6 @@ void run(V file_name)
 		handle_error(IllegalFile, NULL);
 		return;
 	}
-	Stack *S = new_stack();
 	Stack *scope = new_stack();
 	Scope *sc;
 	push(scope, new_file_scope(file));
@@ -71,11 +70,19 @@ void run(V file_name)
 
 int main(int argc, char *argv[])
 {
+	int i;
 	init_path();
 	init_errors();
 	if (argc > 1)
 	{
-		run(find_file(get_ident(argv[1])));
+		Stack *S = new_stack();
+
+		for (i = argc - 1; i > 1; i--)
+		{
+			pushS(a_to_value(argv[i]));
+		}
+
+		run(find_file(get_ident(argv[1])), S);
 	}
 	return 0;
 }
