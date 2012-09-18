@@ -70,6 +70,19 @@ def convert(filename, flat):
 							SingleInstruction('RETURN', 0),
 							mchild,
 						])
+					elif w.value == '\xce\xbb': #U+03BB GREEK SMALL LETTER LAMDA
+						for i in range(len(bytecode) - 1, -1, -1):
+							l = bytecode[i]
+							if isinstance(l, SingleInstruction) and l.opcode == 'PUSH_WORD' and l.ref.value == ';':
+								l.opcode = 'LABDA'
+								l.ref = Marker()
+								bytecode.extend([
+									SingleInstruction('RETURN', 0),
+									l.ref,
+								])
+								break
+						else:
+							raise DejaSyntaxError('Inline lambda without closing semi-colon.')
 					else:
 						bytecode.append(SingleInstruction('PUSH_WORD', w))
 				elif isinstance(w, Number) and w.value.is_integer() and w.value <= POS_SIZE and w.value >= NEG_SIZE:
