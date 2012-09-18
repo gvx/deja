@@ -9,6 +9,10 @@
 #define TYPE_IDENT '\x00'
 #define TYPE_STR '\x01'
 #define TYPE_NUM '\x02'
+// not a type, a flag for
+// short variants of other
+// types
+#define TYPE_SHORT '\x80'
 
 #if __BYTE_ORDER == __BIG_ENDIAN
 #define ntohll(x) (x)
@@ -51,6 +55,11 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			memcpy(&str_length, curpos, 4);
 			curpos += 4 + ntohl(str_length);
 		}
+		else if (type == (TYPE_STR | TYPE_SHORT) || type == (TYPE_IDENT | TYPE_SHORT))
+		{
+			str_length = *curpos++;
+			curpos += str_length;
+		}
 	}
 	V* arr = calloc(n, sizeof(V));
 	V t;
@@ -79,7 +88,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			curpos += str_length;
 			t->type = T_STR;
 		}
-		else // if (type == TYPE_IDENT)
+		else if (type == TYPE_IDENT)
 		{
 			memcpy(&str_length, curpos, 4);
 			curpos += 4;
@@ -89,6 +98,31 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			data[str_length] = '\0';
 			t = lookup_ident(str_length, data);
 			curpos += str_length;
+		}
+		else if (type == (TYPE_STR | TYPE_SHORT))
+		{
+			str_length = *curpos++;
+			if (!valid_utf8(str_length, curpos))
+			{
+				return false;
+			}
+			t = str_to_value(str_length, curpos);
+			curpos += str_length;
+			t->type = T_STR;
+		}
+		else if (type == (TYPE_IDENT | TYPE_SHORT))
+		{
+			str_length = *curpos++;
+			char data[str_length + 1];
+			memcpy(&data, curpos, str_length);
+			data[str_length] = '\0';
+			t = lookup_ident(str_length, data);
+			curpos += str_length;
+		}
+		else
+		{
+			//should probably error instead of continue
+			continue;
 		}
 		arr[i] = t;
 	}

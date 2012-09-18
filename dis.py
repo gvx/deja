@@ -18,7 +18,7 @@ def d_signed_int(x):
 	if x[0] >= '\x80':
 		x = '\xff' + x
 	else:
-		x = '\x00' + x 
+		x = '\x00' + x
 	return signed_int_s.unpack(x)[0]
 
 def d_double(x):
@@ -39,6 +39,14 @@ class Literals(object):
 				length = unsigned_int(self.source[1:5]) #<-- length?
 				b = '"' + self.source[5:5 + length] + '"'
 				self.source = self.source[5 + length:]
+			if s == '\x80':
+				length = ord(self.source[1])
+				b = "'" + self.source[2:2 + length] + "'"
+				self.source = self.source[2 + length:]
+			elif s == '\x81':
+				length = ord(self.source[1]) #<-- length?
+				b = '"' + self.source[2:2 + length] + '"'
+				self.source = self.source[2 + length:]
 			elif s == '\x02':
 				b = d_double(self.source[1:9])
 				self.source = self.source[9:]
@@ -75,6 +83,8 @@ def dis_01(text):
 def dis(text):
 	if not text.startswith('\x07DV'):
 		raise Exception("Not a Deja Vu byte code file.")
+	elif text[3] == '\x03':
+		return dis_01(text[4:])
 	elif text[3] == '\x02':
 		return dis_01(text[4:])
 	if text[3] == '\x01':
@@ -82,7 +92,7 @@ def dis(text):
 	elif text[3] == '\x00':
 		return dis_00(text[4:])
 	else:
-		raise Exception("Byte code version not recoginised.")
+		raise Exception("Byte code version not recognised.")
 
 if __name__ == '__main__':
 	import sys

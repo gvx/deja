@@ -68,11 +68,17 @@ def ann(text):
 		if s == '\x02':
 			j = 9
 			yield literal_num
-		else:
+		elif s < '\x80':
 			j = unsigned_int(text[i+1:i+5]) + 5
 			if s == '\x00':
 				yield literal_ident
 			elif s == '\x01':
+				yield literal_str
+		else:
+			j = ord(text[i+1]) + 2
+			if s == '\x80':
+				yield literal_ident
+			elif s == '\x81':
 				yield literal_str
 		yield hexify(text[i+1:i+j])
 		i += j

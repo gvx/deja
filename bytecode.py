@@ -3,7 +3,7 @@ from collect import *
 import struct
 
 HEADER = '\x07DV'
-VERSION = (0, 2)
+VERSION = (0, 3)
 OP_SIZE = 5
 
 OPCODES = {
@@ -44,9 +44,11 @@ for k in OPCODES:
 	OPCODES[k] = int(OPCODES[k], 2) * 0x1000000
 
 TYPES = {
-	'ident':	'00000000',
-	'str':		'00000001',
-	'num':		'00000010',
+	'ident':       '00000000',
+	'str':         '00000001',
+	'num':         '00000010',
+	'short-ident': '10000000',
+	'short-str':   '10000001',
 }
 for k in TYPES:
 	TYPES[k] = chr(int(TYPES[k], 2))
@@ -72,6 +74,10 @@ def write_literals(literals, acc):
 		acc.append(TYPES[literal[0]])
 		if literal[0] == 'num':
 			acc.append(double(literal[1]))
+		elif len(literal[1]) < 256:
+			acc[-1] = TYPES['short-' + literal[0]]
+			acc.append(chr(len(literal[1])))
+			acc.append(literal[1])
 		else:
 			acc.append(unsigned_int(len(literal[1])))
 			acc.append(literal[1])
