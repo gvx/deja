@@ -1551,7 +1551,6 @@ Error exists_(Stack* S, Stack* scope_arr)
 	}
 	pushS(add_ref(v_true));
 	clear_ref(key);
-	clear_ref(v);
 	return Nothing;
 }
 
