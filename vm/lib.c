@@ -1418,6 +1418,12 @@ Error to_num(Stack *S, Stack *scope_arr)
 		pushS(v);
 		return Nothing;
 	}
+	else if (type == T_FRAC)
+	{
+		pushS(double_to_value((double)(toNumerator(v))/(double)(toDenominator(v))));
+		clear_ref(v);
+		return Nothing;
+	}
 	else if (type != T_STR)
 	{
 		clear_ref(v);
