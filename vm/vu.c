@@ -5,6 +5,7 @@
 #include "stack.h"
 #include "lib.h"
 #include "std.h"
+#include "utf8.h"
 
 void run(V file_name, Stack *S)
 {
@@ -92,6 +93,11 @@ int main(int argc, char *argv[])
 
 		for (i = argc - 1; i > 1; i--)
 		{
+			if (!valid_utf8(strlen(argv[i]), argv[i]))
+			{
+				handle_error(UnicodeError, NULL);
+				return 1;
+			}
 			pushS(a_to_value(argv[i]));
 		}
 
