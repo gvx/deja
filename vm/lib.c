@@ -2,6 +2,7 @@
 #include "utf8.h"
 
 #include <time.h>
+#include <sys/time.h>
 
 void print_list_value(Stack*, int, int);
 
@@ -1930,6 +1931,14 @@ Error clear(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error time_(Stack *S, Stack *scope_arr)
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	pushS(new_frac(tv.tv_usec + tv.tv_sec * 1000000, 1000000));
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2033,6 +2042,7 @@ static CFunc stdlib[] = {
 	{"(ident-depth)", print_ident_depth},
 	{"//", make_frac},
 	{"clear", clear},
+	{"time", time_},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
