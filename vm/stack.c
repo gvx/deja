@@ -41,7 +41,7 @@ void push(Stack *stack, V v)
 	if (stack->used == stack->size)
 	{
 		stack->size *= 2;
-		stack->nodes = realloc(stack->nodes, stack->size);
+		stack->nodes = realloc(stack->nodes, stack->size * sizeof(V));
 	}
 	stack->nodes[stack->used++] = v;
 }
@@ -69,7 +69,7 @@ V pop(Stack *stack)
 		if (stack->used < (stack->size / 4) && stack->size > 64)
 		{
 			stack->size /= 2;
-			stack->nodes = realloc(stack->nodes, stack->size);
+			stack->nodes = realloc(stack->nodes, stack->size * sizeof(V));
 		}
 		return v;
 	}
