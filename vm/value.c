@@ -45,9 +45,9 @@ V a_to_value(char* str)
 {
 	size_t l = strlen(str);
 	V t = make_new_value(T_STR, true, sizeof(String) + l + 1);
-	String *s = &((StrValue*)t)->s;
+	String *s = toString(t);
 	s->length = l;
-	memcpy((char*)t + sizeof(StrValue), str, l + 1);
+	memcpy(toCharArr(s), str, l + 1);
 	s->hash = string_hash(l, str);
 	return t;
 }
@@ -55,10 +55,10 @@ V a_to_value(char* str)
 V str_to_value(int max, char* str)
 {
 	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
-	String *s = &((StrValue*)t)->s;
+	String *s = toString(t);
 	s->length = max;
-	memcpy((char*)t + sizeof(StrValue), str, max);
-	max[(char*)t + sizeof(StrValue)] = '\0';
+	memcpy(toCharArr(s), str, max);
+	max[toCharArr(s)] = '\0';
 	s->hash = string_hash(max, str);
 	return t;
 }
@@ -66,10 +66,10 @@ V str_to_value(int max, char* str)
 V empty_str_to_value(int max, char **adr)
 {
 	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
-	String *s = &((StrValue*)t)->s;
+	String *s = toString(t);
 	s->length = max;
-	*adr = (char*)(s + 1);
-	max[(char*)t + sizeof(StrValue)] = '\0';
+	*adr = toCharArr(s);
+	max[toCharArr(s)] = '\0';
 	s->hash = 0;
 	return t;
 }

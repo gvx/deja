@@ -62,12 +62,6 @@ typedef struct String
 
 typedef struct
 {
-	Value v;
-	String s;
-} StrValue;
-
-typedef struct
-{
 	long int numerator;
 	long int denominator;
 } Frac;
