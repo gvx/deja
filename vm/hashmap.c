@@ -46,6 +46,10 @@ uint32_t get_hash(V v)
 	{
 		return get_hash(toFirst(v)) + get_hash(toSecond(v));
 	}
+	else if (t == T_FRAC)
+	{
+		return toNumerator(v) ^ toDenominator(v);
+	}
 	else
 	{
 		return (unsigned long)v >> 4;
