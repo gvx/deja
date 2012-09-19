@@ -103,6 +103,17 @@ V new_pair(V first, V second)
 	return t;
 }
 
+int pair_ordinal(V p)
+{
+	if (getType(p) != T_PAIR)
+	{
+		return 0;
+	}
+	int o1 = pair_ordinal(toFirst(p));
+	int o2 = pair_ordinal(toSecond(p));
+	return (o1 > o2 ? o1 : o2) + 1;
+}
+
 unsigned long int gcd(unsigned long int u, unsigned long int v)
 {
   // simple cases (termination)

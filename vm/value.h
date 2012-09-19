@@ -90,4 +90,6 @@ V new_frac(long int, long int);
 bool truthy(V);
 bool equal(V, V);
 
+int pair_ordinal(V);
+
 #endif
