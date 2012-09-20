@@ -144,7 +144,8 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 		}
 		else if (type == TYPE_FRAC)
 		{
-			uint64_t numer, denom;
+			int64_t numer;
+			uint64_t denom;
 			memcpy(&numer, curpos, 8);
 			numer = ntohll(numer);
 			memcpy(&denom, curpos + 8, 8);
@@ -154,7 +155,8 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 		}
 		else if (type == (TYPE_FRAC | TYPE_SHORT))
 		{
-			uint8_t numer, denom;
+			int8_t numer;
+			uint8_t denom;
 			numer = *curpos++;
 			denom = *curpos++;
 			t = new_frac(numer, denom);
