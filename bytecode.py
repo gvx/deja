@@ -90,7 +90,7 @@ def write_literals(literals, acc):
 			acc.append(double(literal[1]))
 		elif literal[0] == 'frac':
 			n, d = literal[1]
-			if -128 <= n < 128 and -128 <= d < 128:
+			if -128 <= n < 128 and d < 256:
 				acc[-1] = TYPES['short-frac']
 				acc.append(signed_char(n))
 				acc.append(chr(d))

@@ -117,8 +117,10 @@ void write_object(FILE *file, V obj, HashMap *hm)
 	String *s = NULL;
 	Stack *st;
 	HashMap *hmv;
+	int8_t n8;
 	uint8_t l8;
 	uint32_t l32;
+	int64_t n64;
 	uint64_t l64;
 	int i;
 	Bucket *b;
@@ -137,7 +139,7 @@ void write_object(FILE *file, V obj, HashMap *hm)
 				type |= TYPE_SHORT;
 		case T_FRAC:
 			if (toNumerator(obj) < 128 && toNumerator(obj) >= -128 &&
-				toDenominator(obj) < 128 && toDenominator(obj) >= -128)
+				toDenominator(obj) < 256)
 				type |= TYPE_SHORT;
 	}
 
@@ -181,16 +183,16 @@ void write_object(FILE *file, V obj, HashMap *hm)
 		case T_FRAC:
 			if (type & TYPE_SHORT)
 			{
-				l8 = toNumerator(obj);
-				fwrite(&l8, 1, 1, file);
+				n8 = toNumerator(obj);
+				fwrite(&n8, 1, 1, file);
 				l8 = toDenominator(obj);
 				fwrite(&l8, 1, 1, file);
 			}
 			else
 			{
-				l64 = toNumerator(obj);
-				l64 = htonl(l64);
-				fwrite(&l64, 8, 1, file);
+				n64 = toNumerator(obj);
+				n64 = htonl(n64);
+				fwrite(&n64, 8, 1, file);
 				l64 = toDenominator(obj);
 				l64 = htonl(l64);
 				fwrite(&l64, 8, 1, file);
