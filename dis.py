@@ -1,5 +1,8 @@
 import struct
-from bytecode import OPCODES, unsigned_int_s, signed_int_s, double_s
+from bytecode import (
+	OPCODES, unsigned_int_s, signed_int_s, double_s, signed_long_int_s,
+	unsigned_long_int_s, signed_char_s
+)
 
 DECODE_OPCODES = {}
 for k in OPCODES:
@@ -13,6 +16,15 @@ def d_unsigned_int(x):
 
 def unsigned_int(x):
 	return unsigned_int_s.unpack(x)[0]
+
+def unsigned_long_int(x):
+	return unsigned_long_int_s.unpack(x)[0]
+
+def signed_long_int(x):
+	return signed_long_int_s.unpack(x)[0]
+
+def signed_char(x):
+	return signed_char_s.unpack(x)[0]
 
 def d_signed_int(x):
 	if x[0] >= '\x80':
@@ -50,6 +62,16 @@ class Literals(object):
 			elif s == '\x02':
 				b = d_double(self.source[1:9])
 				self.source = self.source[9:]
+			elif s == '\x07':
+				n = signed_long_int(self.source[1:9])
+				d = signed_long_int(self.source[9:17])
+				b = str(n) + '/' + str(d)
+				self.source = self.source[17:]
+			elif s == '\x87':
+				n = signed_char(self.source[1])
+				d = ord(self.source[2])
+				b = str(n) + '/' + str(d)
+				self.source = self.source[3:]
 			self.cache.append(b)
 		return self.cache[item]
 
