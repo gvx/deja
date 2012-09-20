@@ -11,6 +11,10 @@
 #define TYPE_IDENT '\x00'
 #define TYPE_STR '\x01'
 #define TYPE_NUM '\x02'
+#define TYPE_LIST '\x03'
+#define TYPE_DICT '\x05'
+#define TYPE_PAIR '\x06'
+#define TYPE_FRAC '\x07'
 // not a type, a flag for
 // short variants of other
 // types
