@@ -67,6 +67,14 @@ unsigned_int_s = struct.Struct('>I')
 def unsigned_int(x):
 	return unsigned_int_s.pack(x)
 
+signed_long_int_s = struct.Struct('>q')
+def signed_long_int(x):
+	return signed_long_int_s.pack(x)
+
+unsigned_long_int_s = struct.Struct('>Q')
+def unsigned_long_int(x):
+	return unsigned_long_int_s.pack(x)
+
 double_s = struct.Struct('>d')
 def double(x):
 	return double_s.pack(x)
@@ -87,8 +95,8 @@ def write_literals(literals, acc):
 				acc.append(signed_char(n))
 				acc.append(chr(d))
 			else:
-				acc.append(signed_int(n))
-				acc.append(unsigned_int(d))
+				acc.append(signed_long_int(n))
+				acc.append(unsigned_long_int(d))
 		elif len(literal[1]) < 256:
 			acc[-1] = TYPES['short-' + literal[0]]
 			acc.append(chr(len(literal[1])))
