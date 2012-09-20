@@ -30,7 +30,6 @@ V load_memfile(char *data, size_t length, V file_name, V global)
 	{
 		if (!read_literals(data, length, &h))
 		{
-			error_msg = "Wrong encoding for string literal, should be UTF-8.";
 			return NULL;
 		}
 		new_file = make_new_value(T_FILE, false, sizeof(File));

@@ -85,6 +85,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			str_length = ntohl(str_length);
 			if (!valid_utf8(str_length, curpos))
 			{
+				error_msg = "Wrong encoding for string literal, should be UTF-8.";
 				return false;
 			}
 			t = str_to_value(str_length, curpos);
@@ -106,6 +107,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			str_length = *curpos++;
 			if (!valid_utf8(str_length, curpos))
 			{
+				error_msg = "Wrong encoding for string literal, should be UTF-8.";
 				return false;
 			}
 			t = str_to_value(str_length, curpos);
@@ -127,6 +129,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			str_length = ntohl(ref);
 			if (ref >= i)
 			{
+				error_msg = "Illegal pair detected.";
 				return false;
 			}
 			V v1 = arr[ref];
@@ -135,6 +138,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			ref = ntohl(ref);
 			if (ref >= i)
 			{
+				error_msg = "Illegal pair detected.";
 				return false;
 			}
 			V v2 = arr[ref];
@@ -202,6 +206,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 		}
 		else
 		{
+			error_msg = "Unknown literal type.";
 			return false;
 		}
 		arr[i] = t;
