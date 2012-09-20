@@ -39,18 +39,34 @@ def asm(intext):
 				t = line[0]
 				r = line[1:]
 				if t == 'i':
-					acc.append('\x00')
-					acc.append(unsigned_int(len(r)))
-					acc.append(r)
+					if len(r) < 256:
+						acc.append('\x80')
+						acc.append(chr(len(r)))
+						acc.append(r)
+					else:
+						acc.append('\x00')
+						acc.append(unsigned_int(len(r)))
+						acc.append(r)
 				elif t == 's':
-					acc.append('\x01')
-					acc.append(unsigned_int(len(r)))
-					acc.append(r)
+					if len(r) < 256:
+						acc.append('\x81')
+						acc.append(chr(len(r)))
+						acc.append(r)
+					else:
+						acc.append('\x01')
+						acc.append(unsigned_int(len(r)))
+						acc.append(r)
 				elif t == 'f':
-					acc.append('\x07')
 					n, d = r.split('/', 1)
-					acc.append(signed_long_int(int(n)))
-					acc.append(unsigned_long_int(int(d)))
+					n, d = int(n), int(d)
+					if -128 <= n < 128 and d < 256:
+						acc.append('\x87')
+						acc.append(signed_char(int(n)))
+						acc.append(chr(int(d)))
+					else:
+						acc.append('\x07')
+						acc.append(signed_long_int(int(n)))
+						acc.append(unsigned_long_int(int(d)))
 				elif t == 'n':
 					acc.append('\x02')
 					acc.append(double(float(r)))
