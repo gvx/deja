@@ -6,29 +6,12 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-#define TYPE_IDENT '\x00'
-#define TYPE_STR '\x01'
-#define TYPE_NUM '\x02'
-// not a type, a flag for
-// short variants of other
-// types
-#define TYPE_SHORT '\x80'
+#define eofreached ((unsigned)(8 + curpos - oldpos) >= size)
 
-#if __BYTE_ORDER == __BIG_ENDIAN
-#define ntohll(x) (x)
-#else
-uint64_t ntohll(uint64_t i)
+uint64_t ntohll_(uint64_t i)
 {
 	return ntohl(i >> 32) | ((uint64_t)ntohl(i & (((uint64_t)1 << 32) - 1)) << 32);
 }
-#endif
-
-#define eofreached ((unsigned)(8 + curpos - oldpos) >= size)
-
-union double_or_uint64_t {
-	double d;
-	uint64_t i;
-};
 
 bool read_literals(char *oldpos, size_t size, Header* h)
 {

@@ -1,0 +1,1 @@
+bool persist(char*, V);

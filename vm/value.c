@@ -103,7 +103,7 @@ V new_pair(V first, V second)
 	return t;
 }
 
-int pair_ordinal(V p)
+long int pair_ordinal(V p)
 {
 	if (getType(p) != T_PAIR)
 	{

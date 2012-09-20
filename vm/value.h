@@ -7,7 +7,7 @@
 #define isInt(x) ((long int)x & 1)
 #define canBeInt(x) (x > INTPTR_MIN >> 1 && x < INTPTR_MAX >> 1)
 #define toInt(x) ((long int)x>>1)
-#define intToV(x) ((V)((x << 1) + 1))
+#define intToV(x) ((V)(((x) << 1) + 1))
 
 #define toFile(x) ((File*)(x + 1))
 #define toScope(x) ((Scope*)(x + 1))
@@ -90,6 +90,6 @@ V new_frac(long int, long int);
 bool truthy(V);
 bool equal(V, V);
 
-int pair_ordinal(V);
+long int pair_ordinal(V);
 
 #endif
