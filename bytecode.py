@@ -47,11 +47,17 @@ TYPES = {
 	'ident':       '00000000',
 	'str':         '00000001',
 	'num':         '00000010',
+	'frac':        '00000111',
 	'short-ident': '10000000',
 	'short-str':   '10000001',
+	'short-frac':  '10000111',
 }
 for k in TYPES:
 	TYPES[k] = chr(int(TYPES[k], 2))
+
+signed_char_s = struct.Struct('>b')
+def signed_char(x):
+	return signed_char_s.pack(x)
 
 signed_int_s = struct.Struct('>i')
 def signed_int(x):
@@ -74,6 +80,15 @@ def write_literals(literals, acc):
 		acc.append(TYPES[literal[0]])
 		if literal[0] == 'num':
 			acc.append(double(literal[1]))
+		elif literal[0] == 'frac':
+			n, d = literal[1]
+			if -128 <= n < 128 and -128 <= d < 128:
+				acc[-1] = TYPES['short-frac']
+				acc.append(signed_char(n))
+				acc.append(chr(d))
+			else:
+				acc.append(signed_int(n))
+				acc.append(unsigned_int(d))
 		elif len(literal[1]) < 256:
 			acc[-1] = TYPES['short-' + literal[0]]
 			acc.append(chr(len(literal[1])))

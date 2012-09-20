@@ -19,6 +19,8 @@ class Bucket(object):
 			b = 'num'
 		elif isinstance(v, String):
 			b = 'str'
+		elif isinstance(v, Fraction):
+			b = 'frac'
 		elif isinstance(v, str):
 			return v, 'ident'
 		return v.value, b

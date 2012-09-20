@@ -62,6 +62,11 @@ class ProperWord(Word):
 	def convert(self, value):
 		return value
 
+class Fraction(Word):
+	def convert(self, value):
+		n, d = value.split('/')
+		return int(n), int(d)
+
 class WordList(Node):
 	def __init__(self, parent, tokens):
 		Node.__init__(self, parent)
@@ -75,8 +80,11 @@ class WordList(Node):
 			return 'ident'
 		elif token.count('.') < 2 and (token.replace('.', '').isdigit() or token.startswith('-') and token[1:].replace('.', '').isdigit()):
 			return 'num'
-		else:
-			return 'word'
+		elif token.count('/') == 1:
+			n, d = token.split('/')
+			if (n.isdigit() or (n.startswith('-') and n[1:].isdigit())) and d.isdigit():
+				return 'frac'
+		return 'word'
 	@classmethod
 	def gettokenclass(cls, token):
 		t = cls.gettokentype(token)
@@ -88,6 +96,8 @@ class WordList(Node):
 			return ProperWord
 		elif t == 'ident':
 			return Ident
+		elif t == 'frac':
+			return Fraction
 
 class Line(WordList):
 	def __init__(self, parent, tokens, linenr):

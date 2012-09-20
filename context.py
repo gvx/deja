@@ -54,12 +54,6 @@ class LineContext(Context):
 					if token.startswith('@') and len(token) > 1:
 						tokens[i] = ":%s" % token[1:]
 						tokens.insert(i, 'get')
-					elif token.count('/') == 1:
-						n, d = token.split('/')
-						if (n.isdigit() or (n.startswith('-') and n[1:].isdigit())) and d.isdigit():
-							tokens[i] = '//'
-							tokens.insert(i + 1, d)
-							tokens.insert(i + 1, n)
 				self.tokens.extend(tokens)
 		return self
 
