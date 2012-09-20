@@ -46,6 +46,11 @@ def asm(intext):
 					acc.append('\x01')
 					acc.append(unsigned_int(len(r)))
 					acc.append(r)
+				elif t == 'f':
+					acc.append('\x07')
+					n, d = r.split('/', 1)
+					acc.append(signed_long_int(int(n)))
+					acc.append(unsigned_long_int(int(d)))
 				elif t == 'n':
 					acc.append('\x02')
 					acc.append(double(float(r)))
