@@ -105,8 +105,43 @@ void write_object(FILE *file, V obj, HashMap *hm)
 {
 	int t = getType(obj);
 	char type;
+	ITreeNode *id;
+	String *s;
+
 	switch (t)
 	{
+		case T_IDENT:
+			id = toIdent(obj);
+			type = (id->length < 256) ? (TYPE_SHORT | TYPE_IDENT) : TYPE_IDENT;
+			fwrite(&type, 1, 1, file);
+			if (type & TYPE_SHORT)
+			{
+				uint8_t l = id->length;
+				fwrite(&l, 1, 1, file);
+			}
+			else
+			{
+				uint32_t l = id->length;
+				l = htonl(l);
+				fwrite(&l, 4, 1, file);
+			}
+			fwrite(&id->data, id->length, 1, file);
+		case T_STR:
+			s = toString(obj);
+			type = (s->length < 256) ? (TYPE_SHORT | TYPE_STR) : TYPE_STR;
+			fwrite(&type, 1, 1, file);
+			if (type & TYPE_SHORT)
+			{
+				uint8_t l = s->length;
+				fwrite(&l, 1, 1, file);
+			}
+			else
+			{
+				uint32_t l = s->length;
+				l = htonl(l);
+				fwrite(&l, 4, 1, file);
+			}
+			fwrite(toCharArr(s), s->length, 1, file);
 		case T_NUM:
 			type = TYPE_NUM;
 			fwrite(&type, 1, 1, file);
@@ -114,6 +149,11 @@ void write_object(FILE *file, V obj, HashMap *hm)
 			num.d = toNumber(obj);
 			num.i = htonll(num.i);
 			fwrite(&num, 8, 1, file);
+			break;
+		case T_FRAC:
+		case T_PAIR:
+		case T_STACK:
+		case T_DICT:
 			break;
 	}
 }

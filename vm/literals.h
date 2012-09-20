@@ -23,6 +23,11 @@
 #endif
 #define htonll ntohll
 
+union double_or_uint64_t {
+	double d;
+	uint64_t i;
+};
+
 uint64_t ntohll_(uint64_t);
 
 bool read_literals(char*, size_t, Header*);
