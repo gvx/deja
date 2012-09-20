@@ -21,6 +21,7 @@ literal_type = clb % 0
 literal_str = clb % 31
 literal_ident = clb % 32
 literal_num = clb % 33
+literal_frac = clb % 35
 end = clb % 0
 
 def unsigned_int(x):
@@ -68,6 +69,12 @@ def ann(text):
 		if s == '\x02':
 			j = 9
 			yield literal_num
+		elif s == '\x07':
+			j = 17
+			yield literal_frac
+		elif s == '\x87':
+			j = 3
+			yield literal_frac
 		elif s < '\x80':
 			j = unsigned_int(text[i+1:i+5]) + 5
 			if s == '\x00':
