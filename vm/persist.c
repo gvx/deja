@@ -101,59 +101,133 @@ int persist_order_objects(HashMap *hm)
 	return index;
 }
 
+void write_ref(FILE *file, V obj, HashMap *hm)
+{
+	V n = get_hashmap(hm, obj);
+	uint32_t ref = toInt(n);
+	ref = htonl(ref);
+	fwrite(((char*)&ref) + 1, 3, 1, file);
+}
+
 void write_object(FILE *file, V obj, HashMap *hm)
 {
 	int t = getType(obj);
-	char type;
-	ITreeNode *id;
-	String *s;
+	union double_or_uint64_t num;
+	ITreeNode *id = NULL;
+	String *s = NULL;
+	Stack *st;
+	HashMap *hmv;
+	uint8_t l8;
+	uint32_t l32;
+	uint64_t l64;
+	int i;
+	Bucket *b;
+
+	char type = t;
 
 	switch (t)
 	{
 		case T_IDENT:
 			id = toIdent(obj);
-			type = (id->length < 256) ? (TYPE_SHORT | TYPE_IDENT) : TYPE_IDENT;
-			fwrite(&type, 1, 1, file);
-			if (type & TYPE_SHORT)
-			{
-				uint8_t l = id->length;
-				fwrite(&l, 1, 1, file);
-			}
-			else
-			{
-				uint32_t l = id->length;
-				l = htonl(l);
-				fwrite(&l, 4, 1, file);
-			}
-			fwrite(&id->data, id->length, 1, file);
+			if (id->length < 256)
+				type |= TYPE_SHORT;
 		case T_STR:
 			s = toString(obj);
-			type = (s->length < 256) ? (TYPE_SHORT | TYPE_STR) : TYPE_STR;
-			fwrite(&type, 1, 1, file);
+			if (s->length < 256)
+				type |= TYPE_SHORT;
+		case T_FRAC:
+			if (toNumerator(obj) < 128 && toNumerator(obj) >= -128 &&
+				toDenominator(obj) < 128 && toDenominator(obj) >= -128)
+				type |= TYPE_SHORT;
+	}
+
+	fwrite(&type, 1, 1, file);
+
+	switch (t)
+	{
+		case T_IDENT:
 			if (type & TYPE_SHORT)
 			{
-				uint8_t l = s->length;
-				fwrite(&l, 1, 1, file);
+				l8 = id->length;
+				fwrite(&l8, 1, 1, file);
 			}
 			else
 			{
-				uint32_t l = s->length;
-				l = htonl(l);
-				fwrite(&l, 4, 1, file);
+				l32 = id->length;
+				l32 = htonl(l32);
+				fwrite(&l32, 4, 1, file);
+			}
+			fwrite(&id->data, id->length, 1, file);
+			break;
+		case T_STR:
+			if (type & TYPE_SHORT)
+			{
+				l8 = s->length;
+				fwrite(&l8, 1, 1, file);
+			}
+			else
+			{
+				l32 = s->length;
+				l32 = htonl(l32);
+				fwrite(&l32, 4, 1, file);
 			}
 			fwrite(toCharArr(s), s->length, 1, file);
+			break;
 		case T_NUM:
-			type = TYPE_NUM;
-			fwrite(&type, 1, 1, file);
-			union double_or_uint64_t num;
 			num.d = toNumber(obj);
 			num.i = htonll(num.i);
 			fwrite(&num, 8, 1, file);
 			break;
 		case T_FRAC:
+			if (type & TYPE_SHORT)
+			{
+				l8 = toNumerator(obj);
+				fwrite(&l8, 1, 1, file);
+				l8 = toDenominator(obj);
+				fwrite(&l8, 1, 1, file);
+			}
+			else
+			{
+				l64 = toNumerator(obj);
+				l64 = htonl(l64);
+				fwrite(&l64, 8, 1, file);
+				l64 = toDenominator(obj);
+				l64 = htonl(l64);
+				fwrite(&l64, 8, 1, file);
+			}
+			break;
 		case T_PAIR:
+			write_ref(file, toFirst(obj), hm);
+			write_ref(file, toSecond(obj), hm);
+			break;
 		case T_STACK:
+			st = toStack(obj);
+			l32 = st->used;
+			l32 = htonl(l32);
+			fwrite(&l32, 4, 1, file);
+			for (i = 0; i < st->used; i++)
+			{
+				write_ref(file, st->nodes[i], hm);
+			}
+			break;
 		case T_DICT:
+			hmv = toHashMap(obj);
+			l32 = hmv->used;
+			l32 = htonl(l32);
+			fwrite(&l32, 4, 1, file);
+			if (hmv->map != NULL)
+			{
+				for (i = 0; i < hmv->size; i++)
+				{
+					b = hmv->map[i];
+					while(b != NULL)
+					{
+						write_ref(file, b->key, hm);
+						write_ref(file, b->value, hm);
+						b = b->next;
+					}
+				}
+			}
 			break;
 	}
 }
