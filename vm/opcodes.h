@@ -38,6 +38,6 @@
 #define OP_GET_DICT       0x72
 #define OP_SET_DICT       0x73
 
-Error do_instruction(Header*, Stack*, Stack*);
+Error inline do_instruction(Header*, Stack*, Stack*);
 
 #endif

@@ -9,7 +9,7 @@
 
 extern V lastCall;
 
-Error do_instruction(Header* h, Stack* S, Stack* scope_arr)
+Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 {
 	V container;
 	V v;
