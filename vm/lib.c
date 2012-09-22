@@ -1984,6 +1984,28 @@ Error persist_stack(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error unpersist(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V location = popS();
+	if (getType(location) != T_STR)
+	{
+		clear_ref(location);
+		return TypeError;
+	}
+	V file = load_file(location, toFile(toScope(get_head(scope_arr))->file)->global);
+	if (file == NULL)
+	{
+		return IllegalFile;
+	}
+	if (getType(file) == T_FILE)
+	{
+		push(scope_arr, new_file_scope(file));
+	}
+	clear_ref(file);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2090,6 +2112,7 @@ static CFunc stdlib[] = {
 	{"time", time_},
 	{"persist", persist_value},
 	{"persist-stack", persist_stack},
+	{"unpersist", unpersist},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
