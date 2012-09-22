@@ -171,7 +171,6 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			str_length = ntohl(str_length);
 			t = new_list();
 			curpos += 4;
-			ref = 0;
 			if (str_length > 0)
 			{
 				uint32_t size = 64;
@@ -181,6 +180,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 				toStack(t)->nodes = calloc(size, sizeof(V));
 				for (j = 0; j < str_length; j++)
 				{
+					ref = 0;
 					memcpy(((char*)&ref) + 1, curpos, 3);
 					ref = ntohl(ref);
 					toStack(t)->nodes[j] = intToV((uint64_t)ref);
@@ -226,16 +226,17 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			case TYPE_DICT:
 				if (toHashMap(t)->map)
 				{
-					ref = 0;
 					curpos = ((char*)toHashMap(t)->map);
 
 					toHashMap(t)->map = NULL;
 					for (j = 0; j < toHashMap(t)->used; j++)
 					{
+						ref = 0;
 						memcpy(((char*)&ref) + 1, curpos, 3);
 						ref = ntohl(ref);
 						V key = arr[ref];
 
+						ref = 0;
 						memcpy(((char*)&ref) + 1, curpos + 3, 3);
 						ref = ntohl(ref);
 						V value = arr[ref];
