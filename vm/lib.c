@@ -1,5 +1,6 @@
 #include "lib.h"
 #include "utf8.h"
+#include "persist.h"
 
 #include <time.h>
 #include <sys/time.h>
@@ -1944,6 +1945,28 @@ Error time_(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error persist_value(Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V location = popS();
+	if (getType(location) != T_STR)
+	{
+		clear_ref(location);
+		return TypeError;
+	}
+	V pval = popS();
+	if (!persist(getChars(location), pval))
+	{
+		clear_ref(location);
+		clear_ref(pval);
+		return UnknownError;
+	}
+	clear_ref(location);
+	clear_ref(pval);
+	return Nothing;
+}
+
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2048,6 +2071,7 @@ static CFunc stdlib[] = {
 	{"//", make_frac},
 	{"clear", clear},
 	{"time", time_},
+	{"persist", persist_value},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
