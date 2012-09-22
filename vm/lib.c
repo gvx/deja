@@ -1966,6 +1966,23 @@ Error persist_value(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error persist_stack(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V location = popS();
+	if (getType(location) != T_STR)
+	{
+		clear_ref(location);
+		return TypeError;
+	}
+	if (!persist_all(getChars(location), S))
+	{
+		clear_ref(location);
+		return UnknownError;
+	}
+	clear_ref(location);
+	return Nothing;
+}
 
 static CFunc stdlib[] = {
 	{"get", get},
@@ -2072,6 +2089,7 @@ static CFunc stdlib[] = {
 	{"clear", clear},
 	{"time", time_},
 	{"persist", persist_value},
+	{"persist-stack", persist_stack},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
