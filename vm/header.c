@@ -3,7 +3,7 @@
 Header read_header(char *data, size_t size)
 {
 	Header header = {{0}};
-	if (size < sizeof header) return header;
+	if (size < 8) return header;
 	memcpy(&header, data, sizeof header);
 	header.size = ntohl(header.size);
 	return header;
