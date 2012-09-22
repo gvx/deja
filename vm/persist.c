@@ -240,7 +240,7 @@ bool persist(char *fname, V obj)
 	HashMap *hm;
 	int maxm;
 	FILE *file;
-	long int obj_encoded;
+	uint32_t obj_encoded;
 	Bucket *b;
 
 	hm = persist_collect(obj);
@@ -249,8 +249,8 @@ bool persist(char *fname, V obj)
 		maxm = persist_order_objects(hm);
 		file = fopen(fname, "w");
 		fwrite("\x07DV\x03\0\0\0\x01", 8, 1, file);
-		obj_encoded = htonll(toInt(get_hashmap(hm, obj)));
-		fwrite(&obj_encoded, sizeof obj_encoded, 1, file);
+		obj_encoded = htonl((uint32_t)toInt(get_hashmap(hm, obj)));
+		fwrite(&obj_encoded, 4, 1, file);
 
 		V reverse_lookup[maxm];
 
@@ -276,4 +276,75 @@ bool persist(char *fname, V obj)
 	{
 		return false;
 	}
+}
+
+bool persist_all(char *fname, Stack *objects)
+{
+	int i;
+	HashMap *hm = NULL;
+	int maxm;
+	FILE *file;
+	uint32_t obj_encoded;
+	Bucket *b;
+	uint32_t ssize;
+
+	if (objects->used)
+	{
+		hm = persist_collect(objects->nodes[0]);
+
+		if (!hm)
+		{
+			return false;
+		}
+
+		for (i = 1; i < objects->used; i++)
+		{
+			if (!persist_collect_(objects->nodes[i], hm))
+			{
+				return false;
+			}
+		}
+
+		maxm = persist_order_objects(hm);
+	}
+	else
+	{
+		maxm = 0; // empty stack is valid too
+	}
+
+	file = fopen(fname, "w");
+
+	fwrite("\x07DV\x03", 4, 1, file);
+	ssize = objects->size;
+	fwrite(&ssize, 4, 1, file);
+
+	for (i = 0; i < objects->used; i++)
+	{
+		obj_encoded = htonl((uint32_t)toInt(get_hashmap(hm, objects->nodes[i])));
+		fwrite(&obj_encoded, 4, 1, file);
+	}
+
+	V reverse_lookup[maxm];
+
+	if (hm)
+	{
+		for (i = 0; i < hm->size; i++)
+		{
+			b = hm->map[i];
+			while (b != NULL)
+			{
+				reverse_lookup[toInt(b->value)] = b->key;
+				b = b->next;
+			}
+		}
+	}
+
+	for (i = 0; i < maxm; i++)
+	{
+		write_object(file, reverse_lookup[i], hm);
+	}
+
+	fclose(file);
+
+	return true;
 }
