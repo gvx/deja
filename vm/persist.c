@@ -248,9 +248,11 @@ bool persist(char *fname, V obj)
 	{
 		maxm = persist_order_objects(hm);
 		file = fopen(fname, "w");
-		fwrite("\007DV\x03\0\0\0\x01", 8, 1, file);
+		fwrite("\007DV\x03\0\0\0\x02", 8, 1, file);
 		obj_encoded = htonl((uint32_t)toInt(get_hashmap(hm, obj)));
 		fwrite(&obj_encoded, 4, 1, file);
+
+		fwrite("\x12\0\0\0", 4, 1, file);
 
 		V reverse_lookup[maxm];
 
@@ -270,6 +272,7 @@ bool persist(char *fname, V obj)
 		}
 
 		fclose(file);
+
 		return true;
 	}
 	else
@@ -315,7 +318,7 @@ bool persist_all(char *fname, Stack *objects)
 	file = fopen(fname, "w");
 
 	fwrite("\007DV\x03", 4, 1, file);
-	ssize = objects->size;
+	ssize = objects->size + 1;
 	fwrite(&ssize, 4, 1, file);
 
 	for (i = 0; i < objects->used; i++)
@@ -323,6 +326,8 @@ bool persist_all(char *fname, Stack *objects)
 		obj_encoded = htonl((uint32_t)toInt(get_hashmap(hm, objects->nodes[i])));
 		fwrite(&obj_encoded, 4, 1, file);
 	}
+
+	fwrite("\x12\0\0\0", 4, 1, file);
 
 	V reverse_lookup[maxm];
 
