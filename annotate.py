@@ -20,8 +20,10 @@ arg_nothing = clb % 30
 literal_type = clb % 0
 literal_str = clb % 31
 literal_ident = clb % 32
-literal_num = clb % 33
+literal_num = clb % 34
 literal_frac = clb % 35
+literal_list = clb % 33
+literal_dict = clb % 36
 end = clb % 0
 
 def unsigned_int(x):
@@ -75,6 +77,18 @@ def ann(text):
 		elif s == '\x87':
 			j = 3
 			yield literal_frac
+		elif s == '\x03':
+			j = unsigned_int(text[i+1:i+5]) * 3 + 5
+			yield literal_list
+		elif s == '\x83':
+			j = ord(text[i+1]) * 3 + 2
+			yield literal_list
+		elif s in ('\x05', '\x85'):
+			if s == '\x05':
+				j = unsigned_int(text[i+1:i+5]) * 6 + 5
+			else:
+				j = ord(text[i+1]) * 6 + 2
+			yield literal_dict
 		elif s < '\x80':
 			j = unsigned_int(text[i+1:i+5]) + 5
 			if s == '\x00':
