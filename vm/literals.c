@@ -229,7 +229,9 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 					curpos = ((char*)toHashMap(t)->map);
 
 					toHashMap(t)->map = NULL;
-					for (j = 0; j < toHashMap(t)->used; j++)
+					str_length = toHashMap(t)->used; //worst abuse of variable name ever Y/Y?
+					toHashMap(t)->used = 0;
+					for (j = 0; j < str_length; j++)
 					{
 						ref = 0;
 						memcpy(((char*)&ref) + 1, curpos, 3);
