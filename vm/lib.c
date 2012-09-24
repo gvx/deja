@@ -1961,14 +1961,17 @@ Error persist_value(Stack *S, Stack *scope_arr)
 		return ValueError;
 	}
 	V pval = popS();
-	if (!persist(make_persist_path(location), pval))
+	char *path = make_persist_path(location);
+	if (!persist(path, pval))
 	{
 		clear_ref(location);
 		clear_ref(pval);
+		free(path);
 		return UnknownError;
 	}
 	clear_ref(location);
 	clear_ref(pval);
+	free(path);
 	return Nothing;
 }
 
@@ -1987,12 +1990,15 @@ Error persist_stack(Stack *S, Stack *scope_arr)
 		error_msg = "Invalid name for persisted data file.";
 		return ValueError;
 	}
-	if (!persist_all(make_persist_path(location), S))
+	char *path = make_persist_path(location);
+	if (!persist_all(path, S))
 	{
 		clear_ref(location);
+		free(path);
 		return UnknownError;
 	}
 	clear_ref(location);
+	free(path);
 	return Nothing;
 }
 
