@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "hashmap.h"
 #include "types.h"
@@ -362,18 +363,29 @@ bool valid_persist_name(V fname)
 	return memchr(toCharArr(s), '/', s->length) == NULL;
 }
 
+void makedirs(char *path)
+{
+	char *first_slash = path;
+	while ((first_slash = strchr(first_slash + 1, '/')))
+	{
+		*first_slash = '\0';
+		mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		*first_slash = '/';
+	}
+}
+
 char *make_persist_path(V fname)
 {
 	String *s = toString(fname);
 	char *pathbase = getenv("XDG_DATA_HOME");
 	size_t plen;
+	char *home = NULL;
 	if (pathbase == NULL)
 	{
-		char *home = getenv("HOME");
+		home = getenv("HOME");
 		plen = strlen(home) + strlen("/.local/share");
 		pathbase = malloc(plen + 1);
 		sprintf(pathbase, "%s/.local/share", home);
-		free(home);
 	}
 	else
 	{
@@ -381,6 +393,10 @@ char *make_persist_path(V fname)
 	}
 	char *data = malloc(plen + strlen("/deja/persist/") + s->length + 3 + 1);
 	sprintf(data, "%s/deja/persist/%s.vu", pathbase, toCharArr(s));
-	free(pathbase);
+	if (home)
+	{ // if home is not NULL, that means we allocated pathbase
+		free(pathbase);
+	}
+	makedirs(data);
 	return data;
 }
