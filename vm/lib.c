@@ -1954,8 +1954,14 @@ Error persist_value(Stack *S, Stack *scope_arr)
 		clear_ref(location);
 		return TypeError;
 	}
+	if (!valid_persist_name(location))
+	{
+		clear_ref(location);
+		error_msg = "Invalid name for persisted data file.";
+		return ValueError;
+	}
 	V pval = popS();
-	if (!persist(getChars(location), pval))
+	if (!persist(make_persist_path(location), pval))
 	{
 		clear_ref(location);
 		clear_ref(pval);
@@ -1975,7 +1981,13 @@ Error persist_stack(Stack *S, Stack *scope_arr)
 		clear_ref(location);
 		return TypeError;
 	}
-	if (!persist_all(getChars(location), S))
+	if (!valid_persist_name(location))
+	{
+		clear_ref(location);
+		error_msg = "Invalid name for persisted data file.";
+		return ValueError;
+	}
+	if (!persist_all(make_persist_path(location), S))
 	{
 		clear_ref(location);
 		return UnknownError;
@@ -1993,7 +2005,13 @@ Error unpersist(Stack *S, Stack *scope_arr)
 		clear_ref(location);
 		return TypeError;
 	}
-	V file = load_file(location, toFile(toScope(get_head(scope_arr))->file)->global);
+	if (!valid_persist_name(location))
+	{
+		clear_ref(location);
+		error_msg = "Invalid name for persisted data file.";
+		return ValueError;
+	}
+	V file = load_file(a_to_value(make_persist_path(location)), toFile(toScope(get_head(scope_arr))->file)->global);
 	if (file == NULL)
 	{
 		return IllegalFile;

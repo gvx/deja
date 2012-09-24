@@ -273,6 +273,8 @@ bool persist(char *fname, V obj)
 
 		fclose(file);
 
+		free(hm);
+
 		return true;
 	}
 	else
@@ -352,4 +354,33 @@ bool persist_all(char *fname, Stack *objects)
 	fclose(file);
 
 	return true;
+}
+
+bool valid_persist_name(V fname)
+{
+	String *s = toString(fname);
+	return memchr(toCharArr(s), '/', s->length) == NULL;
+}
+
+char *make_persist_path(V fname)
+{
+	String *s = toString(fname);
+	char *pathbase = getenv("XDG_DATA_HOME");
+	size_t plen;
+	if (pathbase == NULL)
+	{
+		char *home = getenv("HOME");
+		plen = strlen(home) + strlen("/.local/share");
+		pathbase = malloc(plen + 1);
+		sprintf(pathbase, "%s/.local/share", home);
+		free(home);
+	}
+	else
+	{
+		plen = strlen(pathbase);
+	}
+	char *data = malloc(plen + strlen("/deja/persist/") + s->length + 3 + 1);
+	sprintf(data, "%s/deja/persist/%s.vu", pathbase, toCharArr(s));
+	free(pathbase);
+	return data;
 }

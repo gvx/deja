@@ -5,9 +5,15 @@ V load_file(V file_name, V global)
 {
 	if (file_name == NULL || getType(file_name) != T_STR)
 	{
+		clear_ref(file_name);
 		return file_name;
 	}
 	FILE* f = fopen(getChars(file_name), "rb");
+	if (f == NULL)
+	{
+		clear_ref(file_name);
+		return NULL;
+	}
 	fseek(f, 0, SEEK_END);
 	size_t length = ftell(f);
 	rewind(f);
