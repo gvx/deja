@@ -242,7 +242,7 @@ bool persist(char *fname, V obj)
 	int maxm;
 	FILE *file;
 	uint32_t obj_encoded;
-	Bucket *b;
+	Bucket *b, *bb;
 
 	hm = persist_collect(obj);
 	if (hm)
@@ -274,7 +274,20 @@ bool persist(char *fname, V obj)
 
 		fclose(file);
 
-		free(hm->map);
+		if (hm->map != NULL)
+		{
+			for (i = 0; i < hm->size; i++)
+			{
+				b = hm->map[i];
+				while(b != NULL)
+				{
+					bb = b;
+					b = b->next;
+					free(bb);
+				}
+			}
+			free(hm->map);
+		}
 		free(hm);
 
 		return true;

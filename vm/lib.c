@@ -2017,7 +2017,9 @@ Error unpersist(Stack *S, Stack *scope_arr)
 		error_msg = "Invalid name for persisted data file.";
 		return ValueError;
 	}
-	V file = load_file(a_to_value(make_persist_path(location)), toFile(toScope(get_head(scope_arr))->file)->global);
+	char *path = make_persist_path(location);
+	V file = load_file(a_to_value(path), toFile(toScope(get_head(scope_arr))->file)->global);
+	free(path);
 	if (file == NULL)
 	{
 		return IllegalFile;
