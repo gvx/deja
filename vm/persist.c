@@ -274,6 +274,7 @@ bool persist(char *fname, V obj)
 
 		fclose(file);
 
+		free(hm->map);
 		free(hm);
 
 		return true;
