@@ -114,7 +114,7 @@ long int pair_ordinal(V p)
 	return (o1 > o2 ? o1 : o2) + 1;
 }
 
-unsigned long int gcd(unsigned long int u, unsigned long int v)
+frac_long gcd(frac_long u, frac_long v)
 {
   // simple cases (termination)
   if (u == v)
@@ -141,7 +141,7 @@ unsigned long int gcd(unsigned long int u, unsigned long int v)
   return gcd((v - u) >> 1, u);
 }
 
-V new_frac(long int numerator, long int denominator)
+V new_frac(frac_long numerator, frac_long denominator)
 {
 	if (numerator == 0)
 		return intToV(0);

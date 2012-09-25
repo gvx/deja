@@ -26,6 +26,8 @@
 #define toSecond(x) (*((V*)(x + 2)))
 #define toNumerator(x) (((Frac*)(x + 1))->numerator)
 #define toDenominator(x) (((Frac*)(x + 1))->denominator)
+#define getNumer(x) ((frac_long)toNumerator(x))
+#define getDenom(x) ((frac_long)toDenominator(x))
 
 #define new_dict() new_sized_dict(16)
 
@@ -74,6 +76,10 @@ typedef struct TreeNode {
 	char data[1]; // That length is a white lie.
 } ITreeNode;
 
+#ifdef __GNUC__
+typedef __int128_t frac_long;
+#endif
+
 uint32_t string_hash(int, const char*);
 
 V int_to_value(long int);
@@ -85,7 +91,7 @@ V get_ident(const char*);
 V new_list();
 V new_sized_dict();
 V new_pair(V, V);
-V new_frac(long int, long int);
+V new_frac(frac_long, frac_long);
 
 bool truthy(V);
 bool equal(V, V);

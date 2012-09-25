@@ -231,23 +231,23 @@ Error add(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumerator(v1) * toDenominator(v2) +
-			toNumerator(v2) * toDenominator(v1),
-			toDenominator(v1) * toDenominator(v2)
+			getNumer(v1) * getDenom(v2) +
+			getNumer(v2) * getDenom(v1),
+			getNumer(v1) * getDenom(v2)
 		);
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
 		r = new_frac(
-			toNumerator(v1) + toNumber(v2) * toDenominator(v1),
-			toDenominator(v1)
+			getNumer(v1) + toNumber(v2) * getDenom(v1),
+			getDenom(v1)
 		);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumber(v1) * toDenominator(v2) + toNumerator(v2),
-			toDenominator(v2)
+			toNumber(v1) * getDenom(v2) + getNumer(v2),
+			getDenom(v2)
 		);
 	}
 	else
@@ -275,23 +275,23 @@ Error sub(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumerator(v1) * toDenominator(v2) -
-			toNumerator(v2) * toDenominator(v1),
-			toDenominator(v1) * toDenominator(v2)
+			getNumer(v1) * getDenom(v2) -
+			getNumer(v2) * getDenom(v1),
+			getDenom(v1) * getDenom(v2)
 		);
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
 		r = new_frac(
-			toNumerator(v1) - toNumber(v2) * toDenominator(v1),
-			toDenominator(v1)
+			getNumer(v1) - toNumber(v2) * getDenom(v1),
+			getDenom(v1)
 		);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumber(v1) * toDenominator(v2) - toNumerator(v2),
-			toDenominator(v2)
+			toNumber(v1) * getDenom(v2) - getNumer(v2),
+			getDenom(v2)
 		);
 	}
 	else
@@ -319,22 +319,22 @@ Error mul(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumerator(v1) * toNumerator(v2),
-			toDenominator(v1) * toDenominator(v2)
+			getNumer(v1) * getNumer(v2),
+			getDenom(v1) * getDenom(v2)
 		);
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
 		r = new_frac(
-			toNumerator(v1) * toNumber(v2),
-			toDenominator(v1)
+			getNumer(v1) * toNumber(v2),
+			getDenom(v1)
 		);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumber(v1) * toNumerator(v2),
-			toDenominator(v2)
+			toNumber(v1) * getNumer(v2),
+			getDenom(v2)
 		);
 	}
 	else
@@ -369,8 +369,8 @@ Error div_(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumerator(v1) * toDenominator(v2),
-			toDenominator(v1) * toNumerator(v2)
+			getNumer(v1) * getDenom(v2),
+			getDenom(v1) * getNumer(v2)
 		);
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
@@ -383,15 +383,15 @@ Error div_(Stack* S, Stack* scope_arr)
 			return ValueError;
 		}
 		r = new_frac(
-			toNumerator(v1),
-			toDenominator(v1) * toNumber(v2)
+			getNumer(v1),
+			getDenom(v1) * toNumber(v2)
 		);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			toNumber(v1) * toDenominator(v2),
-			toNumerator(v2)
+			toNumber(v1) * getDenom(v2),
+			getNumer(v2)
 		);
 	}
 	else
@@ -426,9 +426,9 @@ Error mod_(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			(toNumerator(v1) * toDenominator(v2)) %
-			(toNumerator(v2) * toDenominator(v1)),
-			toDenominator(v1) * toDenominator(v2)
+			(getNumer(v1) * getDenom(v2)) %
+			(getNumer(v2) * getDenom(v1)),
+			getDenom(v1) * getDenom(v2)
 		);
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
@@ -441,17 +441,17 @@ Error mod_(Stack* S, Stack* scope_arr)
 			return ValueError;
 		}
 		r = new_frac(
-			toNumerator(v1) %
-			((long int)toNumber(v2) * toDenominator(v1)),
-			toDenominator(v1)
+			getNumer(v1) %
+			((long int)toNumber(v2) * getDenom(v1)),
+			getDenom(v1)
 		);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
 		r = new_frac(
-			((long int)toNumber(v1) * toDenominator(v2)) %
-			toNumerator(v2),
-			toDenominator(v2)
+			((long int)toNumber(v1) * getDenom(v2)) %
+			getNumer(v2),
+			getDenom(v2)
 		);
 	}
 	else
@@ -640,18 +640,18 @@ Error lt(Stack* S, Stack* scope_arr)
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
-		r = toNumerator(v1) * toDenominator(v2) <
-			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) * getDenom(v2) <
+			getNumer(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
-		r = toNumerator(v1) <
-			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) <
+			toNumber(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		r = toNumber(v1) * toDenominator(v2) <
-			toNumerator(v2) ? v_true : v_false;
+		r = toNumber(v1) * getDenom(v2) <
+			getNumer(v2) ? v_true : v_false;
 	}
 	else
 	{
@@ -677,18 +677,18 @@ Error gt(Stack* S, Stack* scope_arr)
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
-		r = toNumerator(v1) * toDenominator(v2) >
-			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) * getDenom(v2) >
+			getNumer(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
-		r = toNumerator(v1) >
-			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) >
+			toNumber(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		r = toNumber(v1) * toDenominator(v2) >
-			toNumerator(v2) ? v_true : v_false;
+		r = toNumber(v1) * getDenom(v2) >
+			getNumer(v2) ? v_true : v_false;
 	}
 	else
 	{
@@ -714,18 +714,18 @@ Error le(Stack* S, Stack* scope_arr)
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
-		r = toNumerator(v1) * toDenominator(v2) <=
-			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) * getDenom(v2) <=
+			getNumer(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
-		r = toNumerator(v1) <=
-			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) <=
+			toNumber(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		r = toNumber(v1) * toDenominator(v2) <=
-			toNumerator(v2) ? v_true : v_false;
+		r = toNumber(v1) * getDenom(v2) <=
+			getNumer(v2) ? v_true : v_false;
 	}
 	else
 	{
@@ -751,18 +751,18 @@ Error ge(Stack* S, Stack* scope_arr)
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
-		r = toNumerator(v1) * toDenominator(v2) >=
-			toNumerator(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) * getDenom(v2) >=
+			getNumer(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
-		r = toNumerator(v1) >=
-			toNumber(v2) * toDenominator(v1) ? v_true : v_false;
+		r = getNumer(v1) >=
+			toNumber(v2) * getDenom(v1) ? v_true : v_false;
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		r = toNumber(v1) * toDenominator(v2) >=
-			toNumerator(v2) ? v_true : v_false;
+		r = toNumber(v1) * getDenom(v2) >=
+			getNumer(v2) ? v_true : v_false;
 	}
 	else
 	{
