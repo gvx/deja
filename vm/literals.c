@@ -126,7 +126,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 		{
 			ref = 0;
 			memcpy(((char*)&ref) + 1, curpos, 3);
-			str_length = ntohl(ref);
+			ref = ntohl(ref);
 			if (ref >= i)
 			{
 				error_msg = "Illegal pair detected.";
@@ -134,6 +134,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			}
 			V v1 = arr[ref];
 
+			ref = 0;
 			memcpy(((char*)&ref) + 1, curpos + 3, 3);
 			ref = ntohl(ref);
 			if (ref >= i)
