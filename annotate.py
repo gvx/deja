@@ -71,6 +71,9 @@ def ann(text):
 		if s == '\x02':
 			j = 9
 			yield literal_num
+		elif s == '\x82':
+			j = 4
+			yield literal_num
 		elif s == '\x07':
 			j = 17
 			yield literal_frac
