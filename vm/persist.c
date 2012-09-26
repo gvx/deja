@@ -110,6 +110,11 @@ void write_ref(FILE *file, V obj, HashMap *hm)
 	fwrite(((char*)&ref) + 1, 3, 1, file);
 }
 
+bool canBeSmallInt(V obj)
+{
+	return isInt(obj) && (toInt(obj) > -(1 << 23)) && (toInt(obj) < (1 << 23));
+}
+
 void write_object(FILE *file, V obj, HashMap *hm)
 {
 	int t = getType(obj);
@@ -120,6 +125,7 @@ void write_object(FILE *file, V obj, HashMap *hm)
 	HashMap *hmv;
 	int8_t n8;
 	uint8_t l8;
+	int32_t n32;
 	uint32_t l32;
 	int64_t n64;
 	uint64_t l64;
@@ -130,18 +136,25 @@ void write_object(FILE *file, V obj, HashMap *hm)
 
 	switch (t)
 	{
+		case T_NUM:
+			if (canBeSmallInt(obj))
+				type |= TYPE_SHORT;
+			break;
 		case T_IDENT:
 			id = toIdent(obj);
 			if (id->length < 256)
 				type |= TYPE_SHORT;
+			break;
 		case T_STR:
 			s = toString(obj);
 			if (s->length < 256)
 				type |= TYPE_SHORT;
+			break;
 		case T_FRAC:
 			if (toNumerator(obj) < 128 && toNumerator(obj) >= -128 &&
 				toDenominator(obj) < 256)
 				type |= TYPE_SHORT;
+			break;
 	}
 
 	fwrite(&type, 1, 1, file);
@@ -177,9 +190,18 @@ void write_object(FILE *file, V obj, HashMap *hm)
 			fwrite(toCharArr(s), s->length, 1, file);
 			break;
 		case T_NUM:
-			num.d = toNumber(obj);
-			num.i = htonll(num.i);
-			fwrite(&num, 8, 1, file);
+			if (type & TYPE_SHORT)
+			{
+				n32 = toInt(obj);
+				n32 = htonl(n32);
+				fwrite(((char*)&n32) + 1, 3, 1, file);
+			}
+			else
+			{
+				num.d = toNumber(obj);
+				num.i = htonll(num.i);
+				fwrite(&num, 8, 1, file);
+			}
 			break;
 		case T_FRAC:
 			if (type & TYPE_SHORT)
