@@ -35,6 +35,9 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			case TYPE_NUM:
 				curpos += 8;
 				break;
+			case TYPE_NUM | TYPE_SHORT:
+				curpos += 3;
+				break;
 			case TYPE_STR:
 			case TYPE_IDENT:
 				memcpy(&str_length, curpos, 4);
@@ -77,6 +80,14 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 			curpos += 8;
 			d.i = ntohll(d.i);
 			t = double_to_value(d.d);
+		}
+		else if (type == (TYPE_NUM | TYPE_SHORT))
+		{
+			ref = 0;
+			memcpy(((char*)&ref) + 1, curpos, 3);
+			ref = ntohl(ref);
+			curpos += 3;
+			t = int_to_value(ref);
 		}
 		else if (type == TYPE_STR)
 		{
