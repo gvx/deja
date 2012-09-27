@@ -62,7 +62,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			if (getType(v) == T_FUNC)
 			{
-				push(scope_arr, new_function_scope(v));
+				push(scope_arr, add_rooted(new_function_scope(v)));
 			}
 			else if (getType(v) == T_CFUNC)
 			{
@@ -156,7 +156,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			file = sc->file;
 			do
 			{
-				clear_ref(v);
+				clear_base_ref(v);
 				v = pop(scope_arr);
 				if (v == NULL)
 				{
@@ -164,7 +164,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				}
 			}
 			while (!toScope(v)->is_func_scope && toScope(v)->file == file);
-			clear_ref(v);
+			clear_base_ref(v);
 			if (stack_size(scope_arr) == 0)
 			{
 				return Exit;
@@ -175,7 +175,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			file = sc->file;
 			do
 			{
-				clear_ref(v);
+				clear_base_ref(v);
 				v = pop(scope_arr);
 				if (v == NULL)
 				{
@@ -183,7 +183,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				}
 			}
 			while (!toScope(v)->is_func_scope && toScope(v)->file == file);
-			push(scope_arr, v);
+			push(scope_arr, add_rooted(v));
 			sc = toScope(v);
 			sc->pc = toFunc(sc->func)->start;
 			break;
@@ -225,6 +225,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(scope_arr, add_rooted(new_scope(scope)));
 			break;
 		case OP_LEAVE_SCOPE:
+		case OP_LEAVE_ERRHAND:
 			pc = sc->pc;
 			clear_base_ref(pop(scope_arr));
 			sc = toScope(get_head(scope_arr));
@@ -332,16 +333,10 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_ENTER_ERRHAND:
 			v = new_scope(scope);
-			push(scope_arr, v);
+			push(scope_arr, add_rooted(v));
 			sc = toScope(v);
 			sc->is_error_handler = true;
 			sc->pc += argument - 1;
-			break;
-		case OP_LEAVE_ERRHAND:
-			pc = sc->pc;
-			clear_ref(pop(scope_arr));
-			sc = toScope(get_head(scope_arr));
-			sc->pc = pc;
 			break;
 		case OP_NEW_DICT:
 			pushS(new_dict());
