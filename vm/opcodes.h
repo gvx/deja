@@ -17,6 +17,8 @@
 #define OP_JMPZ           0x11
 #define OP_RETURN         0x12
 #define OP_RECURSE        0x13
+#define OP_JMPEQ          0x14
+#define OP_JMPNE          0x15
 #define OP_LABDA          0x20
 #define OP_ENTER_SCOPE    0x21
 #define OP_LEAVE_SCOPE    0x22

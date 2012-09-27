@@ -17,6 +17,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	V scope = get_head(scope_arr);
 	Scope *sc = toScope(scope);
 	V file;
+	bool t;
 	uint32_t *pc;
 	int argument;
 	int instruction = ntohl(*sc->pc);
@@ -28,6 +29,8 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 		case OP_PUSH_INTEGER:
 		case OP_JMP:
 		case OP_JMPZ:
+		case OP_JMPEQ:
+		case OP_JMPNE:
 			argument = instruction & 8388607;
 			if (instruction & (1 << 23))
 			{
@@ -141,7 +144,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			v = popS();
-			bool t = truthy(v);
+			t = truthy(v);
 			clear_ref(v);
 			if (!t)
 			{
@@ -183,6 +186,36 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			push(scope_arr, v);
 			sc = toScope(v);
 			sc->pc = toFunc(sc->func)->start;
+			break;
+		case OP_JMPEQ:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
+			v = popS();
+			key = popS(); //variable reuse
+			t = equal(v, key);
+			clear_ref(v);
+			clear_ref(key);
+			if (t)
+			{
+				sc->pc += argument - 1;
+			}
+			break;
+		case OP_JMPNE:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
+			v = popS();
+			key = popS(); //variable reuse
+			t = equal(v, key);
+			clear_ref(v);
+			clear_ref(key);
+			if (!t)
+			{
+				sc->pc += argument - 1;
+			}
 			break;
 		case OP_LABDA:
 			pushS(new_func(scope, sc->pc));
