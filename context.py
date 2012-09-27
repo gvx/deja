@@ -6,10 +6,10 @@ from loop import *
 from func import *
 from trycatch import *
 
-STATEMENTS = set('func labda local if elseif else while for catch repeat'.split())
+STATEMENTS = set('func labda local if elseif else while for try catch repeat'.split())
 STATEMENT_CLASS = {'func': FuncStatement, 'labda': LabdaStatement,
 	'local': LocalFuncStatement, 'while': WhileStatement,
-	'for': ForStatement, 'catch': CatchStatement,
+	'for': ForStatement,
 	'repeat': RepeatStatement
 }
 
@@ -99,8 +99,17 @@ class LineContext(Context):
 	def assert_repeat(self):
 		pass
 
+	def assert_try(self):
+		if self.tokens:
+			raise DejaSyntaxError("A try statement cannot have other words", self, self.text.index('try') + 4)
+
 	def assert_catch(self):
-		pass
+		if not self.tokens:
+			raise DejaSyntaxError("Missing exception name", self, self.text.index(':'))
+		for ex in self.tokens:
+			if WordList.gettokentype(ex) != 'word':
+				raise DejaSyntaxError("Error category list must consist of proper words", self, self.text.index(ex))
+
 
 	def assert_elseif(self):
 		pass #needs to follow an if or another elseif
@@ -147,6 +156,12 @@ class FileContext(Context):
 				if len(self.indentation_stack) <= self.last_indent + 1 or not isinstance(self.indentation_stack[self.last_indent + 1], (IfClause, ElseIfClause)):
 					raise DejaSyntaxError("No if clause or elseif clause preceding else clause", linecontext, 0)
 				self.last_node = ElseClause(self.indentation_stack[self.last_indent + 1].parent)
+			elif st == 'try':
+				self.last_node = TryClause(TryStatement(self.indentation_stack[self.last_indent], linecontext.linenr))
+			elif st == 'catch':
+				if len(self.indentation_stack) <= self.last_indent + 1 or not isinstance(self.indentation_stack[self.last_indent + 1], (TryClause, CatchClause)):
+					raise DejaSyntaxError("No try clause preceding catch clause", linecontext, 0)
+				self.last_node = CatchClause(self.indentation_stack[self.last_indent + 1].parent, linecontext.tokens)
 			else:
 				self.last_node = BodyClause(STATEMENT_CLASS[st](self.indentation_stack[self.last_indent], linecontext.tokens, linecontext.linenr))
 			self.indentation_stack = self.indentation_stack[:self.last_indent + 1]

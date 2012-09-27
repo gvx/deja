@@ -1,12 +1,23 @@
 from nodes import *
 
-class CatchStatement(SimpleStatement):
-	def __init__(self, parent, handler, linenr):
-		SimpleStatement.__init__(self, parent, linenr)
-		self.errorhandler = ErrorHandler(self, handler)
+class TryStatement(Statement):
+	def __init__(self, parent, linenr):
+		Node.__init__(self, parent)
+		self.linenr = linenr
+		self.tryclause = None
+		self.catchclauses = []
+	def addtry(self, tryclause):
+		self.tryclause = tryclause
+	def addcatch(self, catchclause):
+		self.catchclauses.append(catchclause)
 
-class ErrorHandler(Clause, WordList):
+class TryClause(BodyClause):
+	def __init__(self, parent):
+		Node.__init__(self, parent)
+		parent.addtry(self)
+
+class CatchClause(BodyClause):
 	def __init__(self, parent, tokens):
-		WordList.__init__(self, None, tokens)
-		self.parent = parent
-
+		Node.__init__(self, parent)
+		parent.addcatch(self)
+		self.exceptions = tokens

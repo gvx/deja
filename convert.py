@@ -28,7 +28,7 @@ OPTIMIZERS = {
 }
 ARGED_OPT = set('SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL'.split())
 
-positional_instructions = set('JMP JMPZ LABDA ENTER_ERRHAND'.split())
+positional_instructions = set('JMP JMPZ LABDA JMPEQ JMPNE ENTER_ERRHAND'.split())
 
 def convert(filename, flat):
 	bytecode = [SingleInstruction('SOURCE_FILE', String(None, '"' + filename))]

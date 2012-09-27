@@ -140,14 +140,30 @@ def flatten(tree, acc=None):
 				flatten(branch.elseclause, acc)
 			acc.append(m_end)
 			acc.append(SingleInstruction('LEAVE_SCOPE', 0))
-		elif isinstance(branch, CatchStatement):
+		elif isinstance(branch, TryStatement):
 			m_body = Marker()
 			m_end = Marker()
 			acc.append(SingleInstruction('ENTER_ERRHAND', m_body))
-			flatten(branch.errorhandler, acc)
-			acc.append(GoTo(m_end))
+			for handler in branch.catchclauses:
+				h_start = Marker()
+				h_end = Marker()
+				for ex in handler.exceptions:
+					acc.extend([
+						SingleInstruction('DUP', 0),
+						SingleInstruction('PUSH_LITERAL', ex),
+						SingleInstruction('JMPEQ', h_start),
+					])
+				acc.pop()
+				acc.extend([
+					SingleInstruction('JMPNE', h_end),
+					h_start,
+					SingleInstruction('DROP', 0),
+				])
+				flatten(handler, acc)
+				acc.extend([GoTo(m_end), h_end])
+			acc.append(SingleInstruction('PUSH_WORD', 'raise'))
 			acc.append(m_body)
-			flatten(branch.body, acc)
+			flatten(branch.tryclause, acc)
 			acc.append(SingleInstruction('LEAVE_ERRHAND', 0))
 			acc.append(m_end)
 	return acc
