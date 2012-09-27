@@ -1,12 +1,12 @@
 import struct
-from bytecode import OPCODES, unsigned_int_s, signed_int_s, double_s
+from bytecode import OPCODES, unsigned_int_s, signed_int_s, double_s, positional_instructions
 
 DECODE_OPCODES = {}
 for k in OPCODES:
 	DECODE_OPCODES[OPCODES[k] / 0x1000000] = k
 
 WORD_ARG = set('GET SET GET_GLOBAL SET_GLOBAL SET_LOCAL PUSH_LITERAL PUSH_WORD SOURCE_FILE'.split())
-POS_ARG = set('JMP JMPZ LABDA'.split())
+POS_ARG = positional_instructions
 LIT_ARG = set('PUSH_INTEGER LINE_NUMBER'.split())
 
 clb = '\033[%sm'
