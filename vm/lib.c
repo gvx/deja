@@ -1208,6 +1208,19 @@ Error raise_(Stack* S, Stack* scope_arr)
 	return ident_to_error(v);
 }
 
+Error reraise_(Stack* S, Stack* scope_arr)
+{
+	extern bool reraise;
+	require(1);
+	V v = popS();
+	if (getType(v) != T_IDENT)
+	{
+		return TypeError;
+	}
+	reraise = true;
+	return ident_to_error(v);
+}
+
 Error catch_if(Stack* S, Stack* scope_arr)
 {
 	require(2);
@@ -2093,6 +2106,7 @@ static CFunc stdlib[] = {
 	{"rot", rotate},
 	{"error", error},
 	{"raise", raise_},
+	{"reraise", reraise_},
 	{"catch-if", catch_if},
 	{"len", len},
 	{"yield", yield},
