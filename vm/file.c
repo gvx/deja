@@ -49,6 +49,6 @@ V load_memfile(char *data, size_t length, V file_name, V global)
 		f_obj->code = code;
 	}
 	else
-		error_msg = "Not a valid Déjà Vu bytecode file.";
+		error_msg = "not a valid Déjà Vu bytecode file";
 	return new_file;
 }

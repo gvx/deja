@@ -361,7 +361,7 @@ Error div_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "Division by zero.";
+			error_msg = "division by zero";
 			return ValueError;
 		}
 		r = double_to_value(toNumber(v1) / toNumber(v2));
@@ -379,7 +379,7 @@ Error div_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "Division by zero.";
+			error_msg = "division by zero";
 			return ValueError;
 		}
 		r = new_frac(
@@ -418,7 +418,7 @@ Error mod_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "Division by zero.";
+			error_msg = "division by zero";
 			return ValueError;
 		}
 		r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
@@ -437,7 +437,7 @@ Error mod_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "Division by zero.";
+			error_msg = "division by zero";
 			return ValueError;
 		}
 		r = new_frac(
@@ -1934,7 +1934,7 @@ Error make_frac(Stack* S, Stack* scope_arr)
 	}
 	if (toInt(d) == 0)
 	{
-		error_msg = "Division by zero.";
+		error_msg = "division by zero";
 		return ValueError;
 	}
 	pushS(new_frac(toInt(n), toInt(d)));
@@ -1970,7 +1970,7 @@ Error persist_value(Stack *S, Stack *scope_arr)
 	if (!valid_persist_name(location))
 	{
 		clear_ref(location);
-		error_msg = "Invalid name for persisted data file.";
+		error_msg = "invalid name for persisted data file";
 		return ValueError;
 	}
 	V pval = popS();
@@ -2000,7 +2000,7 @@ Error persist_stack(Stack *S, Stack *scope_arr)
 	if (!valid_persist_name(location))
 	{
 		clear_ref(location);
-		error_msg = "Invalid name for persisted data file.";
+		error_msg = "invalid name for persisted data file";
 		return ValueError;
 	}
 	char *path = make_persist_path(location);
@@ -2027,7 +2027,7 @@ Error unpersist(Stack *S, Stack *scope_arr)
 	if (!valid_persist_name(location))
 	{
 		clear_ref(location);
-		error_msg = "Invalid name for persisted data file.";
+		error_msg = "invalid name for persisted data file";
 		return ValueError;
 	}
 	char *path = make_persist_path(location);

@@ -59,21 +59,24 @@ Error ident_to_error(V e)
 
 void handle_error(Error e, Stack *scope_arr)
 {
+	fputs(error_name(e), stderr);
 	if (error_msg)
+	{
+		fputs(": ", stderr);
 		fputs(error_msg, stderr);
-	else
-		fputs(error_name(e), stderr);
-	putc(10, stderr);
+	}
 
 	if (lastCall)
 	{
 		ITreeNode *s = toIdent(lastCall);
-		fprintf(stderr, "In %*s:\n", s->length, s->data);
+		fprintf(stderr, " in %*s", s->length, s->data);
 	}
 	if (scope_arr == NULL)
 	{
+		fputs(".\n", stderr);
 		return;
 	}
+	fputs(":\n", stderr);
 	Scope *sc;
 	bool show_next = true;
 	int n;
