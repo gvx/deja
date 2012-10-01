@@ -7,6 +7,8 @@
 #include "std.h"
 #include "utf8.h"
 
+bool reraise;
+
 void run(V file_name, Stack *S)
 {
 	V global = new_global_scope();
@@ -19,6 +21,7 @@ void run(V file_name, Stack *S)
 		return;
 	}
 	Stack *scope = new_stack();
+	Stack *save_scopes = new_stack();
 	Scope *sc;
 	push(scope, new_file_scope(file));
 	//loading the dva part of the standard library
@@ -27,10 +30,18 @@ void run(V file_name, Stack *S)
 	{
 		sc = toScope(get_head(scope));
 		sc->pc++;
+		reraise = false;
 		e = do_instruction(&toFile(sc->file)->header, S, scope);
 		if (e != Nothing && e != Exit)
 		{
-			Stack *save_scopes = new_stack();
+			if (!reraise)
+			{
+				while (stack_size(save_scopes) > 0)
+				{
+					clear_ref(pop(save_scopes));
+				}
+
+			}
 			do
 			{
 				push(save_scopes, pop(scope));
@@ -41,13 +52,6 @@ void run(V file_name, Stack *S)
 			{ //Let error be handled by code
 				pushS(add_ref(error_to_ident(e)));
 				e = Nothing;
-
-				//The rest of the call stack is discarded.
-				//This needs to be changed if we let modules deal with tracebacks.
-				while (stack_size(save_scopes) > 0)
-				{
-					clear_ref(pop(save_scopes));
-				}
 			}
 			else
 			{ //Error slips away, uncaught
@@ -56,7 +60,6 @@ void run(V file_name, Stack *S)
 					push(scope, pop(save_scopes));
 				}
 			}
-			clear_stack(save_scopes);
 		}
 	}
 	if (e == Exit)
@@ -79,6 +82,7 @@ void run(V file_name, Stack *S)
 	//clean-up
 	clear_stack(S);
 	clear_stack(scope);
+	clear_stack(save_scopes);
 	clear_ref(file);
 }
 
