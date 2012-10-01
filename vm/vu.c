@@ -80,7 +80,6 @@ void run(V file_name, Stack *S)
 		handle_error(e, scope);
 	}
 	//clean-up
-	clear_stack(S);
 	clear_stack(scope);
 	clear_stack(save_scopes);
 	clear_ref(file);
@@ -100,12 +99,14 @@ int main(int argc, char *argv[])
 			if (!valid_utf8(strlen(argv[i]), argv[i]))
 			{
 				handle_error(UnicodeError, NULL);
+				clear_stack(S);
 				return 1;
 			}
 			pushS(a_to_value(argv[i]));
 		}
 
 		run(find_file(get_ident(argv[1])), S);
+		clear_stack(S);
 	}
 	return 0;
 }
