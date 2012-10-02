@@ -41,7 +41,7 @@ V charat(utf8 source, utf8index curr)
 V strslice(utf8 source, utf8index from, utf8index to)
 {
 	size_t len = to >= from ? to - from : 0;
-	return str_to_string(len + 1, source + from);
+	return str_to_string(len, source + from);
 }
 
 V str_to_string(size_t max, char *str)
@@ -98,4 +98,43 @@ uint32_t string_length(V string)
 		s->length = count_characters(s->size, s->text);
 	}
 	return s->length;
+}
+
+Error new_ord(Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = popS();
+	if (getType(v) != T_STR)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	NewString *s = toNewString(v);
+	if (s->size == 0)
+	{
+		clear_ref(v);
+		return ValueError;
+	}
+	utf8index n = 0;
+	pushS(int_to_value(decode_codepoint(s->text, &n)));
+	clear_ref(v);
+	return Nothing;
+}
+
+Error new_chr(Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V v = popS();
+	if (getType(v) != T_NUM)
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+	unichar c = toNumber(v);
+	utf8 *adr = NULL;
+	V r = empty_string_to_value(codepoint_length(c), adr);
+	encode_codepoint(c, *adr);
+	pushS(r);
+	clear_ref(v);
+	return Nothing;
 }

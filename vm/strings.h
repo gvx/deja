@@ -3,6 +3,7 @@
 
 #include "utf8.h"
 #include "value.h"
+#include "lib.h"
 #define toNewString(x) (NewString*)(x+1)
 
 typedef struct {
@@ -18,5 +19,8 @@ V charat(utf8, utf8index);
 V strslice(utf8, utf8index, utf8index);
 V a_to_string(char*);
 V str_to_string(size_t, char*);
+
+Error new_ord(Stack*, Stack*);
+Error new_chr(Stack*, Stack*);
 
 #endif

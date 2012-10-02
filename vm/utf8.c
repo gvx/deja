@@ -63,6 +63,35 @@ utf8byte encode_first_byte(unichar source)
 	}
 }
 
+unichar rest_of_codepoint(unichar source)
+{
+	if (source <= 0x007F)
+	{
+		return 0;
+	}
+	else if (source <= 0x07FF)
+	{
+		return source & 63;
+	}
+	else if (source <= 0xFFFF)
+	{
+		return source & 4095;
+	}
+	else if (source <= 0x1FFFF)
+	{
+		return source & 262143;
+	}
+	else if (source <= 0x3FFFF)
+	{
+		return source & 16777215;
+	}
+	else
+	{
+		return source & 1073741823;
+	}
+}
+
+
 bool valid_utf8(size_t size, utf8 source)
 {
 	utf8index index = 0;
@@ -106,4 +135,44 @@ bool valid_utf8(size_t size, utf8 source)
 			return false;
 	}
 	return true;
+}
+
+utf8index codepoint_length(unichar source)
+{
+	if (source <= 0x007F)
+	{
+		return 1;
+	}
+	else if (source <= 0x07FF)
+	{
+		return 2;
+	}
+	else if (source <= 0xFFFF)
+	{
+		return 3;
+	}
+	else if (source <= 0x1FFFF)
+	{
+		return 4;
+	}
+	else if (source <= 0x3FFFF)
+	{
+		return 5;
+	}
+	else
+	{
+		return 6;
+	}
+}
+
+void encode_codepoint(unichar source, utf8 dest)
+{
+	*dest++ = encode_first_byte(source);
+	utf8index t = codepoint_length(source) - 1;
+	source = rest_of_codepoint(source);
+	while (t--)
+	{
+		*dest++ = (source >> (t*6)) | 128;
+		source = source & ((1 << (t*6)) - 1);
+	}
 }

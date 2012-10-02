@@ -12,5 +12,7 @@ typedef uint32_t unichar;
 
 unichar decode_codepoint(utf8, utf8index*);
 bool valid_utf8(size_t, utf8);
+utf8index codepoint_length(unichar);
+void encode_codepoint(unichar, utf8);
 
 #endif
