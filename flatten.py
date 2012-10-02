@@ -161,7 +161,7 @@ def flatten(tree, acc=None):
 				])
 				flatten(handler, acc)
 				acc.extend([GoTo(m_end), h_end])
-			acc.append(SingleInstruction('PUSH_WORD', 'reraise'))
+			acc.append(SingleInstruction('RERAISE', 0))
 			acc.append(m_body)
 			flatten(branch.tryclause, acc)
 			acc.append(SingleInstruction('LEAVE_ERRHAND', 0))

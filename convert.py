@@ -25,6 +25,8 @@ OPTIMIZERS = {
 	'has': 'HAS_DICT',
 	'get-from': 'GET_DICT',
 	'set-to': 'SET_DICT',
+	'raise': 'RAISE',
+	'reraise': 'RERAISE',
 }
 ARGED_OPT = set('SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL'.split())
 
