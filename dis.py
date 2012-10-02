@@ -62,6 +62,9 @@ class Literals(object):
 			elif s == '\x02':
 				b = d_double(self.source[1:9])
 				self.source = self.source[9:]
+			elif s == '\x82':
+				b = d_signed_int(self.source[1:4])
+				self.source = self.source[4:]
 			elif s == '\x07':
 				n = signed_long_int(self.source[1:9])
 				d = signed_long_int(self.source[9:17])
