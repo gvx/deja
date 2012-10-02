@@ -45,7 +45,7 @@ class Literals(object):
 			s = self.source[0]
 			if s == '\x00':
 				length = unsigned_int(self.source[1:5])
-				b = "'" + self.source[5:5 + length] + "'"
+				b = ":" + self.source[5:5 + length]
 				self.source = self.source[5 + length:]
 			elif s == '\x01':
 				length = unsigned_int(self.source[1:5]) #<-- length?
@@ -53,7 +53,7 @@ class Literals(object):
 				self.source = self.source[5 + length:]
 			if s == '\x80':
 				length = ord(self.source[1])
-				b = "'" + self.source[2:2 + length] + "'"
+				b = ":" + self.source[2:2 + length]
 				self.source = self.source[2 + length:]
 			elif s == '\x81':
 				length = ord(self.source[1]) #<-- length?
