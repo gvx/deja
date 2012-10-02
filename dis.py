@@ -101,20 +101,10 @@ def dis_00(text):
 	literals = Literals(text[size * 4:])
 	return '\n'.join(make_line_00(i, x, literals) for i, x in enumerate(code))
 
-def dis_01(text):
-	POS_ARG.add('ENTER_ERRHAND')
-	return dis_00(text)
-
 def dis(text):
 	if not text.startswith('\x07DV'):
 		raise Exception("Not a Deja Vu byte code file.")
-	elif text[3] == '\x03':
-		return dis_01(text[4:])
-	elif text[3] == '\x02':
-		return dis_01(text[4:])
-	if text[3] == '\x01':
-		return dis_01(text[4:])
-	elif text[3] == '\x00':
+	elif text[3] in ('\x00', '\x01', '\x02', '\x03'):
 		return dis_00(text[4:])
 	else:
 		raise Exception("Byte code version not recognised.")
