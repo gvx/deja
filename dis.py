@@ -94,7 +94,7 @@ def make_line_00(i, x, literals):
 
 def dis_00(text):
 	if len(text) < 4:
-		raise Exception("Code file to short")
+		raise Exception("Code file too short")
 	size = unsigned_int(text[:4])
 	text = text[4:]
 	code = [text[j * 4:j * 4 + 4] for j in range(size)]
