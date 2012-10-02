@@ -338,6 +338,30 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			sc->is_error_handler = true;
 			sc->pc += argument - 1;
 			break;
+		case OP_RAISE:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
+			v = popS();
+			if (getType(v) != T_IDENT)
+			{
+				return TypeError;
+			}
+			return ident_to_error(v);
+		case OP_RERAISE:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
+			v = popS();
+			if (getType(v) != T_IDENT)
+			{
+				return TypeError;
+			}
+			extern bool reraise;
+			reraise = true;
+			return ident_to_error(v);
 		case OP_NEW_DICT:
 			pushS(new_dict());
 			break;

@@ -35,6 +35,8 @@
 #define OP_SOURCE_FILE    0x52
 #define OP_ENTER_ERRHAND  0x60
 #define OP_LEAVE_ERRHAND  0x61
+#define OP_RAISE          0x62
+#define OP_RERAISE        0x63
 #define OP_NEW_DICT       0x70
 #define OP_HAS_DICT       0x71
 #define OP_GET_DICT       0x72
