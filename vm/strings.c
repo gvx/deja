@@ -121,6 +121,15 @@ Error new_ord(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+V unichar_to_value(unichar c)
+{
+	utf8 *adr = NULL;
+	V r = empty_string_to_value(codepoint_length(c), adr);
+	toNewString(r)->length = 1;
+	encode_codepoint(c, *adr);
+	return r;
+}
+
 Error new_chr(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -130,11 +139,30 @@ Error new_chr(Stack* S, Stack* scope_arr)
 		clear_ref(v);
 		return TypeError;
 	}
-	unichar c = toNumber(v);
-	utf8 *adr = NULL;
-	V r = empty_string_to_value(codepoint_length(c), adr);
-	encode_codepoint(c, *adr);
-	pushS(r);
+	pushS(unichar_to_value(toNumber(v)));
 	clear_ref(v);
+	return Nothing;
+}
+
+Error new_chars(Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V source = popS();
+	if (getType(source) != T_STR)
+	{
+		clear_ref(source);
+		return TypeError;
+	}
+	utf8 chrs = toNewString(source)->text;
+	utf8index index = 0;
+	V list = new_list();
+	Stack *st = toStack(list);
+	size_t size = toNewString(source)->size;
+	int i;
+	for (i = 0; i < size; i++)
+	{
+		push(st, unichar_to_value(decode_codepoint(chrs, &index)));
+	}
+	pushS(list);
 	return Nothing;
 }

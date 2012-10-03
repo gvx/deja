@@ -4,7 +4,7 @@
 #include "utf8.h"
 #include "value.h"
 #include "lib.h"
-#define toNewString(x) (NewString*)(x+1)
+#define toNewString(x) ((NewString*)(x+1))
 
 typedef struct {
 	size_t size;     //size in bytes
@@ -22,5 +22,6 @@ V str_to_string(size_t, char*);
 
 Error new_ord(Stack*, Stack*);
 Error new_chr(Stack*, Stack*);
+Error new_chars(Stack*, Stack*);
 
 #endif
