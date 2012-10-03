@@ -11,7 +11,7 @@ typedef struct {
 	size_t length;   //length in characters
 	uint32_t hash;   //hashcode (initially 0)
 	utf8byte text[1];
-} NewString;
+} __attribute__((packed)) NewString;
 
 uint32_t need_hash(V);
 uint32_t string_length(V);
