@@ -13,7 +13,7 @@ utf8index nextchar(utf8 chars, utf8index start)
 uint32_t new_string_hash(size_t length, const char *key)
 {
 	uint32_t hash = 2166136261;
-	int i;
+	size_t i;
 	for (i = 0; i < length; i++)
 	{
 		hash = (16777619 * hash) ^ (*key);
