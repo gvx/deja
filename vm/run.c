@@ -3,6 +3,7 @@
 #include "std.h"
 
 bool reraise;
+bool vm_silent = false;
 
 void run(V file_name, Stack *S)
 {
@@ -60,7 +61,7 @@ void run(V file_name, Stack *S)
 	if (e == Exit)
 	{
 		int i;
-		if (stack_size(S))
+		if (stack_size(S) && !vm_silent)
 		{
 			puts("Result:");
 			for (i = stack_size(S) - 1; i >= 0; i--)
