@@ -79,11 +79,13 @@ Error concat(Stack* S, Stack* scope_arr)
 		{
 			if (getType(S->nodes[i]) == T_IDENT && S->nodes[i] == get_ident(")"))
 			{
+				clear_ref(popS());
 				break;
 			}
 			s1 = toString(S->nodes[i]);
 			memcpy(currpoint, toCharArr(s1), s1->length);
 			currpoint += s1->length;
+			clear_ref(popS());
 		}
 		*currpoint = '\0';
 		pushS(str_to_value(newlength, new));
