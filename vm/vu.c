@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	};
 	char opt;
 	int i;
-	while ((opt = getopt_long(argc, argv, "hdvs", options, NULL)) != -1)
+	while ((opt = getopt_long(argc, argv, "+hdvs", options, NULL)) != -1)
 	{
 		switch (opt)
 		{
