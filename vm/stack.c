@@ -56,7 +56,7 @@ void reverse(Stack *stack)
 		{
 			V v = stack->nodes[i];
 			stack->nodes[i] = stack->nodes[u - i - 1];
-			stack->nodes[u - i] = v;
+			stack->nodes[u - i - 1] = v;
 		}
 	}
 }
