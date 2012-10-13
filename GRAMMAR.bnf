@@ -3,13 +3,18 @@ Program ::= <Block>*
 Block ::= <Head> ":" <NewLine>+ (<Indentation> <Block>)+
         | <Line> <NewLine>+
         | <IfBlock>
+        | <TryBlock>
 
 IfBlock ::= "if" <Space> <Line> ":" <NewLine>+ (<Indentation> <Block>)+
             ("elseif" <Space> <Line> ":" <NewLine>+ (<Indentation> <Block>)+)*
             ("else" <Space>? ":" <NewLine>+ (<Indentation> <Block>)+)?
 
+TryBlock ::= "try" <Space>* ":" <NewLine>+ (<Indentation> <Block>)+
+             ("catch" <Space> <ProperWord> ":" <NewLine>+ (<Indentation> <Block>)+)*
+
 Head ::= "while" <Space> <Line>
        | "for" <Space> <ProperWord> (<Space> <Line>)? <Space>?
+       | "repeat" <Space> <Line>
        | "func" <Space> <ProperWord> <Arguments>
        | "local" <Space> <ProperWord> <Arguments>
        | "labda" <Arguments>
@@ -26,13 +31,21 @@ Space ::= " "+
 Word ::= ProperWord
        | Identity
        | String
+       | Number
+       | Fraction
 
-Identity ::= "'" <ProperWord>? "'"
+Identity ::= ":" <ProperWord>?
 
 ProperWord ::= <Char>+
 
-String :: '"' <StringChar>* '"'
+String ::= '"' <StringChar>* '"'
 
-Char ::= any non-whitespace character
+Number ::= '-'? <Digits> ('.' <Digits>)?
+
+Fraction ::= '-'? <Digits> '/' <Digits>
+
+Digits ::= ('0'..'9')+
+
+Char ::= any non-whitespace, non-# character
 
 StringChar ::= any character other than a double quote
