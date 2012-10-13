@@ -10,6 +10,7 @@
 #include "module.h"
 
 extern bool vm_silent;
+extern bool vm_debug;
 
 int main(int argc, char *argv[])
 {
@@ -40,7 +41,7 @@ int main(int argc, char *argv[])
 			vm_silent = true;
 			break;
 		case 'd':
-			/*debugging = true;*/
+			vm_debug = true;
 			break;
 		}
 	}

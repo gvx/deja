@@ -1,9 +1,12 @@
 #include "run.h"
 #include "lib.h"
 #include "std.h"
+#include "error.h"
+#include "debug.h"
 
 bool reraise;
 bool vm_silent = false;
+bool vm_debug = false;
 
 void run(V file_name, Stack *S)
 {
@@ -30,6 +33,7 @@ void run(V file_name, Stack *S)
 		e = do_instruction(&toFile(sc->file)->header, S, scope);
 		if (e != Nothing && e != Exit)
 		{
+			DBG_PRINTF("Error %d %sraised", e, reraise ? "re" : "");
 			if (!reraise)
 			{
 				while (stack_size(save_scopes) > 0)

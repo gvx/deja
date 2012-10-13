@@ -2,6 +2,7 @@
 #include "scope.h"
 #include "func.h"
 #include "file.h"
+#include "debug.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -13,6 +14,8 @@
 
 static int root_size = 0;
 static V roots[MAX_ROOTS];
+
+extern bool vm_debug;
 
 void collect_cycles(void);
 
@@ -381,9 +384,11 @@ void collect_roots(void)
 
 void collect_cycles(void)
 {
+	DBG_PRINT("Starting GC cycle...");
 	mark_roots();
 	scan_roots();
 	collect_roots();
+	DBG_PRINT("... GC done");
 }
 
 void clear_ref(V t)
