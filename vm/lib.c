@@ -1115,6 +1115,7 @@ Error copy(Stack* S, Stack* scope_arr)
 		new = add_ref(v);
 	}
 	pushS(new);
+	clear_ref(v);
 	return Nothing;
 }
 
