@@ -1098,13 +1098,23 @@ Error copy(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
-	if (getType(v) != T_STACK)
+	V new;
+	if (getType(v) == T_STACK)
+	{
+		new = new_list();
+		copy_stack(toStack(v), toStack(new));
+	}
+	else if (getType(v) == T_DICT)
+	{
+		HashMap *hm = toHashMap(v);
+		new = new_sized_dict(hm->size);
+		copy_hashmap(hm, toHashMap(new));
+	}
+	else
 	{
 		clear_ref(v);
 		return TypeError;
 	}
-	V new = new_list();
-	copy_stack(toStack(v), toStack(new));
 	pushS(new);
 	return Nothing;
 }

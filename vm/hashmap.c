@@ -225,3 +225,28 @@ bool delete_hashmap(HashMap *hm, V key)
 	}
 	return false;
 }
+
+// make sure to only call this if old->size == new->size
+void copy_hashmap(HashMap *old, HashMap *new)
+{
+	int i;
+	if (old->map == NULL)
+	{
+		return;
+	}
+	if (new->map == NULL)
+	{
+		new->map = calloc(new->size, sizeof(Bucket*));
+	}
+	for (i = 0; i < old->size; i++)
+	{
+		Bucket *b = old->map[i];
+		Bucket **newb = new->map + i;
+		while (b)
+		{
+			*newb = new_bucket(b->key, b->value);
+			b = b->next;
+			newb = &(*newb)->next;
+		}
+	}
+}

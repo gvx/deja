@@ -27,5 +27,6 @@ bool delete_hashmap(HashMap*, V);
 void set_hashmap(HashMap*, V, V);
 bool change_hashmap(HashMap*, V, V);
 void resize_hashmap(HashMap*, int);
+void copy_hashmap(HashMap*, HashMap*);
 
 #endif
