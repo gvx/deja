@@ -119,14 +119,11 @@ def get(l, i):
 
 def optimize(flattened): #optimize away superfluous RETURN statements
 	for i, instruction in reversed(list(enumerate(flattened))):
-		if is_return(instruction) and (is_return(get(flattened, i + 1)) or (isinstance(get(flattened, i + 1), Marker) and is_return(get(flattened, i + 2)))):
-			flattened.remove(instruction)
-		elif isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 1)):
-			flattened.remove(instruction)
-		elif isinstance(get(flattened, i + 2), Marker) and isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 2)):
-			flattened.remove(instruction)
-		elif is_pass(instruction):
-			flattened.remove(instruction)
+		if (is_return(instruction) and (is_return(get(flattened, i + 1)) or (isinstance(get(flattened, i + 1), Marker) and is_return(get(flattened, i + 2))))
+			or isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 1))
+			or isinstance(get(flattened, i + 2), Marker) and isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 2))
+			or is_pass(instruction)):
+			flattened.pop(i)
 	return flattened
 
 def refine(flattened): #removes all markers and replaces them by indices
