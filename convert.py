@@ -111,20 +111,22 @@ def is_jump_to(node, marker):
 def is_pass(node):
 	return isinstance(node, SingleInstruction) and node.opcode == 'PUSH_WORD' and node.ref.value == 'pass'
 
+def get(l, i):
+	try:
+		return l[i]
+	except IndexError:
+		return None
+
 def optimize(flattened): #optimize away superfluous RETURN statements
-	prev_instruction = None
-	prev_prev_instruction = None
-	for instruction in reversed(flattened):
-		if is_return(instruction) and (is_return(prev_instruction) or (isinstance(prev_instruction, Marker) and is_return(prev_prev_instruction))):
+	for i, instruction in reversed(list(enumerate(flattened))):
+		if is_return(instruction) and (is_return(get(flattened, i + 1)) or (isinstance(get(flattened, i + 1), Marker) and is_return(get(flattened, i + 2)))):
 			flattened.remove(instruction)
-		elif isinstance(prev_instruction, Marker) and is_jump_to(instruction, prev_instruction):
+		elif isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 1)):
 			flattened.remove(instruction)
-		elif isinstance(prev_prev_instruction, Marker) and isinstance(prev_instruction, Marker) and is_jump_to(instruction, prev_prev_instruction):
+		elif isinstance(get(flattened, i + 2), Marker) and isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 2)):
 			flattened.remove(instruction)
 		elif is_pass(instruction):
 			flattened.remove(instruction)
-		prev_prev_instruction = prev_instruction
-		prev_instruction = instruction
 	return flattened
 
 def refine(flattened): #removes all markers and replaces them by indices
