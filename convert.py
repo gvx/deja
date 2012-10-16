@@ -108,6 +108,9 @@ def is_return(node):
 def is_jump_to(node, marker):
 	return isinstance(node, SingleInstruction) and node.opcode == 'JMP' and node.ref is marker
 
+def is_pass(node):
+	return isinstance(node, SingleInstruction) and node.opcode == 'PUSH_WORD' and node.ref.value == 'pass'
+
 def optimize(flattened): #optimize away superfluous RETURN statements
 	prev_instruction = None
 	prev_prev_instruction = None
@@ -117,6 +120,8 @@ def optimize(flattened): #optimize away superfluous RETURN statements
 		elif isinstance(prev_instruction, Marker) and is_jump_to(instruction, prev_instruction):
 			flattened.remove(instruction)
 		elif isinstance(prev_prev_instruction, Marker) and isinstance(prev_instruction, Marker) and is_jump_to(instruction, prev_prev_instruction):
+			flattened.remove(instruction)
+		elif is_pass(instruction):
 			flattened.remove(instruction)
 		prev_prev_instruction = prev_instruction
 		prev_instruction = instruction
