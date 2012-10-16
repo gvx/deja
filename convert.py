@@ -105,11 +105,18 @@ def convert(filename, flat):
 def is_return(node):
 	return isinstance(node, SingleInstruction) and node.opcode == 'RETURN'
 
+def is_jump_to(node, marker):
+	return isinstance(node, SingleInstruction) and node.opcode == 'JMP' and node.ref is marker
+
 def optimize(flattened): #optimize away superfluous RETURN statements
 	prev_instruction = None
 	prev_prev_instruction = None
 	for instruction in reversed(flattened):
 		if is_return(instruction) and (is_return(prev_instruction) or (isinstance(prev_instruction, Marker) and is_return(prev_prev_instruction))):
+			flattened.remove(instruction)
+		elif isinstance(prev_instruction, Marker) and is_jump_to(instruction, prev_instruction):
+			flattened.remove(instruction)
+		elif isinstance(prev_prev_instruction, Marker) and isinstance(prev_instruction, Marker) and is_jump_to(instruction, prev_prev_instruction):
 			flattened.remove(instruction)
 		prev_prev_instruction = prev_instruction
 		prev_instruction = instruction
