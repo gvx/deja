@@ -109,7 +109,7 @@ def is_jump_to(node, marker):
 	return isinstance(node, SingleInstruction) and node.opcode == 'JMP' and node.ref is marker
 
 def is_pass(node):
-	return isinstance(node, SingleInstruction) and node.opcode == 'PUSH_WORD' and node.ref.value == 'pass'
+	return isinstance(node, SingleInstruction) and node.opcode == 'PUSH_WORD' and (node.ref == 'pass' or (isinstance(node.ref, ProperWord) and node.ref.value == 'pass'))
 
 def is_linenr(node):
 	return isinstance(node, SingleInstruction) and node.opcode == 'LINE_NUMBER'
