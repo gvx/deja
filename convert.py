@@ -111,6 +111,9 @@ def is_jump_to(node, marker):
 def is_pass(node):
 	return isinstance(node, SingleInstruction) and node.opcode == 'PUSH_WORD' and node.ref.value == 'pass'
 
+def is_linenr(node):
+	return isinstance(node, SingleInstruction) and node.opcode == 'LINE_NUMBER'
+
 def get(l, i):
 	try:
 		return l[i]
@@ -120,9 +123,11 @@ def get(l, i):
 def optimize(flattened): #optimize away superfluous RETURN statements
 	for i, instruction in reversed(list(enumerate(flattened))):
 		if (is_return(instruction) and (is_return(get(flattened, i + 1)) or (isinstance(get(flattened, i + 1), Marker) and is_return(get(flattened, i + 2))))
-			or isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 1))
-			or isinstance(get(flattened, i + 2), Marker) and isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 2))
-			or is_pass(instruction)):
+		 or isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 1))
+		 or isinstance(get(flattened, i + 2), Marker) and isinstance(get(flattened, i + 1), Marker) and is_jump_to(instruction, get(flattened, i + 2))
+		 or is_pass(instruction)
+		 or is_linenr(instruction) and is_linenr(get(flattened, i + 1))
+		):
 			flattened.pop(i)
 	return flattened
 
