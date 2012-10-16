@@ -436,17 +436,43 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			container = popS();
 			key = popS();
-			if (getType(container) != T_DICT)
+			v = popS();
+			if (getType(container) == T_DICT)
 			{
+				set_hashmap(toHashMap(container), key, v);
+			}
+			else if (getType(container) == T_STACK)
+			{
+				if (getType(key) != T_NUM)
+				{
+					clear_ref(container);
+					clear_ref(key);
+					clear_ref(v);
+					return TypeError;
+				}
+				int index = (int)toNumber(key);
+				Stack *s = toStack(container);
+				if (index < 0)
+					index = s->used + index;
+				if (index < 0 || index >= s->used)
+				{
+					clear_ref(key);
+					clear_ref(v);
+					clear_ref(container);
+					return ValueError;
+				}
+				else
+				{
+					s->nodes[index] = v;
+				}
+			}
+			else
+			{
+				clear_ref(key);
+				clear_ref(v);
+				clear_ref(container);
 				return TypeError;
 			}
-			v = popS();
-			if (v == NULL)
-			{
-				clear_ref(container);
-				return StackEmpty;
-			}
-			set_hashmap(toHashMap(container), key, v);
 			clear_ref(key);
 			clear_ref(v);
 			clear_ref(container);

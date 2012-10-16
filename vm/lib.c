@@ -1378,14 +1378,42 @@ Error set_to(Stack* S, Stack* scope_arr)
 	V container = popS();
 	V key = popS();
 	V value = popS();
-	if (getType(container) != T_DICT)
+	if (getType(container) == T_DICT)
+	{
+		set_hashmap(toHashMap(container), key, value);
+	}
+	else if (getType(container) == T_STACK)
+	{
+		if (getType(key) != T_NUM)
+		{
+			clear_ref(container);
+			clear_ref(key);
+			clear_ref(value);
+			return TypeError;
+		}
+		int index = (int)toNumber(key);
+		Stack *s = toStack(container);
+		if (index < 0)
+			index = s->used + index;
+		if (index < 0 || index >= s->used)
+		{
+			clear_ref(key);
+			clear_ref(value);
+			clear_ref(container);
+			return ValueError;
+		}
+		else
+		{
+			s->nodes[index] = value;
+		}
+	}
+	else
 	{
 		clear_ref(key);
 		clear_ref(value);
 		clear_ref(container);
 		return TypeError;
 	}
-	set_hashmap(toHashMap(container), key, value);
 	clear_ref(key);
 	clear_ref(value);
 	clear_ref(container);
