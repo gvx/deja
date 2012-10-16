@@ -388,17 +388,46 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			container = popS();
 			key = popS();
-			if (getType(container) != T_DICT)
+			if (getType(container) == T_DICT)
 			{
+				v = get_hashmap(toHashMap(container), key);
+			}
+			else if (getType(container) == T_STACK)
+			{
+				if (getType(key) != T_NUM)
+				{
+					clear_ref(container);
+					clear_ref(key);
+					return TypeError;
+				}
+				int index = (int)toNumber(key);
+				Stack *s = toStack(container);
+				if (index < 0)
+					index = s->used + index;
+				if (index < 0 || index >= s->used)
+				{
+					v = NULL;
+				}
+				else
+				{
+					v = s->nodes[index];
+				}
+			}
+			else
+			{
+				clear_ref(container);
+				clear_ref(key);
 				return TypeError;
 			}
-			v = get_hashmap(toHashMap(container), key);
 			if (v == NULL)
 			{
+				clear_ref(container);
+				clear_ref(key);
 				return ValueError;
 			}
 			pushS(add_ref(v));
 			clear_ref(container);
+			clear_ref(key);
 			break;
 		case OP_SET_DICT:
 			if (stack_size(S) < 3)

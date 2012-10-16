@@ -1328,13 +1328,38 @@ Error get_from(Stack* S, Stack* scope_arr)
 	require(2);
 	V container = popS();
 	V key = popS();
-	if (getType(container) != T_DICT)
+	V v;
+	if (getType(container) == T_DICT)
+	{
+		v = get_hashmap(toHashMap(container), key);
+	}
+	else if (getType(container) == T_STACK)
+	{
+		if (getType(key) != T_NUM)
+		{
+			clear_ref(container);
+			clear_ref(key);
+			return TypeError;
+		}
+		int index = (int)toNumber(key);
+		Stack *s = toStack(container);
+		if (index < 0)
+			index = s->used + index;
+		if (index < 0 || index >= s->used)
+		{
+			v = NULL;
+		}
+		else
+		{
+			v = s->nodes[index];
+		}
+	}
+	else
 	{
 		clear_ref(container);
 		clear_ref(key);
 		return TypeError;
 	}
-	V v = get_hashmap(toHashMap(container), key);
 	if (v == NULL)
 	{
 		clear_ref(container);
