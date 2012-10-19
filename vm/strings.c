@@ -166,3 +166,55 @@ Error new_chars(Stack* S, Stack* scope_arr)
 	pushS(list);
 	return Nothing;
 }
+
+Error new_starts_with(Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V v1 = popS();
+	V v2 = popS();
+	if (getType(v1) != T_STR || getType(v2) != T_STR)
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+	NewString *s1 = toNewString(v1);
+	NewString *s2 = toNewString(v2);
+	if (s1->size > s2->size || memcmp(s2->text, s1->text, s1->size))
+	{
+		pushS(add_ref(v_false));
+	}
+	else
+	{
+		pushS(add_ref(v_true));
+	}
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
+
+Error new_ends_with(Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V v1 = popS();
+	V v2 = popS();
+	if (getType(v1) != T_STR || getType(v2) != T_STR)
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+	NewString *s1 = toNewString(v1);
+	NewString *s2 = toNewString(v2);
+	if (s1->size > s2->size || memcmp(s2->text + s2->size - s1->size, s1->text, s1->size))
+	{
+		pushS(add_ref(v_false));
+	}
+	else
+	{
+		pushS(add_ref(v_true));
+	}
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}
