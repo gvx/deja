@@ -254,13 +254,16 @@ Error split(Stack* S, Stack* scope_arr)
 		V r = new_list();
 		Stack *rs = toStack(r);
 		uint32_t start, laststart = 0;
-		for (start = 0; start <= s2->length - s1->length; start++)
+		if (s1->length <= s2->length)
 		{
-			if (!memcmp(toCharArr(s1), toCharArr(s2) + start, s1->length))
+			for (start = 0; start <= s2->length - s1->length; start++)
 			{
-				V new = str_to_value(start - laststart, toCharArr(s2) + laststart);
-				laststart = start + s1->length;
-				push(rs, new);
+				if (!memcmp(toCharArr(s1), toCharArr(s2) + start, s1->length))
+				{
+					V new = str_to_value(start - laststart, toCharArr(s2) + laststart);
+					laststart = start + s1->length;
+					push(rs, new);
+				}
 			}
 		}
 		push(rs, str_to_value(s2->length - laststart, toCharArr(s2) + laststart));
