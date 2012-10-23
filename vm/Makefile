@@ -1,6 +1,6 @@
 all: release debug
-release: vu std.vu
-debug: vu-dbg std.vu
+release: vu
+debug: vu-dbg
 
 clean:
 	rm *.o
@@ -8,24 +8,37 @@ clean:
 CFILES = $(wildcard *.c)
 OFILES = $(patsubst %.c, %.o, $(CFILES))
 ODBGFILES = $(patsubst %.c, %.dbg.o, $(CFILES))
+CFLAGS = -Wall
+LDFLAGS = -ldl -lm
 
-vu: $(OFILES)
-	$(CC) -O2 $(CFLAGS) -Wall -ldl -lm $^ -o $@
+vu: .depend $(OFILES)
+	$(CC) -O2 $(CFLAGS) $(LDFLAGS) $(OFILES) -o $@
 
-%.o: %.c %.h
-	$(CC) -O2 $(CFLAGS) -Wall -c -o $@ $<
+vu-dbg: .depend.dbg $(ODBGFILES)
+	$(CC) -ggdb3 $(CFLAGS) $(LDFLAGS) $(ODBGFILES) -o $@
 
-vu.o: vu.c
-	$(CC) -O2 $(CFLAGS) -Wall -c -o $@ $<
+depend: .depend .depend.dbg
 
-vu-dbg: $(ODBGFILES)
-	$(CC) -ggdb3 $(CFLAGS) -Wall -ldl -lm $^ -o $@
+.depend: cmd = gcc -MM -MF depend $(var); cat depend >> .depend;
+.depend:
+	@echo "Generating dependencies..."
+	@$(foreach var, $(CFILES), $(cmd))
+	@rm -f depend
 
-%.dbg.o: %.c %.h
-	$(CC) -ggdb3 $(CFLAGS) -Wall -c -o $@ $<
+.depend.dbg: cmd = gcc -MM -MF depend $(var); sed 's/\.o/.dbg.o/' < depend >> .depend.dbg;
+.depend.dbg:
+	@echo "Generating dependencies..."
+	@$(foreach var, $(CFILES), $(cmd))
+	@rm -f depend
 
-vu.dbg.o: vu.c
-	$(CC) -ggdb3 $(CFLAGS) -Wall -c -o $@ $<
+-include .depend
+-include .depend.dbg
+
+%.o: %.c
+	$(CC) -O2 $(CFLAGS) -c -o $@ $<
+
+%.dbg.o: %.c
+	$(CC) -ggdb3 $(CFLAGS) -c -o $@ $<
 
 std.vu: std.dva
 	python ../dvasm.py < $^ > $@
