@@ -218,3 +218,42 @@ Error new_ends_with(Stack* S, Stack* scope_arr)
 	clear_ref(v2);
 	return Nothing;
 }
+
+Error new_contains(Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V v1 = popS();
+	V v2 = popS();
+	if (getType(v1) != T_STR || getType(v2) != T_STR)
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+	NewString *s1 = toNewString(v1);
+	NewString *s2 = toNewString(v2);
+	if (s1->length > s2->length)
+	{
+		pushS(add_ref(v_false));
+	}
+	else
+	{
+		uint32_t i;
+		utf8index index = 0;
+		for (i = 0; i <= s2->length - s1->length; i++)
+		{
+			if (!memcmp(s2->text + index, s1->text, s1->size))
+			{
+				pushS(add_ref(v_true));
+				clear_ref(v1);
+				clear_ref(v2);
+				return Nothing;
+			}
+			index = nextchar(s2->text, index);
+		}
+		pushS(add_ref(v_false));
+	}
+	clear_ref(v1);
+	clear_ref(v2);
+	return Nothing;
+}

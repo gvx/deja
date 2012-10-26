@@ -23,5 +23,8 @@ V str_to_string(size_t, char*);
 Error new_ord(Stack*, Stack*);
 Error new_chr(Stack*, Stack*);
 Error new_chars(Stack*, Stack*);
+Error new_starts_with(Stack*, Stack*);
+Error new_ends_with(Stack*, Stack*);
+Error new_contains(Stack*, Stack*);
 
 #endif
