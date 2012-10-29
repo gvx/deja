@@ -463,7 +463,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				}
 				else
 				{
-					s->nodes[index] = v;
+					s->nodes[index] = add_ref(v);
 				}
 			}
 			else

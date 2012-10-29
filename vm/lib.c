@@ -1404,7 +1404,7 @@ Error set_to(Stack* S, Stack* scope_arr)
 		}
 		else
 		{
-			s->nodes[index] = value;
+			s->nodes[index] = add_ref(value);
 		}
 	}
 	else
