@@ -2108,6 +2108,36 @@ Error unpersist(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error chance(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V p = popS();
+	long threshold;
+	if (getType(p) == T_NUM)
+	{
+		threshold = toNumber(p) * RAND_MAX;
+	}
+	else if (getType(p) == T_FRAC)
+	{
+		threshold = toNumerator(p) * RAND_MAX / toDenominator(p);
+	}
+	else
+	{
+		clear_ref(p);
+		return TypeError;
+	}
+	if (threshold < 0 || threshold > RAND_MAX)
+	{
+		clear_ref(p);
+		error_msg = "probability should be between 0 and 1";
+		return ValueError;
+	}
+
+	pushS(add_ref(rand() < threshold ? v_true : v_false));
+	clear_ref(p);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2216,6 +2246,7 @@ static CFunc stdlib[] = {
 	{"persist", persist_value},
 	{"persist-stack", persist_stack},
 	{"unpersist", unpersist},
+	{"chance", chance},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
