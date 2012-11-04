@@ -170,17 +170,18 @@ Error new_chars(Stack* S, Stack* scope_arr)
 Error new_starts_with(Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V v1 = popS();
-	V v2 = popS();
-	if (getType(v1) != T_STR || getType(v2) != T_STR)
+	V haystack = popS();
+	V needle = popS();
+	if (getType(needle) != T_STR || getType(haystack) != T_STR)
 	{
-		clear_ref(v1);
-		clear_ref(v2);
+		clear_ref(needle);
+		clear_ref(haystack);
 		return TypeError;
 	}
-	NewString *s1 = toNewString(v1);
-	NewString *s2 = toNewString(v2);
-	if (s1->size > s2->size || memcmp(s2->text, s1->text, s1->size))
+	NewString *needle_s = toNewString(needle);
+	NewString *haystack_s = toNewString(haystack);
+	if (needle_s->size > haystack_s->size ||
+	    memcmp(haystack_s->text, needle_s->text, needle_s->size))
 	{
 		pushS(add_ref(v_false));
 	}
@@ -188,25 +189,27 @@ Error new_starts_with(Stack* S, Stack* scope_arr)
 	{
 		pushS(add_ref(v_true));
 	}
-	clear_ref(v1);
-	clear_ref(v2);
+	clear_ref(needle);
+	clear_ref(haystack);
 	return Nothing;
 }
 
 Error new_ends_with(Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V v1 = popS();
-	V v2 = popS();
-	if (getType(v1) != T_STR || getType(v2) != T_STR)
+	V haystack = popS();
+	V needle = popS();
+	if (getType(needle) != T_STR || getType(haystack) != T_STR)
 	{
-		clear_ref(v1);
-		clear_ref(v2);
+		clear_ref(needle);
+		clear_ref(haystack);
 		return TypeError;
 	}
-	NewString *s1 = toNewString(v1);
-	NewString *s2 = toNewString(v2);
-	if (s1->size > s2->size || memcmp(s2->text + s2->size - s1->size, s1->text, s1->size))
+	NewString *needle_s = toNewString(needle);
+	NewString *haystack_s = toNewString(haystack);
+	if (needle_s->size > haystack_s->size ||
+	    memcmp(haystack_s->text + haystack_s->size - needle_s->size,
+	           needle_s->text, needle_s->size))
 	{
 		pushS(add_ref(v_false));
 	}
@@ -214,25 +217,25 @@ Error new_ends_with(Stack* S, Stack* scope_arr)
 	{
 		pushS(add_ref(v_true));
 	}
-	clear_ref(v1);
-	clear_ref(v2);
+	clear_ref(needle);
+	clear_ref(haystack);
 	return Nothing;
 }
 
 Error new_contains(Stack* S, Stack* scope_arr)
 {
 	require(2);
-	V v1 = popS();
-	V v2 = popS();
-	if (getType(v1) != T_STR || getType(v2) != T_STR)
+	V haystack = popS();
+	V needle = popS();
+	if (getType(needle) != T_STR || getType(haystack) != T_STR)
 	{
-		clear_ref(v1);
-		clear_ref(v2);
+		clear_ref(needle);
+		clear_ref(haystack);
 		return TypeError;
 	}
-	NewString *s1 = toNewString(v1);
-	NewString *s2 = toNewString(v2);
-	if (s1->length > s2->length)
+	NewString *needle_s = toNewString(needle);
+	NewString *haystack_s = toNewString(haystack);
+	if (needle_s->length > haystack_s->length)
 	{
 		pushS(add_ref(v_false));
 	}
@@ -240,21 +243,21 @@ Error new_contains(Stack* S, Stack* scope_arr)
 	{
 		uint32_t i;
 		utf8index index = 0;
-		for (i = 0; i <= s2->length - s1->length; i++)
+		for (i = 0; i <= haystack_s->length - needle_s->length; i++)
 		{
-			if (!memcmp(s2->text + index, s1->text, s1->size))
+			if (!memcmp(haystack_s->text + index, needle_s->text, needle_s->size))
 			{
 				pushS(add_ref(v_true));
-				clear_ref(v1);
-				clear_ref(v2);
+				clear_ref(needle);
+				clear_ref(haystack);
 				return Nothing;
 			}
-			index = nextchar(s2->text, index);
+			index = nextchar(haystack_s->text, index);
 		}
 		pushS(add_ref(v_false));
 	}
-	clear_ref(v1);
-	clear_ref(v2);
+	clear_ref(needle);
+	clear_ref(haystack);
 	return Nothing;
 }
 
