@@ -31,7 +31,7 @@ bool persist_collect_(V original, HashMap *hm)
 		case T_NUM:
 		case T_FRAC:
 			break;
-		case T_STACK:
+		case T_LIST:
 			for (i = 0; i < toStack(original)->used; i++)
 			{
 				if (!persist_collect_(toStack(original)->nodes[i], hm))
@@ -225,7 +225,7 @@ void write_object(FILE *file, V obj, HashMap *hm)
 			write_ref(file, toFirst(obj), hm);
 			write_ref(file, toSecond(obj), hm);
 			break;
-		case T_STACK:
+		case T_LIST:
 			st = toStack(obj);
 			l32 = st->used;
 			l32 = htonl(l32);

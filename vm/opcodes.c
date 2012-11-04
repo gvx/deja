@@ -240,7 +240,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			container = popS();
-			if (getType(container) != T_STACK)
+			if (getType(container) != T_LIST)
 			{
 				clear_ref(container);
 				return TypeError;
@@ -260,7 +260,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			container = popS();
-			if (getType(container) != T_STACK)
+			if (getType(container) != T_LIST)
 			{
 				clear_ref(container);
 				return TypeError;
@@ -274,7 +274,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			container = popS();
-			if (getType(container) != T_STACK)
+			if (getType(container) != T_LIST)
 			{
 				clear_ref(container);
 				return TypeError;
@@ -392,7 +392,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				v = get_hashmap(toHashMap(container), key);
 			}
-			else if (getType(container) == T_STACK)
+			else if (getType(container) == T_LIST)
 			{
 				if (getType(key) != T_NUM)
 				{
@@ -441,7 +441,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				set_hashmap(toHashMap(container), key, v);
 			}
-			else if (getType(container) == T_STACK)
+			else if (getType(container) == T_LIST)
 			{
 				if (getType(key) != T_NUM)
 				{

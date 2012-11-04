@@ -81,7 +81,7 @@ V get_ident(const char* name)
 
 V new_list(void)
 {
-	V t = make_new_value(T_STACK, false, sizeof(Stack));
+	V t = make_new_value(T_LIST, false, sizeof(Stack));
 	toStack(t)->size = 0;
 	toStack(t)->used = 0;
 	toStack(t)->nodes = NULL;
@@ -177,7 +177,7 @@ bool truthy(V t)
 			return toNumber(t) != 0.0;
 		case T_STR:
 			return toString(t)->length > 0;
-		case T_STACK:
+		case T_LIST:
 			return toStack(t)->used > 0;
 		case T_DICT:
 			return toHashMap(t)->used > 0;

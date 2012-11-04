@@ -5,7 +5,7 @@
 #define T_IDENT 0x00
 #define T_STR 0x01
 #define T_NUM 0x02
-#define T_STACK 0x03
+#define T_LIST 0x03
 #define T_FUNC 0x04
 #define T_DICT 0x05
 #define T_PAIR 0x06

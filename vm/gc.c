@@ -77,7 +77,7 @@ void free_value(V t)
 		case T_IDENT:
 		case T_FUNC:
 			break;
-		case T_STACK:
+		case T_LIST:
 			free(toStack(t)->nodes);
 			break;
 		case T_DICT:
@@ -162,7 +162,7 @@ void iter_children(V t, void (*iter)(V))
 				iter(child);
 			}
 			break;
-		case T_STACK:
+		case T_LIST:
 			s = toStack(t);
 			for (i = 0; i < s->used; i++)
 			{

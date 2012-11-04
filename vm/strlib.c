@@ -25,7 +25,7 @@ Error concat(Stack* S, Stack* scope_arr)
 		clear_ref(v2);
 		return Nothing;
 	}
-	else if (getType(v1) == T_STACK)
+	else if (getType(v1) == T_LIST)
 	{
 		int newlength = 0;
 		int u = toStack(v1)->used;
@@ -196,7 +196,7 @@ Error join(Stack* S, Stack* scope_arr)
 	require(2);
 	V v1 = popS();
 	V v2 = popS();
-	if (getType(v1) == T_STR && getType(v2) == T_STACK)
+	if (getType(v1) == T_STR && getType(v2) == T_LIST)
 	{
 		s1 = toString(v1);
 		int len = stack_size(toStack(v2));

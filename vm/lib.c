@@ -35,7 +35,7 @@ void print_value(V v, int depth)
 				printf("%.15g", toNumber(v));
 			}
 			break;
-		case T_STACK:
+		case T_LIST:
 			if (depth < 4)
 			{
 				fputs("[ ", stdout);
@@ -476,7 +476,7 @@ const char* gettype(V r)
 			return "str";
 		case T_NUM:
 			return "num";
-		case T_STACK:
+		case T_LIST:
 			return "list";
 		case T_DICT:
 			return "dict";
@@ -900,7 +900,7 @@ Error in(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
-	if (getType(list) != T_STACK)
+	if (getType(list) != T_LIST)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -923,7 +923,7 @@ Error reversed(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
-	if (getType(list) != T_STACK)
+	if (getType(list) != T_LIST)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -959,7 +959,7 @@ Error push_to(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V list = popS();
-	if (getType(list) != T_STACK)
+	if (getType(list) != T_LIST)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -974,7 +974,7 @@ Error push_through(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V list = popS();
-	if (getType(list) != T_STACK)
+	if (getType(list) != T_LIST)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -989,7 +989,7 @@ Error pop_from(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
-	if (getType(list) != T_STACK)
+	if (getType(list) != T_LIST)
 	{
 		clear_ref(list);
 		return TypeError;
@@ -1099,7 +1099,7 @@ Error copy(Stack* S, Stack* scope_arr)
 	require(1);
 	V v = popS();
 	V new;
-	if (getType(v) == T_STACK)
+	if (getType(v) == T_LIST)
 	{
 		new = new_list();
 		copy_stack(toStack(v), toStack(new));
@@ -1257,7 +1257,7 @@ Error len(Stack* S, Stack* scope_arr)
 		case T_STR:
 			pushS(int_to_value(toString(v)->length));
 			break;
-		case T_STACK:
+		case T_LIST:
 			pushS(int_to_value(stack_size(toStack(v))));
 			break;
 		default:
@@ -1333,7 +1333,7 @@ Error get_from(Stack* S, Stack* scope_arr)
 	{
 		v = get_hashmap(toHashMap(container), key);
 	}
-	else if (getType(container) == T_STACK)
+	else if (getType(container) == T_LIST)
 	{
 		if (getType(key) != T_NUM)
 		{
@@ -1382,7 +1382,7 @@ Error set_to(Stack* S, Stack* scope_arr)
 	{
 		set_hashmap(toHashMap(container), key, value);
 	}
-	else if (getType(container) == T_STACK)
+	else if (getType(container) == T_LIST)
 	{
 		if (getType(key) != T_NUM)
 		{
@@ -1739,7 +1739,7 @@ Error choose(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
-	if (getType(v) != T_STACK)
+	if (getType(v) != T_LIST)
 	{
 		clear_ref(v);
 		return TypeError;
@@ -1755,7 +1755,7 @@ Error flatten(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V list = popS();
-	if (getType(list) != T_STACK)
+	if (getType(list) != T_LIST)
 	{
 		clear_ref(list);
 		return TypeError;
