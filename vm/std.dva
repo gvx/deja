@@ -75,6 +75,29 @@ push_integer 1
 jmp $startarr
 $endarr1
 set_global 12
+new_dict
+set_local 0
+labda $endimport
+set_local 1
+push_word 1
+push_word 0
+has_dict
+push_word 13
+jmpz $already
+push_word 1
+push_word 14
+push_word 1
+push_word 0
+set_dict
+$already
+push_word 1
+push_word 0
+get_dict
+push_word 1
+push_word 15
+return
+$endimport
+set_global 16
 return
 ...
 ia
@@ -90,3 +113,7 @@ i!=
 i++
 iarr0(
 iarr1(
+inot
+iuse
+isetglobal
+iimport
