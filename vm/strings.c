@@ -158,7 +158,7 @@ Error new_chars(Stack* S, Stack* scope_arr)
 	V list = new_list();
 	Stack *st = toStack(list);
 	size_t size = toNewString(source)->size;
-	int i;
+	size_t i;
 	for (i = 0; i < size; i++)
 	{
 		push(st, unichar_to_value(decode_codepoint(chrs, &index)));
@@ -272,8 +272,8 @@ Error new_count(Stack* S, Stack* scope_arr)
 		clear_ref(needle);
 		return TypeError;
 	}
-	int haystack_len = toNewString(haystack)->size;
-	int needle_len = toNewString(needle)->size;
+	size_t haystack_len = toNewString(haystack)->size;
+	size_t needle_len = toNewString(needle)->size;
 	if (needle_len == 0)
 	{
 		pushS(int_to_value(toNewString(haystack)->length + 1));
@@ -320,8 +320,8 @@ Error new_find(Stack* S, Stack* scope_arr)
 	NewString *haystack_s = toNewString(haystack);
 	if (needle_s->length <= haystack_s->length)
 	{
-		int haystack_len = haystack_s->size;
-		int needle_len = needle_s->size;
+		size_t haystack_len = haystack_s->size;
+		size_t needle_len = needle_s->size;
 		utf8 haystack_c = haystack_s->text;
 		utf8 needle_c = needle_s->text;
 		utf8index ix;
