@@ -26,5 +26,6 @@ Error new_chars(Stack*, Stack*);
 Error new_starts_with(Stack*, Stack*);
 Error new_ends_with(Stack*, Stack*);
 Error new_contains(Stack*, Stack*);
+Error new_count(Stack*, Stack*);
 
 #endif

@@ -257,3 +257,47 @@ Error new_contains(Stack* S, Stack* scope_arr)
 	clear_ref(v2);
 	return Nothing;
 }
+
+Error new_count(Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V haystack = popS();
+	V needle = popS();
+	if (getType(haystack) != T_STR || getType(needle) != T_STR)
+	{
+		clear_ref(haystack);
+		clear_ref(needle);
+		return TypeError;
+	}
+	int haystack_len = toNewString(haystack)->size;
+	int needle_len = toNewString(needle)->size;
+	if (needle_len == 0)
+	{
+		pushS(int_to_value(toNewString(haystack)->length + 1));
+		clear_ref(haystack);
+		clear_ref(needle);
+		return Nothing;
+	}
+
+	utf8 haystack_c = toNewString(haystack)->text;
+	utf8 needle_c = toNewString(needle)->text;
+	utf8index ix;
+	int count = 0;
+	for (ix = 0; ix < haystack_len - needle_len + 1; )
+	{
+		if (!memcmp(haystack_c + ix, needle_c, needle_len))
+		{
+			count++;
+			ix += needle_len;
+		}
+		else
+		{
+			ix = nextchar(haystack_c, ix);
+		}
+	}
+
+	pushS(int_to_value(count));
+	clear_ref(haystack);
+	clear_ref(needle);
+	return Nothing;
+}
