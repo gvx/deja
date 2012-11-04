@@ -304,3 +304,42 @@ Error new_count(Stack* S, Stack* scope_arr)
 	clear_ref(needle);
 	return Nothing;
 }
+
+Error new_find(Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V haystack = popS();
+	V needle = popS();
+	if (getType(needle) != T_STR || getType(haystack) != T_STR)
+	{
+		clear_ref(needle);
+		clear_ref(haystack);
+		return TypeError;
+	}
+	NewString *needle_s = toNewString(needle);
+	NewString *haystack_s = toNewString(haystack);
+	if (needle_s->length <= haystack_s->length)
+	{
+		int haystack_len = haystack_s->size;
+		int needle_len = needle_s->size;
+		utf8 haystack_c = haystack_s->text;
+		utf8 needle_c = needle_s->text;
+		utf8index ix;
+		int i = 0;
+		for (ix = 0; ix < haystack_len - needle_len + 1; ix = nextchar(haystack_c, ix))
+		{
+			if (!memcmp(haystack_c + ix, needle_c, needle_len))
+			{
+				pushS(int_to_value(i));
+				clear_ref(needle);
+				clear_ref(haystack);
+				return Nothing;
+			}
+			i++;
+		}
+	}
+	pushS(int_to_value(-1));
+	clear_ref(needle);
+	clear_ref(haystack);
+	return Nothing;
+}
