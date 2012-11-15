@@ -376,7 +376,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return TypeError;
 			}
-			v = get_hashmap(toHashMap(container), key);
+			v = real_get_hashmap(toHashMap(container), key);
 			pushS(add_ref(v != NULL ? v_true : v_false));
 			clear_ref(container);
 			clear_ref(key);

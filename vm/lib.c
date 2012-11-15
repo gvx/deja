@@ -1316,7 +1316,7 @@ Error has(Stack* S, Stack* scope_arr)
 		clear_ref(key);
 		return TypeError;
 	}
-	V v = get_hashmap(toHashMap(container), key);
+	V v = real_get_hashmap(toHashMap(container), key);
 	pushS(add_ref(v == NULL ? v_false : v_true));
 	clear_ref(container);
 	clear_ref(key);
@@ -2138,6 +2138,23 @@ Error chance(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error set_default(Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V p = popS();
+	if (getType(p) == T_DICT)
+	{
+		toHashMap(p)->asdefault = popS();
+		clear_ref(p);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(p);
+		return TypeError;
+	}
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2247,6 +2264,7 @@ static CFunc stdlib[] = {
 	{"persist-stack", persist_stack},
 	{"unpersist", unpersist},
 	{"chance", chance},
+	{"set-default", set_default},
 	//strlib
 	{"concat", concat},
 	{"contains", contains},
