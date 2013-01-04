@@ -7,6 +7,7 @@
 bool reraise;
 bool vm_silent = false;
 bool vm_debug = false;
+bool vm_persist = false;
 
 void run(V file_name, Stack *S)
 {
