@@ -85,6 +85,19 @@ def convert(filename, flat):
 								break
 						else:
 							raise DejaSyntaxError('Inline lambda without closing semi-colon.')
+					elif '!' in w.value:
+						if w.value.startswith('!'):
+							w.value = 'eva' + w.value
+						if w.value.endswith('!'):
+							w.value = w.value[:-1]
+						args = w.value.split('!')
+						base = args.pop(0)
+						bytecode.extend(SingleInstruction('PUSH_LITERAL', x) for x in reversed(args))
+						bytecode.extend([
+							SingleInstruction('PUSH_WORD', base),
+							SingleInstruction('GET_DICT', 0),
+							SingleInstruction('PUSH_WORD', 'call')
+						])
 					else:
 						bytecode.append(SingleInstruction('PUSH_WORD', w))
 				elif isinstance(w, Number) and w.value.is_integer() and w.value <= POS_SIZE and w.value >= NEG_SIZE:
