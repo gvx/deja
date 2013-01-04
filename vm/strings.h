@@ -28,5 +28,7 @@ Error new_ends_with(Stack*, Stack*);
 Error new_contains(Stack*, Stack*);
 Error new_count(Stack*, Stack*);
 Error new_find(Stack*, Stack*);
+Error new_concat(Stack*, Stack*); /* concat( "a" "b" "c" ) */
+Error new_concat_list(Stack*, Stack*); /* concat [ "a" "b" "c" ] */
 
 #endif

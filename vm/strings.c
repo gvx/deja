@@ -343,3 +343,88 @@ Error new_find(Stack* S, Stack* scope_arr)
 	clear_ref(haystack);
 	return Nothing;
 }
+
+Error new_concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
+{
+	NewString *s1;
+	int i;
+	require(1);
+	V v1 = popS();
+	int newlength = 0;
+	for (i = S->used - 1; i >= 0; i--)
+	{
+		int t = getType(S->nodes[i]);
+		if (t == T_IDENT && S->nodes[i] == get_ident(")"))
+		{
+			break;
+		}
+		else if (t != T_STR)
+		{
+			clear_ref(v1);
+			return TypeError;
+		}
+		newlength += toNewString(S->nodes[i])->size;
+	}
+
+	char *new = malloc(newlength + 1);
+	char *currpoint = new;
+
+	for (i = S->used - 1; i >= 0; i--)
+	{
+		if (getType(S->nodes[i]) == T_IDENT && S->nodes[i] == get_ident(")"))
+		{
+			clear_ref(popS());
+			break;
+		}
+		s1 = toNewString(S->nodes[i]);
+		memcpy(currpoint, s1->text, s1->size);
+		currpoint += s1->size;
+		clear_ref(popS());
+	}
+	*currpoint = '\0';
+	pushS(str_to_value(newlength, new));
+	clear_ref(v1);
+	return Nothing;
+}
+
+Error new_concat_list(Stack *S, Stack *scope_arr) /* concat [ "a" "b" "c" ] */
+{
+	NewString *s1;
+	int i;
+	require(1);
+	V v1 = popS();
+	if (getType(v1) == T_LIST)
+	{
+		int newlength = 0;
+		int u = toStack(v1)->used;
+		V *n = toStack(v1)->nodes;
+		for (i = u - 1; i >= 0; i--)
+		{
+			if (getType(n[i]) != T_STR)
+			{
+				clear_ref(v1);
+				return TypeError;
+			}
+			newlength += toNewString(n[i])->size;
+		}
+
+		char *new = malloc(newlength + 1);
+		char *currpoint = new;
+
+		for (i = u - 1; i >= 0; i--)
+		{
+			s1 = toNewString(n[i]);
+			memcpy(currpoint, s1->text, s1->size);
+			currpoint += s1->size;
+		}
+		*currpoint = '\0';
+		pushS(str_to_value(newlength, new));
+		clear_ref(v1);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		return TypeError;
+	}
+}
