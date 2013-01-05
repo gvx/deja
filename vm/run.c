@@ -25,6 +25,16 @@ void run(V file_name, Stack *S)
 	Stack *save_scopes = new_stack();
 	Scope *sc;
 	push(scope, new_file_scope(file));
+	if (vm_persist)
+	{
+		V stdinfile = load_stdin(global);
+		if (stdinfile == NULL)
+		{
+			handle_error(IllegalFile, NULL);
+			return;
+		}
+		push(scope, new_file_scope(stdinfile));
+	}
 	//loading the dva part of the standard library
 	push(scope, new_file_scope(load_std(global)));
 	while (e == Nothing)

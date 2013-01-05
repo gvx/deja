@@ -18,6 +18,7 @@ typedef struct
 } File;
 
 V load_file(V, V);
+V load_stdin(V);
 V load_memfile(char*, size_t, V, V);
 
 #endif

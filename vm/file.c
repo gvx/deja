@@ -27,6 +27,38 @@ V load_file(V file_name, V global)
 	return new_file;
 }
 
+#define BUF_SIZE 1024
+
+struct vec {
+	int s;
+	char *d;
+};
+
+struct vec read_all()
+{
+	char *t = malloc(BUF_SIZE);
+	int len = fread(t, 1, BUF_SIZE, stdin);
+	int buffer_size = BUF_SIZE;
+	while (!feof(stdin))
+	{
+		buffer_size *= 2;
+		t = realloc(t, buffer_size);
+		len += fread(t + buffer_size - BUF_SIZE, 1, BUF_SIZE, stdin);
+	}
+	return (struct vec){len, t};
+}
+
+
+V load_stdin(V global)
+{
+	struct vec v = read_all();
+	V file_name = a_to_value("(stdin)");
+	V obj = load_memfile(v.d, v.s, file_name, global);
+	free(v.d);
+	clear_ref(file_name);
+	return obj;
+}
+
 V load_memfile(char *data, size_t length, V file_name, V global)
 {
 	V new_file = NULL;
