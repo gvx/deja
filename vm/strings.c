@@ -479,3 +479,45 @@ Error new_join(Stack *S, Stack *scope_arr)
 		return TypeError;
 	}
 }
+
+Error new_split(Stack *S, Stack *scope_arr)
+{
+	NewString *s1;
+	NewString *s2;
+	require(2);
+	V v1 = popS();
+	V v2 = popS();
+	if (getType(v1) == T_STR && getType(v2) == T_STR)
+	{
+		s1 = toNewString(v1);
+		s2 = toNewString(v2);
+		V r = new_list();
+		Stack *rs = toStack(r);
+		utf8index start, laststart = 0;
+		if (s1->size <= s2->size)
+		{
+			for (start = 0; start <= s2->size - s1->size;
+			     start = nextchar(s2->text, start))
+			{
+				if (!memcmp(s1->text, s2->text + start, s1->size))
+				{
+					V new = str_to_string(start - laststart, s2->text + laststart);
+					laststart = start + s1->length;
+					push(rs, new);
+				}
+			}
+		}
+		push(rs, str_to_string(s2->size - laststart, s2->text + laststart));
+		reverse(rs);
+		pushS(r);
+		clear_ref(v1);
+		clear_ref(v2);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+}
