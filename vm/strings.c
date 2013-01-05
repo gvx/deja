@@ -382,7 +382,7 @@ Error new_concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
 		clear_ref(popS());
 	}
 	*currpoint = '\0';
-	pushS(str_to_value(newlength, new));
+	pushS(str_to_string(newlength, new));
 	clear_ref(v1);
 	return Nothing;
 }
@@ -418,13 +418,64 @@ Error new_concat_list(Stack *S, Stack *scope_arr) /* concat [ "a" "b" "c" ] */
 			currpoint += s1->size;
 		}
 		*currpoint = '\0';
-		pushS(str_to_value(newlength, new));
+		pushS(str_to_string(newlength, new));
 		clear_ref(v1);
 		return Nothing;
 	}
 	else
 	{
 		clear_ref(v1);
+		return TypeError;
+	}
+}
+
+Error new_join(Stack *S, Stack *scope_arr)
+{
+	NewString *s1;
+	NewString *s2;
+	int i;
+	require(2);
+	V v1 = popS();
+	V v2 = popS();
+	if (getType(v1) == T_STR && getType(v2) == T_LIST)
+	{
+		s1 = toNewString(v1);
+		int len = stack_size(toStack(v2));
+		int newlength = s1->size * (len > 0 ? len - 1 : 0);
+		for (i = toStack(v2)->used - 1; i >= 0; i--)
+		{
+			if (getType(toStack(v2)->nodes[i]) != T_STR)
+			{
+				clear_ref(v1);
+				clear_ref(v2);
+				return TypeError;
+			}
+			newlength += toNewString(toStack(v2)->nodes[i])->size;
+		}
+
+		utf8 currpoint;
+		V new = empty_string_to_value(newlength, &currpoint);
+
+		for (i = toStack(v2)->used - 1; i >= 0; i--)
+		{
+			s2 = toNewString(toStack(v2)->nodes[i]);
+			memcpy(currpoint, toCharArr(s2), s2->size);
+			currpoint += s2->size;
+			if (i > 0)
+			{
+				memcpy(currpoint, s1->text, s1->size);
+				currpoint += s1->size;
+			}
+		}
+		pushS(new);
+		clear_ref(v1);
+		clear_ref(v2);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
 		return TypeError;
 	}
 }
