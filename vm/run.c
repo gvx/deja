@@ -3,6 +3,7 @@
 #include "std.h"
 #include "error.h"
 #include "debug.h"
+#include "persist.h"
 
 bool reraise;
 bool vm_silent = false;
@@ -74,6 +75,10 @@ void run(V file_name, Stack *S)
 				print_value(S->nodes[i], 0);
 				putchar(10);
 			}
+		}
+		if (vm_persist)
+		{
+			persist_all_file(stdout, S);
 		}
 	}
 	else //uh oh

@@ -320,12 +320,11 @@ bool persist(char *fname, V obj)
 	}
 }
 
-bool persist_all(char *fname, Stack *objects)
+bool persist_all_file(FILE *file, Stack *objects)
 {
 	int i;
 	HashMap *hm = NULL;
 	int maxm;
-	FILE *file;
 	uint32_t obj_encoded;
 	Bucket *b;
 	uint32_t ssize;
@@ -353,8 +352,6 @@ bool persist_all(char *fname, Stack *objects)
 	{
 		maxm = 0; // empty stack is valid too
 	}
-
-	file = fopen(fname, "w");
 
 	fwrite("\007DV\x03", 4, 1, file);
 	ssize = htonl(objects->used + 1);
@@ -388,9 +385,15 @@ bool persist_all(char *fname, Stack *objects)
 		write_object(file, reverse_lookup[i], hm);
 	}
 
-	fclose(file);
-
 	return true;
+}
+
+bool persist_all(char *fname, Stack *objects)
+{
+	FILE *file = fopen(fname, "w");
+	bool result = persist_all_file(file, objects);
+	fclose(file);
+	return result;
 }
 
 bool valid_persist_name(V fname)
