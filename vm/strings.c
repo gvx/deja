@@ -521,3 +521,37 @@ Error new_split(Stack *S, Stack *scope_arr)
 		return TypeError;
 	}
 }
+
+Error new_slice(Stack *S, Stack *scope_arr)
+{
+	require(3);
+	V str = popS();
+	V start = popS();
+	V end = popS();
+	if (getType(str) != T_STR || getType(start) != T_NUM || getType(end) != T_NUM)
+	{
+		clear_ref(str);
+		clear_ref(start);
+		clear_ref(end);
+		return TypeError;
+	}
+	int s = toNumber(start);
+	int e = toNumber(end);
+	NewString *string = toNewString(str);
+	int len = string->length;
+	if (s < -len)
+		s = 0;
+	else if (s < 0)
+		s = len + s;
+	else if (s > len)
+		s = len;
+	if (e <= 0)
+		e = len + e;
+	else if (e > len)
+		e = len;
+	pushS(strslice(string->text, s, e));
+	clear_ref(str);
+	clear_ref(start);
+	clear_ref(end);
+	return Nothing;
+}
