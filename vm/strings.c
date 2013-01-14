@@ -555,3 +555,41 @@ Error new_slice(Stack *S, Stack *scope_arr)
 	clear_ref(end);
 	return Nothing;
 }
+
+Error new_split_any(Stack *S, Stack *scope_arr)
+{
+	NewString *s1;
+	NewString *s2;
+	require(2);
+	V v1 = popS();
+	V v2 = popS();
+	if (getType(v1) == T_STR && getType(v2) == T_STR)
+	{
+		s1 = toNewString(v1);
+		s2 = toNewString(v2);
+		V r = new_list();
+		Stack *rs = toStack(r);
+		uint32_t start, laststart = 0;
+		for (start = 0; start < s2->length; start = nextchar(s2->text, start))
+		{
+			if (memchr(s1->text, s2->text[start], s1->length))
+			{
+				V new = str_to_value(start - laststart, s2->text + laststart);
+				laststart = start + 1;
+				push(rs, new);
+			}
+		}
+		push(rs, str_to_value(s2->length - laststart, s2->text + laststart));
+		reverse(rs);
+		pushS(r);
+		clear_ref(v1);
+		clear_ref(v2);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v1);
+		clear_ref(v2);
+		return TypeError;
+	}
+}

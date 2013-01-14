@@ -33,5 +33,6 @@ Error new_concat_list(Stack*, Stack*); /* concat [ "a" "b" "c" ] */
 Error new_join(Stack*, Stack*);
 Error new_split(Stack*, Stack*);
 Error new_slice(Stack*, Stack*);
+Error new_split_any(Stack*, Stack*);
 
 #endif
