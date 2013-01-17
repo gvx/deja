@@ -70,7 +70,7 @@ return
 ia
 ib
 icall
-ifor:
+ifor
 iwhile
 i$
 iover-3

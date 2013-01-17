@@ -50,7 +50,7 @@ def convert(filename, flat):
 						else:
 							s = 0
 						bytecode.append(SingleInstruction(OPTIMIZERS[w.value], s))
-					elif w.value == 'for:':
+					elif w.value == 'for':
 						mstart = Marker()
 						mend = Marker()
 						bytecode.extend([
