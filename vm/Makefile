@@ -1,5 +1,5 @@
-all: release debug
 release: vu
+all: release debug
 debug: vu-dbg
 
 clean:
