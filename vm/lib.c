@@ -1604,6 +1604,7 @@ Error keys(Stack* S, Stack* scope_arr)
 		}
 	}
 	pushS(list);
+	clear_ref(dict);
 	return Nothing;
 }
 
@@ -1634,6 +1635,7 @@ Error values(Stack* S, Stack* scope_arr)
 		}
 	}
 	pushS(list);
+	clear_ref(dict);
 	return Nothing;
 }
 
@@ -1674,6 +1676,7 @@ Error pairs(Stack* S, Stack* scope_arr)
 		}
 	}
 	pushS(list);
+	clear_ref(dict);
 	return Nothing;
 }
 
