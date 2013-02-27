@@ -65,6 +65,23 @@ push_word 9
 return
 $endimport
 set_global 10
+labda $endlist
+new_list
+set_local 0
+$startloop3
+dup
+jmpz $endloop3
+rot
+get 0
+push_to
+push_word 2
+jmp $startloop3
+$endloop3
+drop
+push_word 0
+return
+$endlist
+set_global 11
 return
 ...
 ia
@@ -78,3 +95,4 @@ inot
 iuse
 isetglobal
 iimport
+ilist
