@@ -1607,6 +1607,76 @@ Error keys(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error values(Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V dict = popS();
+	if (getType(dict) != T_DICT)
+	{
+		clear_ref(dict);
+		return TypeError;
+	}
+	V list = new_list();
+	HashMap *hm = toHashMap(dict);
+	if (hm->map != NULL)
+	{
+		Stack *s = toStack(list);
+		int i;
+		Bucket *b;
+		for (i = 0; i < hm->size; i++)
+		{
+			b = hm->map[i];
+			while(b != NULL)
+			{
+				push(s, add_ref(b->value));
+				b = b->next;
+			}
+		}
+	}
+	pushS(list);
+	return Nothing;
+}
+
+Error pairs(Stack* S, Stack* scope_arr)
+{
+	V k, v;
+	require(1);
+	V dict = popS();
+	if (getType(dict) != T_DICT)
+	{
+		clear_ref(dict);
+		return TypeError;
+	}
+	V list = new_list();
+	HashMap *hm = toHashMap(dict);
+	if (hm->map != NULL)
+	{
+		Stack *s = toStack(list);
+		int i;
+		Bucket *b;
+		for (i = 0; i < hm->size; i++)
+		{
+			b = hm->map[i];
+			while(b != NULL)
+			{
+				k = b->key;
+				v = b->value;
+				if (!is_simple(k) || !is_simple(v))
+				{
+					clear_ref(dict);
+					clear_ref(list);
+					error_msg = "keys and values should have simple types";
+					return TypeError;
+				}
+				push(s, new_pair(add_ref(k), add_ref(v)));
+				b = b->next;
+			}
+		}
+	}
+	pushS(list);
+	return Nothing;
+}
+
 Error exists_(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -2237,6 +2307,8 @@ static CFunc stdlib[] = {
 	{"pass", pass},
 	{"rand", rand_},
 	{"keys", keys},
+	{"values", values},
+	{"pairs", pairs},
 	{"?", exists_},
 	{"exists?", exists_},
 	{"floor", floor_},
