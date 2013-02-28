@@ -1520,6 +1520,7 @@ Error to_num(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+char int_str_buffer[32];
 Error to_str(Stack *S, Stack *scope_arr)
 {
 	V v = popS();
@@ -1544,10 +1545,9 @@ Error to_str(Stack *S, Stack *scope_arr)
 		clear_ref(v);
 		return Nothing;
 	}
-	char *buff = malloc(fmin(5 + abs(log10(fabs(toNumber(v)))), 30));
+	char *buff = int_str_buffer;
 	sprintf(buff, "%.15g", toNumber(v));
 	pushS(a_to_value(buff));
-	free(buff);
 	clear_ref(v);
 	return Nothing;
 }
