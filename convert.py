@@ -27,6 +27,7 @@ OPTIMIZERS = {
 	'set-to': 'SET_DICT',
 	'raise': 'RAISE',
 	'reraise': 'RERAISE',
+	'call': 'CALL',
 }
 ARGED_OPT = set('SET SET_LOCAL SET_GLOBAL GET GET_GLOBAL'.split())
 
@@ -57,7 +58,7 @@ def convert(filename, flat):
 							mstart,
 							SingleInstruction('DUP', 0),
 							SingleInstruction('JMPZ', mend),
-							SingleInstruction('PUSH_WORD', 'call'),
+							SingleInstruction('CALL', 0),
 							SingleInstruction('JMP', mstart),
 							mend,
 							SingleInstruction('DROP', 0)
@@ -96,7 +97,7 @@ def convert(filename, flat):
 						bytecode.extend([
 							SingleInstruction('PUSH_WORD', base),
 							SingleInstruction('GET_DICT', 0),
-							SingleInstruction('PUSH_WORD', 'call')
+							SingleInstruction('CALL', 0)
 						])
 					else:
 						bytecode.append(SingleInstruction('PUSH_WORD', w))

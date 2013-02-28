@@ -20,7 +20,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	bool t;
 	uint32_t *pc;
 	int argument;
-	int instruction = ntohl(*sc->pc);
+	unsigned int instruction = ntohl(*sc->pc);
 	int opcode = instruction >> 24;
 	clear_ref(lastCall);
 	lastCall = NULL;
@@ -476,6 +476,38 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(key);
 			clear_ref(v);
 			clear_ref(container);
+			break;
+		case OP_CALL:
+			v = popS();
+			if (getType(v) == T_IDENT)
+			{
+				key = v;
+				v = get_hashmap(&sc->hm, key);
+				while (v == NULL)
+				{
+					if (sc->parent == NULL)
+					{
+						return NameError;
+					}
+					sc = toScope(sc->parent);
+					v = get_hashmap(&sc->hm, key);
+				}
+			}
+			if (getType(v) == T_FUNC)
+			{
+				push(scope_arr, add_rooted(new_function_scope(v)));
+				clear_ref(v);
+			}
+			else if (getType(v) == T_CFUNC)
+			{
+				Error r = toCFunc(v)(S, scope_arr);
+				clear_ref(v);
+				return r;
+			}
+			else
+			{
+				pushS(v);
+			}
 			break;
 	}
 	return Nothing;

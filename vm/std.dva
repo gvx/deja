@@ -2,7 +2,7 @@ labda $endfor
 $startloop
 dup
 jmpz $endloop
-push_word 2
+call
 jmp $startloop
 $endloop
 drop
@@ -74,7 +74,7 @@ jmpz $endloop3
 rot
 get 0
 push_to
-push_word 2
+call
 jmp $startloop3
 $endloop3
 drop

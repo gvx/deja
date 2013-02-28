@@ -43,6 +43,7 @@ OPCODES = {
 	'HAS_DICT':			'01110001',
 	'GET_DICT':			'01110010',
 	'SET_DICT':			'01110011',
+	'CALL':				'10000000',
 }
 for k in OPCODES:
 	OPCODES[k] = int(OPCODES[k], 2) * 0x1000000
@@ -85,7 +86,7 @@ def double(x):
 
 def write_code(code, acc):
 	for op in code:
-		acc.append(signed_int(OPCODES[op.opcode] | (op.ref & 0xFFFFFF)))
+		acc.append(unsigned_int(OPCODES[op.opcode] | (op.ref & 0xFFFFFF)))
 
 def write_literals(literals, acc):
 	for literal in literals:

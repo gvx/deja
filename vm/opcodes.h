@@ -41,6 +41,7 @@
 #define OP_HAS_DICT       0x71
 #define OP_GET_DICT       0x72
 #define OP_SET_DICT       0x73
+#define OP_CALL           0x80
 
 Error inline do_instruction(Header*, Stack*, Stack*);
 
