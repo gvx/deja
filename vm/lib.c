@@ -1535,10 +1535,6 @@ Error to_str(Stack *S, Stack *scope_arr)
 		clear_ref(v);
 		return TypeError;
 	}
-	// allocate a reasonable amount
-	// need to take scientific notation etc. in account
-	// also numbers near 0, which are long and have a negative log10
-	// and negative numbers
 	if (!toNumber(v))
 	{
 		pushS(str_to_value(1, "0"));
