@@ -5,17 +5,17 @@ debug: vu-dbg
 clean:
 	rm *.o
 
-CFILES = $(wildcard *.c)
+CFILES := $(wildcard *.c) $(shell if [ ! -e "std.c" ]; then echo "std.c"; fi)
 OFILES = $(patsubst %.c, %.o, $(CFILES))
 ODBGFILES = $(patsubst %.c, %.dbg.o, $(CFILES))
 CFLAGS = -Wall
 LDFLAGS = -ldl -lm
 
 vu: .depend $(OFILES)
-	$(CC) -O2 $(CFLAGS) $(LDFLAGS) $(OFILES) -o $@
+	$(CC) -O2 $(CFLAGS) $(OFILES) -o $@ $(LDFLAGS)
 
 vu-dbg: .depend.dbg $(ODBGFILES)
-	$(CC) -ggdb3 $(CFLAGS) $(LDFLAGS) $(ODBGFILES) -o $@
+	$(CC) -ggdb3 $(CFLAGS) $(ODBGFILES) -o $@ $(LDFLAGS)
 
 depend: .depend .depend.dbg
 
