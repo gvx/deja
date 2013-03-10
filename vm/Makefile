@@ -1,3 +1,5 @@
+.PHONY: all release debug clean depend
+
 release: vu
 all: release debug
 debug: vu-dbg
