@@ -1771,7 +1771,12 @@ Error plus_one(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
-	if (getType(v) == T_NUM)
+	if (isInt(v) && canBeInt(toInt(v) + 1))
+	{
+		pushS(intToV(toInt(v) + 1));
+		return Nothing;
+	}
+	else if (getType(v) == T_NUM)
 	{
 		V r = double_to_value(toNumber(v) + 1.0);
 		clear_ref(v);
@@ -1789,7 +1794,12 @@ Error minus_one(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
-	if (getType(v) == T_NUM)
+	if (isInt(v) && canBeInt(toInt(v) - 1))
+	{
+		pushS(intToV(toInt(v) - 1));
+		return Nothing;
+	}
+	else if (getType(v) == T_NUM)
 	{
 		V r = double_to_value(toNumber(v) - 1.0);
 		clear_ref(v);
