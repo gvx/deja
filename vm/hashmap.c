@@ -69,11 +69,7 @@ uint32_t get_hash(V v)
 V get_hashmap(HashMap* hm, V key)
 {
 	V actual = real_get_hashmap(hm, key);
-	if (!actual)
-	{
-		actual = hm->asdefault;
-	}
-	return actual;
+	return actual ? actual : hm->asdefault;
 }
 
 V real_get_hashmap(HashMap* hm, V key)
