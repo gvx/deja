@@ -22,7 +22,6 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	int argument;
 	unsigned int instruction = ntohl(*sc->pc);
 	int opcode = instruction >> 24;
-	clear_ref(lastCall);
 	lastCall = NULL;
 	switch (opcode)
 	{
@@ -49,7 +48,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			pushS(int_to_value(argument));
 			break;
 		case OP_PUSH_WORD:
-			lastCall = key = add_ref(get_literal(h, argument));
+			lastCall = key = get_literal(h, argument);
 			v = get_hashmap(&sc->hm, key);
 			while (v == NULL)
 			{
