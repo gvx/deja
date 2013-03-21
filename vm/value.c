@@ -1,6 +1,7 @@
 #include "stack.h"
 #include "hashmap.h"
 #include "idents.h"
+#include "strings.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>

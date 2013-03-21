@@ -1,6 +1,6 @@
 #include "literals.h"
 #include "idents.h"
-#include "utf8.h"
+#include "strings.h"
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -99,7 +99,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 				error_msg = "wrong encoding for string literal, should be UTF-8";
 				return false;
 			}
-			t = str_to_value(str_length, curpos);
+			t = str_to_string(str_length, curpos);
 			curpos += str_length;
 		}
 		else if (type == TYPE_IDENT)
@@ -121,7 +121,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 				error_msg = "wrong encoding for string literal, should be UTF-8";
 				return false;
 			}
-			t = str_to_value(str_length, curpos);
+			t = str_to_string(str_length, curpos);
 			curpos += str_length;
 		}
 		else if (type == (TYPE_IDENT | TYPE_SHORT))

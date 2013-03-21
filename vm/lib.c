@@ -1094,7 +1094,7 @@ Error input(Stack* S, Stack* scope_arr)
 	{
 		return UnicodeError;
 	}
-	pushS(a_to_value(line));
+	pushS(a_to_string(line));
 	return Nothing;
 }
 
@@ -1259,7 +1259,7 @@ Error len(Stack* S, Stack* scope_arr)
 	switch (getType(v))
 	{
 		case T_STR:
-			pushS(int_to_value(toString(v)->length));
+			pushS(int_to_value(string_length(v)));
 			break;
 		case T_LIST:
 			pushS(int_to_value(stack_size(toStack(v))));
@@ -1537,13 +1537,13 @@ Error to_str(Stack *S, Stack *scope_arr)
 	}
 	if (!toNumber(v))
 	{
-		pushS(str_to_value(1, "0"));
+		pushS(str_to_string(1, "0"));
 		clear_ref(v);
 		return Nothing;
 	}
 	char *buff = int_str_buffer;
 	sprintf(buff, "%.15g", toNumber(v));
-	pushS(a_to_value(buff));
+	pushS(a_to_string(buff));
 	clear_ref(v);
 	return Nothing;
 }
@@ -2177,7 +2177,7 @@ Error unpersist(Stack *S, Stack *scope_arr)
 		return ValueError;
 	}
 	char *path = make_persist_path(location);
-	V file = load_file(a_to_value(path), toFile(toScope(get_head(scope_arr))->file)->global);
+	V file = load_file(a_to_string(path), toFile(toScope(get_head(scope_arr))->file)->global);
 	free(path);
 	if (file == NULL)
 	{
@@ -2345,7 +2345,8 @@ static CFunc stdlib[] = {
 	{"chance", chance},
 	{"set-default", set_default},
 	//strlib
-	{"concat", concat},
+	{"concat(", concat},
+	{"concat", concat_list},
 	{"contains", contains},
 	{"starts-with", starts_with},
 	{"ends-with", ends_with},

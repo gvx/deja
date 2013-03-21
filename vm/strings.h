@@ -4,6 +4,9 @@
 #include "utf8.h"
 #include "value.h"
 #include "lib.h"
+#include "stack.h"
+#include "error.h"
+
 #define toNewString(x) ((NewString*)(x+1))
 
 typedef struct {
@@ -21,19 +24,19 @@ V a_to_string(char*);
 V str_to_string(size_t, char*);
 V empty_string_to_value(size_t, utf8*);
 
-Error new_ord(Stack*, Stack*);
-Error new_chr(Stack*, Stack*);
-Error new_chars(Stack*, Stack*);
-Error new_starts_with(Stack*, Stack*);
-Error new_ends_with(Stack*, Stack*);
-Error new_contains(Stack*, Stack*);
-Error new_count(Stack*, Stack*);
-Error new_find(Stack*, Stack*);
-Error new_concat(Stack*, Stack*); /* concat( "a" "b" "c" ) */
-Error new_concat_list(Stack*, Stack*); /* concat [ "a" "b" "c" ] */
-Error new_join(Stack*, Stack*);
-Error new_split(Stack*, Stack*);
-Error new_slice(Stack*, Stack*);
-Error new_split_any(Stack*, Stack*);
+Error ord(Stack*, Stack*);
+Error chr(Stack*, Stack*);
+Error chars(Stack*, Stack*);
+Error starts_with(Stack*, Stack*);
+Error ends_with(Stack*, Stack*);
+Error contains(Stack*, Stack*);
+Error count(Stack*, Stack*);
+Error find(Stack*, Stack*);
+Error concat(Stack*, Stack*); /* concat( "a" "b" "c" ) */
+Error concat_list(Stack*, Stack*); /* concat [ "a" "b" "c" ] */
+Error join(Stack*, Stack*);
+Error split(Stack*, Stack*);
+Error slice(Stack*, Stack*);
+Error split_any(Stack*, Stack*);
 
 #endif

@@ -100,7 +100,7 @@ uint32_t string_length(V string)
 	return s->length;
 }
 
-Error new_ord(Stack* S, Stack* scope_arr)
+Error ord(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -130,7 +130,7 @@ V unichar_to_value(unichar c)
 	return r;
 }
 
-Error new_chr(Stack* S, Stack* scope_arr)
+Error chr(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
@@ -144,7 +144,7 @@ Error new_chr(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error new_chars(Stack* S, Stack* scope_arr)
+Error chars(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V source = popS();
@@ -167,7 +167,7 @@ Error new_chars(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error new_starts_with(Stack* S, Stack* scope_arr)
+Error starts_with(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V haystack = popS();
@@ -194,7 +194,7 @@ Error new_starts_with(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error new_ends_with(Stack* S, Stack* scope_arr)
+Error ends_with(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V haystack = popS();
@@ -222,7 +222,7 @@ Error new_ends_with(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error new_contains(Stack* S, Stack* scope_arr)
+Error contains(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V haystack = popS();
@@ -261,7 +261,7 @@ Error new_contains(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error new_count(Stack* S, Stack* scope_arr)
+Error count(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V haystack = popS();
@@ -305,7 +305,7 @@ Error new_count(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error new_find(Stack* S, Stack* scope_arr)
+Error find(Stack* S, Stack* scope_arr)
 {
 	require(2);
 	V haystack = popS();
@@ -344,7 +344,7 @@ Error new_find(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error new_concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
+Error concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
 {
 	NewString *s1;
 	int i;
@@ -387,7 +387,7 @@ Error new_concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
 	return Nothing;
 }
 
-Error new_concat_list(Stack *S, Stack *scope_arr) /* concat [ "a" "b" "c" ] */
+Error concat_list(Stack *S, Stack *scope_arr) /* concat [ "a" "b" "c" ] */
 {
 	NewString *s1;
 	int i;
@@ -429,7 +429,7 @@ Error new_concat_list(Stack *S, Stack *scope_arr) /* concat [ "a" "b" "c" ] */
 	}
 }
 
-Error new_join(Stack *S, Stack *scope_arr)
+Error join(Stack *S, Stack *scope_arr)
 {
 	NewString *s1;
 	NewString *s2;
@@ -480,7 +480,7 @@ Error new_join(Stack *S, Stack *scope_arr)
 	}
 }
 
-Error new_split(Stack *S, Stack *scope_arr)
+Error split(Stack *S, Stack *scope_arr)
 {
 	NewString *s1;
 	NewString *s2;
@@ -522,7 +522,7 @@ Error new_split(Stack *S, Stack *scope_arr)
 	}
 }
 
-Error new_slice(Stack *S, Stack *scope_arr)
+Error slice(Stack *S, Stack *scope_arr)
 {
 	require(3);
 	V str = popS();
@@ -556,7 +556,7 @@ Error new_slice(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error new_split_any(Stack *S, Stack *scope_arr)
+Error split_any(Stack *S, Stack *scope_arr)
 {
 	NewString *s1;
 	NewString *s2;
@@ -574,12 +574,12 @@ Error new_split_any(Stack *S, Stack *scope_arr)
 		{
 			if (memchr(s1->text, s2->text[start], s1->length))
 			{
-				V new = str_to_value(start - laststart, s2->text + laststart);
+				V new = str_to_string(start - laststart, s2->text + laststart);
 				laststart = start + 1;
 				push(rs, new);
 			}
 		}
-		push(rs, str_to_value(s2->length - laststart, s2->text + laststart));
+		push(rs, str_to_string(s2->length - laststart, s2->text + laststart));
 		reverse(rs);
 		pushS(r);
 		clear_ref(v1);

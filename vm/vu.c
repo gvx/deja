@@ -8,6 +8,7 @@
 #include "run.h"
 #include "error.h"
 #include "module.h"
+#include "strings.h"
 
 extern bool vm_silent;
 extern bool vm_debug;
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
 				clear_stack(S);
 				return 1;
 			}
-			pushS(a_to_value(argv[i]));
+			pushS(a_to_string(argv[i]));
 		}
 
 		run(find_file(get_ident(argv[optind])), S);
