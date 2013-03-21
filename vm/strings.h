@@ -19,6 +19,7 @@ V charat(utf8, utf8index);
 V strslice(utf8, utf8index, utf8index);
 V a_to_string(char*);
 V str_to_string(size_t, char*);
+V empty_string_to_value(size_t, utf8*);
 
 Error new_ord(Stack*, Stack*);
 Error new_chr(Stack*, Stack*);
