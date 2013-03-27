@@ -8,6 +8,7 @@
 #include "value.h"
 #include "stack.h"
 #include "literals.h"
+#include "strings.h"
 
 bool persist_collect_(V original, HashMap *hm)
 {
@@ -120,7 +121,7 @@ void write_object(FILE *file, V obj, HashMap *hm)
 	int t = getType(obj);
 	union double_or_uint64_t num;
 	ITreeNode *id = NULL;
-	String *s = NULL;
+	NewString *s = NULL;
 	Stack *st;
 	HashMap *hmv;
 	int8_t n8;
@@ -146,8 +147,8 @@ void write_object(FILE *file, V obj, HashMap *hm)
 				type |= TYPE_SHORT;
 			break;
 		case T_STR:
-			s = toString(obj);
-			if (s->length < 256)
+			s = toNewString(obj);
+			if (s->size < 256)
 				type |= TYPE_SHORT;
 			break;
 		case T_FRAC:
@@ -178,16 +179,16 @@ void write_object(FILE *file, V obj, HashMap *hm)
 		case T_STR:
 			if (type & TYPE_SHORT)
 			{
-				l8 = s->length;
+				l8 = s->size;
 				fwrite(&l8, 1, 1, file);
 			}
 			else
 			{
-				l32 = s->length;
+				l32 = s->size;
 				l32 = htonl(l32);
 				fwrite(&l32, 4, 1, file);
 			}
-			fwrite(toCharArr(s), s->length, 1, file);
+			fwrite(s->text, s->size, 1, file);
 			break;
 		case T_NUM:
 			if (type & TYPE_SHORT)
