@@ -92,7 +92,7 @@ uint32_t need_hash(V string)
 
 uint32_t string_length(NewString *s)
 {
-	if (s->length == (uint32_t)-1)
+	if (s->length == -1)
 	{
 		s->length = count_characters(s->size, s->text);
 	}
