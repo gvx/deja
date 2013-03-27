@@ -9,7 +9,7 @@ void print_list_value(Stack*, int, int);
 
 void print_value(V v, int depth)
 {
-	String* s;
+	NewString* s;
 	ITreeNode* i;
 	switch (getType(v))
 	{
@@ -18,8 +18,8 @@ void print_value(V v, int depth)
 			printf(":%*s", i->length, i->data);
 			break;
 		case T_STR:
-			s = toString(v);
-			printf("\"%*s\"", s->length, toCharArr(s));
+			s = toNewString(v);
+			printf("\"%*s\"", (int)s->size, s->text);
 			break;
 		case T_NUM:
 			if (v == v_true)
@@ -1912,7 +1912,7 @@ Error print_f(Stack* S, Stack* scope_arr)
 	switch (getType(v))
 	{
 		case T_STR:
-			printf("%*s", toString(v)->length, getChars(v));
+			printf("%*s", (int)(toNewString(v)->size), toNewString(v)->text);
 			break;
 		case T_NUM:
 			printf("%.15g", toNumber(v));

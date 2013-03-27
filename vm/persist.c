@@ -432,7 +432,7 @@ char *make_persist_path(V fname)
 		plen = strlen(pathbase);
 	}
 	char *data = malloc(plen + strlen("/deja/persist/") + s->size + 3 + 1);
-	sprintf(data, "%s/deja/persist/%*s.vu", pathbase, s->size, s->text);
+	sprintf(data, "%s/deja/persist/%*s.vu", pathbase, (int)s->size, s->text);
 	if (home)
 	{ // if home is not NULL, that means we allocated pathbase
 		free(pathbase);
