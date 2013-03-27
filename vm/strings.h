@@ -17,7 +17,7 @@ typedef struct {
 } __attribute__((packed)) NewString;
 
 uint32_t need_hash(V);
-uint32_t string_length(V);
+uint32_t string_length(NewString*);
 V charat(utf8, utf8index);
 V strslice(utf8, utf8index, utf8index);
 V a_to_string(char*);

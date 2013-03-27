@@ -1259,7 +1259,7 @@ Error len(Stack* S, Stack* scope_arr)
 	switch (getType(v))
 	{
 		case T_STR:
-			pushS(int_to_value(string_length(v)));
+			pushS(int_to_value(string_length(toNewString(v))));
 			break;
 		case T_LIST:
 			pushS(int_to_value(stack_size(toStack(v))));

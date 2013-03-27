@@ -90,9 +90,8 @@ uint32_t need_hash(V string)
 	return s->hash;
 }
 
-uint32_t string_length(V string)
+uint32_t string_length(NewString *s)
 {
-	NewString *s = toNewString(string);
 	if (s->length == (uint32_t)-1)
 	{
 		s->length = count_characters(s->size, s->text);
@@ -235,7 +234,7 @@ Error contains(Stack* S, Stack* scope_arr)
 	}
 	NewString *needle_s = toNewString(needle);
 	NewString *haystack_s = toNewString(haystack);
-	if (needle_s->length > haystack_s->length)
+	if (string_length(needle_s) > string_length(haystack_s))
 	{
 		pushS(add_ref(v_false));
 	}
@@ -243,7 +242,7 @@ Error contains(Stack* S, Stack* scope_arr)
 	{
 		uint32_t i;
 		utf8index index = 0;
-		for (i = 0; i <= haystack_s->length - needle_s->length; i++)
+		for (i = 0; i <= string_length(haystack_s) - string_length(needle_s); i++)
 		{
 			if (!memcmp(haystack_s->text + index, needle_s->text, needle_s->size))
 			{
@@ -276,7 +275,7 @@ Error count(Stack* S, Stack* scope_arr)
 	size_t needle_len = toNewString(needle)->size;
 	if (needle_len == 0)
 	{
-		pushS(int_to_value(toNewString(haystack)->length + 1));
+		pushS(int_to_value(string_length(toNewString(haystack)) + 1));
 		clear_ref(haystack);
 		clear_ref(needle);
 		return Nothing;
@@ -318,7 +317,7 @@ Error find(Stack* S, Stack* scope_arr)
 	}
 	NewString *needle_s = toNewString(needle);
 	NewString *haystack_s = toNewString(haystack);
-	if (needle_s->length <= haystack_s->length)
+	if (string_length(needle_s) <= string_length(haystack_s))
 	{
 		size_t haystack_len = haystack_s->size;
 		size_t needle_len = needle_s->size;
@@ -502,7 +501,7 @@ Error split(Stack *S, Stack *scope_arr)
 				if (!memcmp(s1->text, s2->text + start, s1->size))
 				{
 					V new = str_to_string(start - laststart, s2->text + laststart);
-					laststart = start + s1->length;
+					laststart = start + string_length(s1);
 					push(rs, new);
 				}
 			}
@@ -538,7 +537,7 @@ Error slice(Stack *S, Stack *scope_arr)
 	int s = toNumber(start);
 	int e = toNumber(end);
 	NewString *string = toNewString(str);
-	int len = string->length;
+	int len = string_length(string);
 	if (s < -len)
 		s = 0;
 	else if (s < 0)
@@ -570,16 +569,16 @@ Error split_any(Stack *S, Stack *scope_arr)
 		V r = new_list();
 		Stack *rs = toStack(r);
 		uint32_t start, laststart = 0;
-		for (start = 0; start < s2->length; start = nextchar(s2->text, start))
+		for (start = 0; start < s2->size; start = nextchar(s2->text, start))
 		{
-			if (memchr(s1->text, s2->text[start], s1->length))
+			if (memchr(s1->text, s2->text[start], s1->size))
 			{
 				V new = str_to_string(start - laststart, s2->text + laststart);
 				laststart = start + 1;
 				push(rs, new);
 			}
 		}
-		push(rs, str_to_string(s2->length - laststart, s2->text + laststart));
+		push(rs, str_to_string(s2->size - laststart, s2->text + laststart));
 		reverse(rs);
 		pushS(r);
 		clear_ref(v1);
