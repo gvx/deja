@@ -5,6 +5,7 @@
 #include "gc.h"
 #include "types.h"
 #include "scope.h"
+#include "strings.h"
 
 HashMap* new_hashmap(int initialsize)
 {
@@ -39,7 +40,7 @@ uint32_t get_hash(V v)
 	int t = getType(v);
 	if (t == T_STR)
 	{
-		return toString(v)->hash;
+		return need_hash(v);
 	}
 	else if (t == T_NUM)
 	{
