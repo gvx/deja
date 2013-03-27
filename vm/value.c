@@ -30,18 +30,6 @@ V double_to_value(double d)
 	make_value_from_double(d);
 }
 
-uint32_t string_hash(int length, const char *key)
-{
-	uint32_t hash = 2166136261;
-	int i;
-	for (i = 0; i < length; i++)
-	{
-        hash = (16777619 * hash) ^ (*key);
-        key++;
-	}
-	return hash;
-}
-
 V get_ident(const char* name)
 {
 	return lookup_ident(strlen(name), name);
