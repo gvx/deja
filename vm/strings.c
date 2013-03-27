@@ -459,7 +459,7 @@ Error join(Stack *S, Stack *scope_arr)
 		for (i = toStack(v2)->used - 1; i >= 0; i--)
 		{
 			s2 = toNewString(toStack(v2)->nodes[i]);
-			memcpy(currpoint, toCharArr(s2), s2->size);
+			memcpy(currpoint, s2->text, s2->size);
 			currpoint += s2->size;
 			if (i > 0)
 			{

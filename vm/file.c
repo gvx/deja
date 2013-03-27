@@ -9,7 +9,7 @@ V load_file(V file_name, V global)
 		clear_ref(file_name);
 		return file_name;
 	}
-	FILE* f = fopen(getChars(file_name), "rb");
+	FILE* f = fopen(toNewString(file_name)->text, "rb");
 	if (f == NULL)
 	{
 		clear_ref(file_name);

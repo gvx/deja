@@ -1288,7 +1288,7 @@ Error loadlib(Stack* S, Stack* scope_arr)
 	{
 		return TypeError;
 	}
-	void* lib_handle = dlopen(getChars(name), RTLD_NOW);
+	void* lib_handle = dlopen(toNewString(name)->text, RTLD_NOW);
 	if (lib_handle == NULL)
 	{
 		fprintf(stderr, "%s\n", dlerror());
@@ -1510,7 +1510,7 @@ Error to_num(Stack *S, Stack *scope_arr)
 		clear_ref(v);
 		return TypeError;
 	}
-	r = strtod(getChars(v), &end);
+	r = strtod(toNewString(v)->text, &end);
 	clear_ref(v);
 	if (end[0] != '\0')
 	{
@@ -1900,7 +1900,7 @@ Error file_info(Stack* S, Stack* scope_arr)
 	File *f = toFile(toScope(get_head(scope_arr))->file);
 	Header *h = &f->header;
 	printf("(source size:%d, literals:%d, filename:%s, source:%s, globals:%d)\n",
-		h->size, h->n_literals, getChars(f->name), getChars(f->source),
+		h->size, h->n_literals, toNewString(f->name)->text, toNewString(f->source)->text,
 		toScope(f->global)->hm.used);
 	return Nothing;
 }
