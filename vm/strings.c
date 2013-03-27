@@ -122,10 +122,10 @@ Error ord(Stack* S, Stack* scope_arr)
 
 V unichar_to_value(unichar c)
 {
-	utf8 *adr = NULL;
-	V r = empty_string_to_value(codepoint_length(c), adr);
+	utf8 adr = NULL;
+	V r = empty_string_to_value(codepoint_length(c), &adr);
 	toNewString(r)->length = 1;
-	encode_codepoint(c, *adr);
+	encode_codepoint(c, adr);
 	return r;
 }
 
