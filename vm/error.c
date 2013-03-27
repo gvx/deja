@@ -1,4 +1,5 @@
 #include "error.h"
+#include "strings.h"
 
 V lastCall = NULL;
 
@@ -85,11 +86,11 @@ void handle_error(Error e, Stack *scope_arr)
 		sc = toScope(scope_arr->nodes[n]);
 		if (show_next)
 		{
-			String *s = toFile(sc->file)->source != NULL ? toString(toFile(sc->file)->source) : toString(toFile(sc->file)->name);
+			NewString *s = toFile(sc->file)->source != NULL ? toNewString(toFile(sc->file)->source) : toNewString(toFile(sc->file)->name);
 			if (sc->linenr > 0)
-				fprintf(stderr, "%s:%d\n", toCharArr(s), sc->linenr);
+				fprintf(stderr, "%*s:%d\n", (int)s->size, s->text, sc->linenr);
 			else
-				fprintf(stderr, "%s\n", toCharArr(s));
+				fprintf(stderr, "%*s\n", (int)s->size, s->text);
 		}
 		show_next = sc->is_func_scope || (n == scope_arr->used - 2);
 	}
