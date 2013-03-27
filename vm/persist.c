@@ -399,8 +399,8 @@ bool persist_all(char *fname, Stack *objects)
 
 bool valid_persist_name(V fname)
 {
-	String *s = toString(fname);
-	return memchr(toCharArr(s), '/', s->length) == NULL;
+	NewString *s = toNewString(fname);
+	return memchr(s->text, '/', s->size) == NULL;
 }
 
 void makedirs(char *path)
@@ -416,7 +416,7 @@ void makedirs(char *path)
 
 char *make_persist_path(V fname)
 {
-	String *s = toString(fname);
+	NewString *s = toNewString(fname);
 	char *pathbase = getenv("XDG_DATA_HOME");
 	size_t plen;
 	char *home = NULL;
@@ -431,8 +431,8 @@ char *make_persist_path(V fname)
 	{
 		plen = strlen(pathbase);
 	}
-	char *data = malloc(plen + strlen("/deja/persist/") + s->length + 3 + 1);
-	sprintf(data, "%s/deja/persist/%s.vu", pathbase, toCharArr(s));
+	char *data = malloc(plen + strlen("/deja/persist/") + s->size + 3 + 1);
+	sprintf(data, "%s/deja/persist/%*s.vu", pathbase, s->size, s->text);
 	if (home)
 	{ // if home is not NULL, that means we allocated pathbase
 		free(pathbase);
