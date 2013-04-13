@@ -1036,7 +1036,7 @@ Error tail_call(Stack* S, Stack* scope_arr)
 	v = popS();
 	if (getType(v) == T_FUNC)
 	{
-		push(scope_arr, new_function_scope(v));
+		push(scope_arr, add_rooted(new_function_scope(v)));
 		clear_ref(v);
 	}
 	else if (getType(v) == T_CFUNC)
@@ -1138,7 +1138,7 @@ Error use(Stack* S, Stack* scope_arr)
 	}
 	if (getType(file) == T_FILE)
 	{
-		push(scope_arr, new_file_scope(file));
+		push(scope_arr, add_rooted(new_file_scope(file)));
 	}
 	clear_ref(file);
 	return Nothing;
@@ -1159,7 +1159,7 @@ Error call(Stack* S, Stack* scope_arr)
 	v = popS();
 	if (getType(v) == T_FUNC)
 	{
-		push(scope_arr, new_function_scope(v));
+		push(scope_arr, add_rooted(new_function_scope(v)));
 		clear_ref(v);
 	}
 	else if (getType(v) == T_CFUNC)
@@ -2185,7 +2185,7 @@ Error unpersist(Stack *S, Stack *scope_arr)
 	}
 	if (getType(file) == T_FILE)
 	{
-		push(scope_arr, new_file_scope(file));
+		push(scope_arr, add_rooted(new_file_scope(file)));
 	}
 	clear_ref(file);
 	return Nothing;
