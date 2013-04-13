@@ -24,7 +24,7 @@ void run(V file_name, Stack *S)
 	Stack *scope = new_stack();
 	Stack *save_scopes = new_stack();
 	Scope *sc;
-	push(scope, new_file_scope(file));
+	push(scope, add_rooted(new_file_scope(file)));
 	if (vm_persist)
 	{
 		V stdinfile = load_stdin(global);
@@ -33,10 +33,10 @@ void run(V file_name, Stack *S)
 			handle_error(IllegalFile, NULL);
 			return;
 		}
-		push(scope, new_file_scope(stdinfile));
+		push(scope, add_rooted(new_file_scope(stdinfile)));
 	}
 	//loading the dva part of the standard library
-	push(scope, new_file_scope(load_std(global)));
+	push(scope, add_rooted(new_file_scope(load_std(global))));
 	while (e == Nothing)
 	{
 		sc = toScope(get_head(scope));
@@ -50,7 +50,7 @@ void run(V file_name, Stack *S)
 			{
 				while (stack_size(save_scopes) > 0)
 				{
-					clear_ref(pop(save_scopes));
+					clear_base_ref(pop(save_scopes));
 				}
 
 			}
