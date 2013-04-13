@@ -607,7 +607,7 @@ Error return_(Stack* S, Stack* scope_arr)
 	V file = toScope(get_head(scope_arr))->file;
 	do
 	{
-		clear_ref(v);
+		clear_base_ref(v);
 		v = pop(scope_arr);
 		if (v == NULL)
 		{
@@ -615,7 +615,7 @@ Error return_(Stack* S, Stack* scope_arr)
 		}
 	}
 	while (!toScope(v)->is_func_scope && toScope(v)->file == file);
-	clear_ref(v);
+	clear_base_ref(v);
 	if (stack_size(scope_arr) == 0)
 	{
 		return Exit;
@@ -1025,7 +1025,7 @@ Error tail_call(Stack* S, Stack* scope_arr)
 	V file = toScope(get_head(scope_arr))->file;
 	do
 	{
-		clear_ref(v);
+		clear_base_ref(v);
 		v = pop(scope_arr);
 		if (v == NULL)
 		{
@@ -1058,7 +1058,7 @@ Error self_tail(Stack* S, Stack* scope_arr)
 	V file = toScope(get_head(scope_arr))->file;
 	do
 	{
-		clear_ref(v);
+		clear_base_ref(v);
 		v = pop(scope_arr);
 		if (v == NULL)
 		{
