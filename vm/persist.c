@@ -8,6 +8,7 @@
 #include "value.h"
 #include "stack.h"
 #include "literals.h"
+#include "strings.h"
 
 bool persist_collect_(V original, HashMap *hm)
 {
@@ -120,7 +121,7 @@ void write_object(FILE *file, V obj, HashMap *hm)
 	int t = getType(obj);
 	union double_or_uint64_t num;
 	ITreeNode *id = NULL;
-	String *s = NULL;
+	NewString *s = NULL;
 	Stack *st;
 	HashMap *hmv;
 	int8_t n8;
@@ -146,8 +147,8 @@ void write_object(FILE *file, V obj, HashMap *hm)
 				type |= TYPE_SHORT;
 			break;
 		case T_STR:
-			s = toString(obj);
-			if (s->length < 256)
+			s = toNewString(obj);
+			if (s->size < 256)
 				type |= TYPE_SHORT;
 			break;
 		case T_FRAC:
@@ -178,16 +179,16 @@ void write_object(FILE *file, V obj, HashMap *hm)
 		case T_STR:
 			if (type & TYPE_SHORT)
 			{
-				l8 = s->length;
+				l8 = s->size;
 				fwrite(&l8, 1, 1, file);
 			}
 			else
 			{
-				l32 = s->length;
+				l32 = s->size;
 				l32 = htonl(l32);
 				fwrite(&l32, 4, 1, file);
 			}
-			fwrite(toCharArr(s), s->length, 1, file);
+			fwrite(s->text, s->size, 1, file);
 			break;
 		case T_NUM:
 			if (type & TYPE_SHORT)
@@ -398,8 +399,8 @@ bool persist_all(char *fname, Stack *objects)
 
 bool valid_persist_name(V fname)
 {
-	String *s = toString(fname);
-	return memchr(toCharArr(s), '/', s->length) == NULL;
+	NewString *s = toNewString(fname);
+	return memchr(s->text, '/', s->size) == NULL;
 }
 
 void makedirs(char *path)
@@ -415,7 +416,7 @@ void makedirs(char *path)
 
 char *make_persist_path(V fname)
 {
-	String *s = toString(fname);
+	NewString *s = toNewString(fname);
 	char *pathbase = getenv("XDG_DATA_HOME");
 	size_t plen;
 	char *home = NULL;
@@ -430,8 +431,8 @@ char *make_persist_path(V fname)
 	{
 		plen = strlen(pathbase);
 	}
-	char *data = malloc(plen + strlen("/deja/persist/") + s->length + 3 + 1);
-	sprintf(data, "%s/deja/persist/%s.vu", pathbase, toCharArr(s));
+	char *data = malloc(plen + strlen("/deja/persist/") + s->size + 3 + 1);
+	sprintf(data, "%s/deja/persist/%*s.vu", pathbase, (int)s->size, s->text);
 	if (home)
 	{ // if home is not NULL, that means we allocated pathbase
 		free(pathbase);

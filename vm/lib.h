@@ -10,8 +10,7 @@
 #include "opcodes.h"
 #include "module.h"
 #include "idents.h"
-
-#include "strlib.h"
+#include "strings.h"
 
 typedef Error (*CFuncP)(Stack*, Stack*);
 

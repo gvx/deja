@@ -17,6 +17,6 @@ V load_std(V global)
 			f.write(r"'\x%02x', " % ord(char))
 	f.write('''
 	};
-	return load_memfile(std, sizeof std, a_to_value("(standard library)"), global);
+	return load_memfile(std, sizeof std, a_to_string("(standard library)"), global);
 }
 ''')

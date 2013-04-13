@@ -13,10 +13,7 @@
 #define toScope(x) ((Scope*)(x + 1))
 #define toFunc(x) ((Func*)(x + 1))
 #define toStack(x) ((Stack*)(x + 1))
-#define toString(x) ((String*)(x + 1))
 #define toIdent(x) ((ITreeNode*)(x))
-#define toCharArr(x) ((char*)(x + 1))
-#define getChars(x) (toCharArr(toString(x)))
 #define toDouble(x) (*(double*)(x + 1))
 #define toNumber(x) (isInt(x) ? (double)toInt(x) : toDouble(x))
 #define toCFunc(x) (*(CFuncP*)(x + 1))
@@ -56,12 +53,6 @@ typedef struct Value
 
 typedef Value* V;
 
-typedef struct String
-{
-	uint32_t length;
-	uint32_t hash;
-} String;
-
 typedef struct
 {
 	long int numerator;
@@ -80,13 +71,8 @@ typedef struct TreeNode {
 typedef __int128_t frac_long;
 #endif
 
-uint32_t string_hash(int, const char*);
-
 V int_to_value(long int);
 V double_to_value(double);
-V a_to_value(char*);
-V str_to_value(int, char*);
-V empty_str_to_value(int, char**);
 V get_ident(const char*);
 V new_list();
 V new_sized_dict();

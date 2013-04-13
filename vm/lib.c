@@ -9,7 +9,7 @@ void print_list_value(Stack*, int, int);
 
 void print_value(V v, int depth)
 {
-	String* s;
+	NewString* s;
 	ITreeNode* i;
 	switch (getType(v))
 	{
@@ -18,8 +18,8 @@ void print_value(V v, int depth)
 			printf(":%*s", i->length, i->data);
 			break;
 		case T_STR:
-			s = toString(v);
-			printf("\"%*s\"", s->length, toCharArr(s));
+			s = toNewString(v);
+			printf("\"%*s\"", (int)s->size, s->text);
 			break;
 		case T_NUM:
 			if (v == v_true)
@@ -1094,7 +1094,7 @@ Error input(Stack* S, Stack* scope_arr)
 	{
 		return UnicodeError;
 	}
-	pushS(a_to_value(line));
+	pushS(a_to_string(line));
 	return Nothing;
 }
 
@@ -1259,7 +1259,7 @@ Error len(Stack* S, Stack* scope_arr)
 	switch (getType(v))
 	{
 		case T_STR:
-			pushS(int_to_value(toString(v)->length));
+			pushS(int_to_value(string_length(toNewString(v))));
 			break;
 		case T_LIST:
 			pushS(int_to_value(stack_size(toStack(v))));
@@ -1288,7 +1288,7 @@ Error loadlib(Stack* S, Stack* scope_arr)
 	{
 		return TypeError;
 	}
-	void* lib_handle = dlopen(getChars(name), RTLD_NOW);
+	void* lib_handle = dlopen(toNewString(name)->text, RTLD_NOW);
 	if (lib_handle == NULL)
 	{
 		fprintf(stderr, "%s\n", dlerror());
@@ -1510,7 +1510,7 @@ Error to_num(Stack *S, Stack *scope_arr)
 		clear_ref(v);
 		return TypeError;
 	}
-	r = strtod(getChars(v), &end);
+	r = strtod(toNewString(v)->text, &end);
 	clear_ref(v);
 	if (end[0] != '\0')
 	{
@@ -1537,13 +1537,13 @@ Error to_str(Stack *S, Stack *scope_arr)
 	}
 	if (!toNumber(v))
 	{
-		pushS(str_to_value(1, "0"));
+		pushS(str_to_string(1, "0"));
 		clear_ref(v);
 		return Nothing;
 	}
 	char *buff = int_str_buffer;
 	sprintf(buff, "%.15g", toNumber(v));
-	pushS(a_to_value(buff));
+	pushS(a_to_string(buff));
 	clear_ref(v);
 	return Nothing;
 }
@@ -1900,7 +1900,7 @@ Error file_info(Stack* S, Stack* scope_arr)
 	File *f = toFile(toScope(get_head(scope_arr))->file);
 	Header *h = &f->header;
 	printf("(source size:%d, literals:%d, filename:%s, source:%s, globals:%d)\n",
-		h->size, h->n_literals, getChars(f->name), getChars(f->source),
+		h->size, h->n_literals, toNewString(f->name)->text, toNewString(f->source)->text,
 		toScope(f->global)->hm.used);
 	return Nothing;
 }
@@ -1912,7 +1912,7 @@ Error print_f(Stack* S, Stack* scope_arr)
 	switch (getType(v))
 	{
 		case T_STR:
-			printf("%*s", toString(v)->length, getChars(v));
+			printf("%*s", (int)(toNewString(v)->size), toNewString(v)->text);
 			break;
 		case T_NUM:
 			printf("%.15g", toNumber(v));
@@ -2177,7 +2177,7 @@ Error unpersist(Stack *S, Stack *scope_arr)
 		return ValueError;
 	}
 	char *path = make_persist_path(location);
-	V file = load_file(a_to_value(path), toFile(toScope(get_head(scope_arr))->file)->global);
+	V file = load_file(a_to_string(path), toFile(toScope(get_head(scope_arr))->file)->global);
 	free(path);
 	if (file == NULL)
 	{
@@ -2345,7 +2345,8 @@ static CFunc stdlib[] = {
 	{"chance", chance},
 	{"set-default", set_default},
 	//strlib
-	{"concat", concat},
+	{"concat(", concat},
+	{"concat", concat_list},
 	{"contains", contains},
 	{"starts-with", starts_with},
 	{"ends-with", ends_with},

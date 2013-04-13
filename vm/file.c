@@ -1,4 +1,5 @@
 #include "file.h"
+#include "strings.h"
 #include <assert.h>
 
 V load_file(V file_name, V global)
@@ -8,7 +9,7 @@ V load_file(V file_name, V global)
 		clear_ref(file_name);
 		return file_name;
 	}
-	FILE* f = fopen(getChars(file_name), "rb");
+	FILE* f = fopen(toNewString(file_name)->text, "rb");
 	if (f == NULL)
 	{
 		clear_ref(file_name);
@@ -52,7 +53,7 @@ struct vec read_all()
 V load_stdin(V global)
 {
 	struct vec v = read_all();
-	V file_name = a_to_value("(stdin)");
+	V file_name = a_to_string("(stdin)");
 	V obj = load_memfile(v.d, v.s, file_name, global);
 	free(v.d);
 	clear_ref(file_name);

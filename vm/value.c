@@ -1,6 +1,7 @@
 #include "stack.h"
 #include "hashmap.h"
 #include "idents.h"
+#include "strings.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -27,51 +28,6 @@ V double_to_value(double d)
 		return intToV((long int)d);
 	}
 	make_value_from_double(d);
-}
-
-uint32_t string_hash(int length, const char *key)
-{
-	uint32_t hash = 2166136261;
-	int i;
-	for (i = 0; i < length; i++)
-	{
-        hash = (16777619 * hash) ^ (*key);
-        key++;
-	}
-	return hash;
-}
-
-V a_to_value(char* str)
-{
-	size_t l = strlen(str);
-	V t = make_new_value(T_STR, true, sizeof(String) + l + 1);
-	String *s = toString(t);
-	s->length = l;
-	memcpy(toCharArr(s), str, l + 1);
-	s->hash = string_hash(l, str);
-	return t;
-}
-
-V str_to_value(int max, char* str)
-{
-	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
-	String *s = toString(t);
-	s->length = max;
-	memcpy(toCharArr(s), str, max);
-	max[toCharArr(s)] = '\0';
-	s->hash = string_hash(max, str);
-	return t;
-}
-
-V empty_str_to_value(int max, char **adr)
-{
-	V t = make_new_value(T_STR, true, sizeof(String) + max + 1);
-	String *s = toString(t);
-	s->length = max;
-	*adr = toCharArr(s);
-	max[toCharArr(s)] = '\0';
-	s->hash = 0;
-	return t;
 }
 
 V get_ident(const char* name)
@@ -176,7 +132,7 @@ bool truthy(V t)
 		case T_NUM:
 			return toNumber(t) != 0.0;
 		case T_STR:
-			return toString(t)->length > 0;
+			return toNewString(t)->size > 0;
 		case T_LIST:
 			return toStack(t)->used > 0;
 		case T_DICT:
@@ -200,11 +156,11 @@ bool equal(V v1, V v2)
 		}
 		else if (getType(v1) == T_STR)
 		{
-			String* s1 = toString(v1);
-			String* s2 = toString(v2);
-			if (s1->length == s2->length)
+			NewString* s1 = toNewString(v1);
+			NewString* s2 = toNewString(v2);
+			if (s1->size == s2->size)
 			{
-				return !memcmp(toCharArr(s1), toCharArr(s2), s1->length);
+				return !memcmp(s1->text, s2->text, s1->size);
 			}
 		}
 		else if (getType(v1) == T_PAIR)
