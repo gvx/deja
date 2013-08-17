@@ -2268,7 +2268,7 @@ static CFunc stdlib[] = {
 	{"=", eq},
 	{"<=", le},
 	{">=", ge},
-	{"!=", ne},
+	{"/=", ne},
 	{"not", not},
 	{"and", and},
 	{"or", or},
