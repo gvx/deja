@@ -481,8 +481,8 @@ Error split(Stack *S, Stack *scope_arr)
 	NewString *s1;
 	NewString *s2;
 	require(2);
-	V v1 = popS();
 	V v2 = popS();
+	V v1 = popS();
 	if (getType(v1) == T_STR && getType(v2) == T_STR)
 	{
 		s1 = toNewString(v1);
@@ -557,8 +557,8 @@ Error split_any(Stack *S, Stack *scope_arr)
 	NewString *s1;
 	NewString *s2;
 	require(2);
-	V v1 = popS();
 	V v2 = popS();
+	V v1 = popS();
 	if (getType(v1) == T_STR && getType(v2) == T_STR)
 	{
 		s1 = toNewString(v1);
