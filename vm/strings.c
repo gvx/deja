@@ -348,7 +348,6 @@ Error concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
 	NewString *s1;
 	int i;
 	require(1);
-	V v1 = popS();
 	int newlength = 0;
 	for (i = S->used - 1; i >= 0; i--)
 	{
@@ -359,7 +358,6 @@ Error concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
 		}
 		else if (t != T_STR)
 		{
-			clear_ref(v1);
 			return TypeError;
 		}
 		newlength += toNewString(S->nodes[i])->size;
@@ -382,7 +380,6 @@ Error concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
 	}
 	*currpoint = '\0';
 	pushS(str_to_string(newlength, new));
-	clear_ref(v1);
 	return Nothing;
 }
 
