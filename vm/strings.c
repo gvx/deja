@@ -541,7 +541,7 @@ Error slice(Stack *S, Stack *scope_arr)
 		s = len + s;
 	else if (s > len)
 		s = len;
-	if (e <= 0)
+	if (e < 0)
 		e = len + e;
 	else if (e > len)
 		e = len;
