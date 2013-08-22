@@ -17,6 +17,8 @@ static V roots[MAX_ROOTS];
 
 extern bool vm_debug;
 
+#define isUncollectable(t) (isInt(t) || isCFunc(t) || t->type == T_IDENT)
+
 void collect_cycles(void);
 
 V make_new_value(int type, bool simple, int size)
@@ -32,7 +34,7 @@ V make_new_value(int type, bool simple, int size)
 
 V add_ref(V t)
 {
-	if (isInt(t) || t->type == T_IDENT)
+	if (isUncollectable(t))
 		return t;
 
 	t->refs++;
@@ -45,7 +47,7 @@ V add_ref(V t)
 
 V add_base_ref(V t)
 {
-	if (isInt(t) || t->type == T_IDENT)
+	if (isUncollectable(t))
 		return t;
 
 	t->baserefs++;
@@ -55,7 +57,7 @@ V add_base_ref(V t)
 
 V add_rooted(V t)
 {
-	if (isInt(t) || t->type == T_IDENT)
+	if (isUncollectable(t))
 		return t;
 
 	t->baserefs++;
@@ -143,7 +145,7 @@ void free_value(V t)
 
 void iter_children(V t, void (*iter)(V))
 {
-	if (isInt(t) || t->type == T_IDENT)
+	if (isUncollectable(t))
 		return;
 
 	Stack* s;
@@ -255,7 +257,7 @@ void mark_gray(V);
 
 void mark_gray_child(V child)
 {
-	if (isInt(child) || child->type == T_IDENT)
+	if (isUncollectable(child))
 		return;
 
 	if (child != NULL)
@@ -301,7 +303,7 @@ void scan_black(V);
 
 void scan_black_child(V child)
 {
-	if (isInt(child) || child->type == T_IDENT)
+	if (isUncollectable(child))
 		return;
 
 	if (child != NULL)
@@ -323,7 +325,7 @@ void scan_black(V t)
 
 void scan(V t)
 {
-	if (isInt(t) || t->type == T_IDENT)
+	if (isUncollectable(t))
 		return;
 
 	if (t->color == Gray)
@@ -354,7 +356,7 @@ void scan_roots(void)
 
 void collect_white(V t)
 {
-	if (isInt(t) || t->type == T_IDENT)
+	if (isUncollectable(t))
 		return;
 
 	if (t->color == White && !t->buffered)
@@ -393,7 +395,7 @@ void collect_cycles(void)
 
 void clear_ref(V t)
 {
-	if (t == NULL || isInt(t) || t->type == T_IDENT)
+	if (t == NULL || isUncollectable(t))
 		return;
 
 	if (--t->refs == 0)
@@ -408,7 +410,7 @@ void clear_ref(V t)
 
 void clear_base_ref(V t)
 {
-	if (t == NULL || isInt(t) || t->type == T_IDENT)
+	if (t == NULL || isUncollectable(t))
 		return;
 
 	t->baserefs--;
@@ -418,7 +420,7 @@ void clear_base_ref(V t)
 
 V clear_rooted(V t)
 {
-	if (t == NULL || isInt(t) || t->type == T_IDENT)
+	if (t == NULL || isUncollectable(t))
 		return t;
 
 	t->baserefs--;
@@ -428,5 +430,5 @@ V clear_rooted(V t)
 
 bool is_simple(V t)
 {
-	return t == NULL || isInt(t) || t->type == T_IDENT || t->color == Green;
+	return t == NULL || isUncollectable(t) || t->color == Green;
 }

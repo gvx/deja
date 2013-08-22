@@ -914,7 +914,7 @@ Error in(Stack* S, Stack* scope_arr)
 		V item = pop(toStack(list));
 		pushS(item);
 		pushS(list);
-		pushS(new_cfunc(in));
+		pushS(cFuncToV(in));
 	}
 	else
 	{
@@ -2369,7 +2369,7 @@ void open_lib(CFunc lib[], HashMap* hm)
 	int i = 0;
 	while (lib[i].name != NULL)
 	{
-		V v = new_cfunc(lib[i].cfunc);
+		V v = cFuncToV(lib[i].cfunc);
 		set_hashmap(hm, get_ident(lib[i].name), v);
 		clear_ref(v);
 		i++;
@@ -2389,16 +2389,9 @@ void open_std_lib(HashMap* hm)
 	toDouble(v_true) = 1.0;
 	v_false = make_new_value(T_NUM, true, sizeof(double));
 	toDouble(v_false) = 0.0;
-	v_range = new_cfunc(range);
+	v_range = cFuncToV(range);
 	set_hashmap(hm, get_ident("true"), v_true);
 	set_hashmap(hm, get_ident("false"), v_false);
 
 	srand((unsigned int)time(NULL));
-}
-
-V new_cfunc(CFuncP func)
-{
-	V v = make_new_value(T_CFUNC, true, sizeof(CFuncP));
-	toCFunc(v) = func;
-	return v;
 }

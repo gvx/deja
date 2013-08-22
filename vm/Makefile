@@ -10,7 +10,7 @@ clean:
 CFILES := $(wildcard *.c) $(shell if [ ! -e "std.c" ]; then echo "std.c"; fi)
 OFILES = $(patsubst %.c, %.o, $(CFILES))
 ODBGFILES = $(patsubst %.c, %.dbg.o, $(CFILES))
-CFLAGS = -Wall
+CFLAGS = -Wall -falign-functions=4
 LDFLAGS = -ldl -lm
 
 vu: .depend $(OFILES)
