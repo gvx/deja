@@ -852,8 +852,6 @@ Error xor(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-V v_range;
-
 Error range(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -884,19 +882,7 @@ Error range(Stack* S, Stack* scope_arr)
 		{
 			pushS(v1);
 			pushS(new_pair(double_to_value(toNumber(v1) + 1.0), v2));
-			/* METHOD 1: look up
-			   more computation
-			   fails if the global "range" is overwritten
-			*/
-			//pushS(add_ref(get_hashmap(&toScope(toFile(toScope(scope_arr->head->data)->file)->global)->hm, get_ident("range"))));
-			/* METHOD 2: create value
-			   less computation
-			   works even if the global "range" is overwritten
-			*/
-			//pushS(new_cfunc(range));
-			/* METHOD 3: just use a global value
-			*/
-			pushS(add_ref(v_range));
+			pushS(cFuncToV(range));
 		}
 		return Nothing;
 	}
@@ -2397,7 +2383,6 @@ void open_std_lib(HashMap* hm)
 	toDouble(v_true) = 1.0;
 	v_false = make_new_value(T_NUM, true, sizeof(double));
 	toDouble(v_false) = 0.0;
-	v_range = cFuncToV(range);
 	set_hashmap(hm, get_ident("true"), v_true);
 	set_hashmap(hm, get_ident("false"), v_false);
 
