@@ -11,7 +11,7 @@ CFILES := $(wildcard *.c) $(shell if [ ! -e "std.c" ]; then echo "std.c"; fi)
 OFILES = $(patsubst %.c, %.o, $(CFILES))
 ODBGFILES = $(patsubst %.c, %.dbg.o, $(CFILES))
 CFLAGS = -Wall -falign-functions=4
-LDFLAGS = -ldl -lm
+LDFLAGS = -ldl -lm -lrt
 
 vu: .depend $(OFILES)
 	$(CC) -O2 $(CFLAGS) $(OFILES) -o $@ $(LDFLAGS)

@@ -1,6 +1,7 @@
 #include "lib.h"
 #include "utf8.h"
 #include "persist.h"
+#include "mersenne.h"
 
 #include <time.h>
 #include <sys/time.h>
@@ -2338,6 +2339,7 @@ static CFunc stdlib[] = {
 	{"unpersist", unpersist},
 	{"chance", chance},
 	{"set-default", set_default},
+	{"random-int", random_int},
 	//strlib
 	{"concat(", concat},
 	{"concat", concat_list},
@@ -2387,4 +2389,7 @@ void open_std_lib(HashMap* hm)
 	set_hashmap(hm, get_ident("false"), v_false);
 
 	srand((unsigned int)time(NULL));
+	struct timespec tm;
+	clock_gettime(CLOCK_MONOTONIC, &tm);
+	init_random(tm.tv_sec ^ (tm.tv_sec >> 32) ^ tm.tv_nsec ^ (tm.tv_nsec >> 32));
 }
