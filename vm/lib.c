@@ -636,8 +636,10 @@ Error lt(Stack* S, Stack* scope_arr)
 	__int128_t a, b;
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		a = (__int128_t)toNumber(v1);
-		b = (__int128_t)toNumber(v2);
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(toNumber(v1) < toNumber(v2) ? v_true : v_false));
+		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -647,11 +649,11 @@ Error lt(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
 		a = (__int128_t)getNumer(v1);
-		b = (__int128_t)toNumber(v2) * (__int128_t)getDenom(v1);
+		b = toNumber(v2) * (__int128_t)getDenom(v1);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		a = (__int128_t)toNumber(v1) * (__int128_t)getDenom(v2);
+		a = toNumber(v1) * (__int128_t)getDenom(v2);
 		b = (__int128_t)getNumer(v2);
 	}
 	else
@@ -674,8 +676,10 @@ Error gt(Stack* S, Stack* scope_arr)
 	__int128_t a, b;
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		a = (__int128_t)toNumber(v1);
-		b = (__int128_t)toNumber(v2);
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(toNumber(v1) > toNumber(v2) ? v_true : v_false));
+		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -685,11 +689,11 @@ Error gt(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
 		a = (__int128_t)getNumer(v1);
-		b = (__int128_t)toNumber(v2) * (__int128_t)getDenom(v1);
+		b = toNumber(v2) * (__int128_t)getDenom(v1);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		a = (__int128_t)toNumber(v1) * (__int128_t)getDenom(v2);
+		a = toNumber(v1) * (__int128_t)getDenom(v2);
 		b = (__int128_t)getNumer(v2);
 	}
 	else
@@ -712,8 +716,10 @@ Error le(Stack* S, Stack* scope_arr)
 	__int128_t a, b;
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		a = (__int128_t)toNumber(v1);
-		b = (__int128_t)toNumber(v2);
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(toNumber(v1) <= toNumber(v2) ? v_true : v_false));
+		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -723,11 +729,11 @@ Error le(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
 		a = (__int128_t)getNumer(v1);
-		b = (__int128_t)toNumber(v2) * (__int128_t)getDenom(v1);
+		b = toNumber(v2) * (__int128_t)getDenom(v1);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		a = (__int128_t)toNumber(v1) * (__int128_t)getDenom(v2);
+		a = toNumber(v1) * (__int128_t)getDenom(v2);
 		b = (__int128_t)getNumer(v2);
 	}
 	else
@@ -750,8 +756,10 @@ Error ge(Stack* S, Stack* scope_arr)
 	__int128_t a, b;
 	if (getType(v1) == T_NUM && getType(v2) == T_NUM)
 	{
-		a = (__int128_t)toNumber(v1);
-		b = (__int128_t)toNumber(v2);
+		clear_ref(v1);
+		clear_ref(v2);
+		pushS(add_ref(toNumber(v1) >= toNumber(v2) ? v_true : v_false));
+		return Nothing;
 	}
 	else if (getType(v1) == T_FRAC && getType(v2) == T_FRAC)
 	{
@@ -761,11 +769,11 @@ Error ge(Stack* S, Stack* scope_arr)
 	else if (getType(v1) == T_FRAC && getType(v2) == T_NUM)
 	{
 		a = (__int128_t)getNumer(v1);
-		b = (__int128_t)toNumber(v2) * (__int128_t)getDenom(v1);
+		b = toNumber(v2) * (__int128_t)getDenom(v1);
 	}
 	else if (getType(v1) == T_NUM && getType(v2) == T_FRAC)
 	{
-		a = (__int128_t)toNumber(v1) * (__int128_t)getDenom(v2);
+		a = toNumber(v1) * (__int128_t)getDenom(v2);
 		b = (__int128_t)getNumer(v2);
 	}
 	else
