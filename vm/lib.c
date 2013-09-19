@@ -2,6 +2,7 @@
 #include "utf8.h"
 #include "persist.h"
 #include "mersenne.h"
+#include "blob.h"
 
 #include <time.h>
 #include <sys/time.h>
@@ -91,6 +92,9 @@ void print_value(V v, int depth)
 			break;
 		case T_FUNC:
 			printf("<func:%p>", toFunc(v));
+			break;
+		case T_BLOB:
+			printf("<blob:%p>", v);
 			break;
 	};
 }
@@ -488,6 +492,8 @@ const char* gettype(V r)
 		case T_FUNC:
 		case T_CFUNC:
 			return "func";
+		case T_BLOB:
+			return "blob";
 		default:
 			return "nil"; //not really true, but meh.
 	}
@@ -1259,6 +1265,9 @@ Error len(Stack* S, Stack* scope_arr)
 		case T_LIST:
 			pushS(int_to_value(stack_size(toStack(v))));
 			break;
+		case T_BLOB:
+			pushS(int_to_value(toBlob(v)->size));
+			break;
 		default:
 			clear_ref(v);
 			return TypeError;
@@ -1904,6 +1913,7 @@ Error print_f(Stack* S, Stack* scope_arr)
 {
 	require(1);
 	V v = popS();
+	int i, size;
 	switch (getType(v))
 	{
 		case T_STR:
@@ -1911,6 +1921,22 @@ Error print_f(Stack* S, Stack* scope_arr)
 			break;
 		case T_NUM:
 			printf("%.15g", toNumber(v));
+			break;
+		case T_BLOB:
+			size = toBlob(v)->size > 31 ? 30 : toBlob(v)->size;
+			fputs("<blob:(", stdout);
+			for (i = 0; i < size; i++)
+			{
+				printf("%02hhx", toBlob(v)->data[i]);
+			}
+			if (size < toBlob(v)->size)
+			{
+				fputs("...)>", stdout);
+			}
+			else
+			{
+				fputs(")>", stdout);
+			}
 			break;
 		default:
 			print_value(v, 1);
@@ -2340,6 +2366,12 @@ static CFunc stdlib[] = {
 	{"chance", chance},
 	{"set-default", set_default},
 	{"random-int", random_int},
+	//blob
+	{"make-blob", make_blob},
+	{"get-from-blob", getbyte_blob_},
+	{"set-to-blob", setbyte_blob_},
+	{"resize-blob", resize_blob_},
+	{"clone-blob", clone_blob_},
 	//strlib
 	{"concat(", concat},
 	{"concat", concat_list},

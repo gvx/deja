@@ -27,6 +27,7 @@
 #define toDenominator(x) (((Frac*)(x + 1))->denominator)
 #define getNumer(x) ((frac_long)toNumerator(x))
 #define getDenom(x) ((frac_long)toDenominator(x))
+#define toBlob(x) ((Blob*)(x + 1))
 
 #define new_dict() new_sized_dict(16)
 
