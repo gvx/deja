@@ -314,7 +314,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			S->nodes[S->used-3] = S->nodes[S->used-2];
 			S->nodes[S->used-2] = S->nodes[S->used-1];
 			S->nodes[S->used-1] = v;
-		break;
+			break;
 		case OP_OVER:
 			if (stack_size(S) < 2)
 			{
