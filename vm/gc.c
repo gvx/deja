@@ -3,6 +3,7 @@
 #include "func.h"
 #include "file.h"
 #include "debug.h"
+#include "blob.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -75,10 +76,6 @@ void free_value(V t)
 	int n;
 	switch (getType(t))
 	{
-		case T_STR:
-		case T_IDENT:
-		case T_FUNC:
-			break;
 		case T_LIST:
 			free(toStack(t)->nodes);
 			break;
@@ -138,6 +135,9 @@ void free_value(V t)
 			f = toFile(t);
 			free(f->header.literals);
 			free(f->code);
+			break;
+		case T_BLOB:
+			free(toBlob(t)->data);
 			break;
 	}
 	free(t);
