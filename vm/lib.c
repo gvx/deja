@@ -2372,6 +2372,7 @@ static CFunc stdlib[] = {
 	{"set-to-blob", setbyte_blob_},
 	{"resize-blob", resize_blob_},
 	{"clone-blob", clone_blob_},
+	{"blit-blob", blit_blob_},
 	//strlib
 	{"concat(", concat},
 	{"concat", concat_list},

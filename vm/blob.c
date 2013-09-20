@@ -48,6 +48,16 @@ V clone_blob(V blob)
 	return t;
 }
 
+int blit_blob(V dest, V src, blobsize_t offset)
+{
+	if (offset < 0 || toBlob(dest)->size < offset + toBlob(src)->size)
+	{
+		return -1;
+	}
+	memcpy(toBlob(dest)->data + offset, toBlob(src)->data, toBlob(src)->size);
+	return 0;
+}
+
 Error make_blob(Stack *S, Stack *scope_arr)
 {
 	require(1);
@@ -151,5 +161,30 @@ Error clone_blob_(Stack *S, Stack *scope_arr)
 	pushS(clone_blob(blob));
 	cleanup:
 	clear_ref(blob);
+	return e;
+}
+
+Error blit_blob_(Stack *S, Stack *scope_arr)
+{
+	require(3);
+	V dest = popS();
+	V src = popS();
+	V offset = popS();
+	Error e = Nothing;
+	if (getType(dest) != T_BLOB || getType(src) != T_BLOB || getType(offset) != T_NUM)
+	{
+		e = TypeError;
+		goto cleanup;
+	}
+	if (blit_blob(dest, src, toNumber(offset) - 1) < 0)
+	{
+		error_msg = "Index out of range";
+		e = ValueError;
+		goto cleanup;
+	}
+	cleanup:
+	clear_ref(dest);
+	clear_ref(src);
+	clear_ref(offset);
 	return e;
 }
