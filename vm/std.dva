@@ -82,6 +82,63 @@ push_word 0
 return
 $endlist
 set_global 11
+labda $endonce
+push_word 12
+labda $endoncelabda
+$endoncelabda
+return
+$endonce
+set_global 13
+labda $endwrite
+swap
+set_local 0
+push_literal 14
+push_literal 15
+get 16
+get_dict
+call
+set_local 1
+push_word 0
+get 0
+push_word 17
+push_literal 18
+jmpne $isiter
+push_word 13
+$isiter
+enter_errhand $write-try
+get 1
+push_literal 19
+get 16
+get_dict
+call
+reraise
+$write-try
+$start-write-for
+dup
+jmpz $end-write-for
+set_local 3
+set_local 4
+get 1
+push_literal 20
+get 16
+get_dict
+call
+push_word 4
+push_word 3
+jmp $start-write-for
+$end-write-for
+drop
+leave_errhand
+get 1
+push_literal 19
+get 16
+get_dict
+call
+return
+$endwrite
+push_literal 14
+get 16
+set_dict
 return
 ...
 ia
@@ -96,3 +153,12 @@ iuse
 isetglobal
 iimport
 ilist
+ifalse
+ionce
+iwrite
+iopen
+ieva
+itype
+iblob
+iclose
+iwrite-fragment
