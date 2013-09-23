@@ -1,140 +1,140 @@
 labda $endfor
-$startloop
-dup
-jmpz $endloop
-call
-jmp $startloop
-$endloop
-drop
-return
+	$startloop
+	dup
+	jmpz $endloop
+	call
+	jmp $startloop
+	$endloop
+	drop
+	return
 $endfor
 set_global 3
 labda $endwhile
-set_local 0
-set_local 1
-$startloop2
-push_word 0
-jmpz $endloop2
-push_word 1
-jmp $startloop2
-$endloop2
-return
+	set_local 0
+	set_local 1
+	$startloop2
+	push_word 0
+	jmpz $endloop2
+	push_word 1
+	jmp $startloop2
+	$endloop2
+	return
 $endwhile
 set_global 4
 labda $endcompose
-set_local 0
-set_local 1
-labda $endcomposed
-push_word 1
-push_word 0
-$endcomposed
-return
+	set_local 0
+	set_local 1
+	labda $endcomposed
+		push_word 1
+		push_word 0
+	$endcomposed
+	return
 $endcompose
 set_global 5
 labda $endover3
-set_local 0
-set_local 1
-set_local 5
-get 5
-get 1
-get 0
-get 5
-return
+	set_local 0
+	set_local 1
+	set_local 5
+	get 5
+	get 1
+	get 0
+	get 5
+	return
 $endover3
 set_global 6
 new_dict
 set_local 0
 labda $endimport
-set_local 1
-push_word 1
-push_word 0
-has_dict
-push_word 7
-jmpz $already
-push_word 1
-push_word 8
-push_word 1
-push_word 0
-set_dict
-$already
-push_word 1
-push_word 0
-get_dict
-push_word 1
-push_word 9
-return
+	set_local 1
+	push_word 1
+	push_word 0
+	has_dict
+	push_word 7
+	jmpz $already
+		push_word 1
+		push_word 8
+		push_word 1
+		push_word 0
+		set_dict
+	$already
+	push_word 1
+	push_word 0
+	get_dict
+	push_word 1
+	push_word 9
+	return
 $endimport
 set_global 10
 labda $endlist
-new_list
-set_local 0
-$startloop3
-dup
-jmpz $endloop3
-rot
-get 0
-push_to
-call
-jmp $startloop3
-$endloop3
-drop
-push_word 0
-return
+	new_list
+	set_local 0
+	$startloop3
+	dup
+	jmpz $endloop3
+		rot
+		get 0
+		push_to
+		call
+		jmp $startloop3
+	$endloop3
+	drop
+	push_word 0
+	return
 $endlist
 set_global 11
 labda $endonce
-push_word 12
-labda $endoncelabda
-$endoncelabda
-return
+	push_word 12
+	labda $endoncelabda
+	$endoncelabda
+	return
 $endonce
 set_global 13
 labda $endwrite
-swap
-set_local 0
-push_literal 14
-push_literal 15
-get 16
-get_dict
-call
-set_local 1
-push_word 0
-get 0
-push_word 17
-push_literal 18
-jmpne $isiter
-push_word 13
-$isiter
-enter_errhand $write-try
-get 1
-push_literal 19
-get 16
-get_dict
-call
-reraise
-$write-try
-$start-write-for
-dup
-jmpz $end-write-for
-set_local 3
-set_local 4
-get 1
-push_literal 20
-get 16
-get_dict
-call
-push_word 4
-push_word 3
-jmp $start-write-for
-$end-write-for
-drop
-leave_errhand
-get 1
-push_literal 19
-get 16
-get_dict
-call
-return
+	swap
+	set_local 0
+	push_literal 14
+	push_literal 15
+	get 16
+	get_dict
+	call
+	set_local 1
+	push_word 0
+	get 0
+	push_word 17
+	push_literal 18
+	jmpne $isiter
+		push_word 13
+	$isiter
+	enter_errhand $write-try
+		get 1
+		push_literal 19
+		get 16
+		get_dict
+		call
+		reraise
+	$write-try
+		$start-write-for
+		dup
+		jmpz $end-write-for
+		set_local 3
+		set_local 4
+			get 1
+			push_literal 20
+			get 16
+			get_dict
+			call
+		push_word 4
+		push_word 3
+		jmp $start-write-for
+		$end-write-for
+		drop
+	leave_errhand
+	get 1
+	push_literal 19
+	get 16
+	get_dict
+	call
+	return
 $endwrite
 push_literal 14
 get 16
