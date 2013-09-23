@@ -2421,6 +2421,12 @@ void open_std_lib(HashMap* hm)
 	set_hashmap(hm, get_ident("true"), v_true);
 	set_hashmap(hm, get_ident("false"), v_false);
 
+	// Open EVA
+	V v_eva = new_dict();
+	extern CFunc eva[];
+	open_lib(eva, toHashMap(v_eva));
+	set_hashmap(hm, get_ident("eva"), v_eva);
+
 	srand((unsigned int)time(NULL));
 	struct timespec tm;
 	clock_gettime(CLOCK_MONOTONIC, &tm);
