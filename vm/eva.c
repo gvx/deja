@@ -126,8 +126,12 @@ Error open_file(Stack *S, Stack *scope_arr)
 	}
 	FILE *file = fopen(toNewString(file_name)->text, m);
 	V handle = new_sized_dict(1);
-	set_hashmap(toHashMap(handle), get_ident("handle"), int_to_value((long int)file));
+	V handle_int = int_to_value((long int)file);
+	set_hashmap(toHashMap(handle), get_ident("handle"), handle_int);
+	set_hashmap(toHashMap(handle), get_ident("file-name"), file_name);
+	set_hashmap(toHashMap(handle), get_ident("mode"), mode);
 	pushS(handle);
+	clear_ref(handle_int);
 	clear_ref(mode);
 	clear_ref(file_name);
 	return Nothing;
