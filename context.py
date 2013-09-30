@@ -24,8 +24,14 @@ class LineContext(Context):
 		self.linenr = linenr
 
 	def indent(self):
-		self.text = self.text.replace('    ', '\t').lstrip('\t')
-		self.indent = len(self.origtext) - len(self.text)
+		i = 0
+		while self.text.startswith(('\t', '    ')):
+			if self.text[0] == '\t':
+				self.text = self.text[1:]
+			else:
+				self.text = self.text[4:]
+			i += 1
+		self.indent = i
 		return self
 
 	def stringify(self):
