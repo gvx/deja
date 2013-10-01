@@ -589,3 +589,34 @@ Error split_any(Stack *S, Stack *scope_arr)
 		return TypeError;
 	}
 }
+
+Error is_digit(Stack *S, Stack *scope_arr)
+{
+	NewString *s;
+	require(1);
+	V v = popS();
+	if (getType(v) == T_STR)
+	{
+		s = toNewString(v);
+		uint32_t i;
+		V rval = v_true;
+		for (i = 0; i < s->size; i++)
+		{
+			// naive method works fine
+			// because everything uses UTF-8
+			if (s->text[i] > '9' || s->text[i] < '0')
+			{
+				rval = v_false;
+				break;
+			}
+		}
+		pushS(add_ref(rval));
+		clear_ref(v);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(v);
+		return TypeError;
+	}
+}

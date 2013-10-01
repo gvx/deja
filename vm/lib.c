@@ -2388,6 +2388,7 @@ static CFunc stdlib[] = {
 	{"chars", chars},
 	{"count", count},
 	{"split-any", split_any},
+	{"is-digit", is_digit},
 	{NULL, NULL}
 };
 

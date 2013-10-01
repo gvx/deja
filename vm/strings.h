@@ -38,5 +38,6 @@ Error join(Stack*, Stack*);
 Error split(Stack*, Stack*);
 Error slice(Stack*, Stack*);
 Error split_any(Stack*, Stack*);
+Error is_digit(Stack*, Stack*);
 
 #endif
