@@ -257,14 +257,11 @@ void mark_gray(V);
 
 void mark_gray_child(V child)
 {
-	if (isUncollectable(child))
+	if (is_simple(child))
 		return;
 
-	if (child != NULL)
-	{
-		child->refs--;
-		mark_gray(child);
-	}
+	child->refs--;
+	mark_gray(child);
 }
 
 void mark_gray(V t)
@@ -303,16 +300,13 @@ void scan_black(V);
 
 void scan_black_child(V child)
 {
-	if (isUncollectable(child))
+	if (is_simple(child))
 		return;
 
-	if (child != NULL)
+	child->refs++;
+	if (child->color != Black)
 	{
-		child->refs++;
-		if (child->color != Black)
-		{
-			scan_black(child);
-		}
+		scan_black(child);
 	}
 }
 
