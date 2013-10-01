@@ -9,6 +9,7 @@
 #include "error.h"
 #include "module.h"
 #include "strings.h"
+#include "eva.h"
 
 extern bool vm_silent;
 extern bool vm_debug;
@@ -57,6 +58,7 @@ int main(int argc, char *argv[])
 	if (argc - optind > 0)
 	{
 		init_path();
+		init_module_path();
 		init_errors();
 		Stack *S = new_stack();
 

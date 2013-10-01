@@ -1,3 +1,7 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <time.h>
 #include <stdio.h>
 #include <assert.h>
 
@@ -188,6 +192,94 @@ Error write_fragment(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+#define SEARCH_PATH_SIZE 32
+
+static char *search_path[SEARCH_PATH_SIZE];
+
+Error find_module(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V module_name = popS();
+	if (getType(module_name) != T_IDENT)
+	{
+		clear_ref(module_name);
+		return TypeError;
+	}
+	ITreeNode *id = toIdent(module_name);
+	int l = id->length;
+	char *mod_name = id->data;
+	int i;
+	struct stat deja_file;
+	struct stat vu_file;
+	for (i = 0; i < SEARCH_PATH_SIZE; i++)
+	{
+		if (!search_path[i])
+		{
+			break;
+		}
+		int length = strlen(search_path[i]) + l + 5; // longest of ".vu" and ".deja"
+		char *fname = malloc(length + 1);
+		strcat(strncat(strcpy(fname, search_path[i]), mod_name, l + 1), ".deja");
+		int deja_exists = stat(fname, &deja_file) == 0;
+		fname[length - 4] = '\0';
+		strcat(fname, "vu");
+		int vu_exists = stat(fname, &vu_file) == 0;
+		if (vu_exists || deja_exists)
+		{
+			pushS(str_to_string(length - 2, fname));
+
+			if (!vu_exists || difftime(deja_file.st_mtime, vu_file.st_mtime) > 0)
+			{
+				fname[length - 4] = '\0';
+				strcat(fname, "deja");
+				pushS(str_to_string(length, fname));
+			}
+			else
+			{
+				pushS(v_false);
+			}
+			free(fname);
+			clear_ref(module_name);
+			return Nothing;
+		}
+		free(fname);
+	}
+	error_msg = malloc(23 + l);
+	sprintf(error_msg, "could not find module %*s", l, mod_name);
+	clear_ref(module_name);
+	return IllegalFile;
+}
+
+void init_module_path()
+{
+	int i = 0;
+	char *env = getenv("DEJAVUPATH");
+	if (env == NULL)
+	{
+		env = ".:/usr/local/lib/deja";
+	}
+	char *start = env;
+	while (i < SEARCH_PATH_SIZE - 1)
+	{
+		if (*env == ':' || *env == '\0')
+		{
+			size_t length = env - start;
+			char *n = malloc(length + 2);
+			strncpy(n, start, length);
+			n[length] = '/';
+			n[length + 1] = '\0';
+			search_path[i++] = n;
+			start = env + 1;
+		}
+		if (!*env)
+		{
+			break;
+		}
+		env++;
+	}
+}
+
+
 CFunc eva[] = {
 	{"encode", encode},
 	{"decode", decode},
@@ -195,5 +287,6 @@ CFunc eva[] = {
 	{"open", open_file},
 	{"close", close_file},
 	{"write-fragment", write_fragment},
+	{"find-module", find_module},
 	{NULL, NULL}
 };

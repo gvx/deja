@@ -3,6 +3,6 @@
 
 #include "lib.h"
 
-//???
+void init_module_path();
 
 #endif
