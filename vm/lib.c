@@ -366,7 +366,7 @@ Error div_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "division by zero";
+			set_error_msg("division by zero");
 			return ValueError;
 		}
 		r = double_to_value(toNumber(v1) / toNumber(v2));
@@ -384,7 +384,7 @@ Error div_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "division by zero";
+			set_error_msg("division by zero");
 			return ValueError;
 		}
 		r = new_frac(
@@ -423,7 +423,7 @@ Error mod_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "division by zero";
+			set_error_msg("division by zero");
 			return ValueError;
 		}
 		r = double_to_value(fmod(toNumber(v1), toNumber(v2)));
@@ -442,7 +442,7 @@ Error mod_(Stack* S, Stack* scope_arr)
 		{
 			clear_ref(v1);
 			clear_ref(v2);
-			error_msg = "division by zero";
+			set_error_msg("division by zero");
 			return ValueError;
 		}
 		r = new_frac(
@@ -1218,6 +1218,7 @@ Error raise_(Stack* S, Stack* scope_arr)
 	V v = popS();
 	if (getType(v) != T_IDENT)
 	{
+		clear_ref(v);
 		return TypeError;
 	}
 	return ident_to_error(v);
@@ -1230,11 +1231,29 @@ Error reraise_(Stack* S, Stack* scope_arr)
 	V v = popS();
 	if (getType(v) != T_IDENT)
 	{
+		clear_ref(v);
 		return TypeError;
 	}
 	reraise = true;
 	return ident_to_error(v);
 }
+
+Error raise_msg(Stack* S, Stack* scope_arr)
+{
+	require(2);
+	V err = popS();
+	V msg = popS();
+	if (getType(err) != T_IDENT || getType(msg) != T_STR)
+	{
+		clear_ref(err);
+		clear_ref(msg);
+		return TypeError;
+	}
+	set_error_msg(toNewString(msg)->text);
+	clear_ref(msg);
+	return ident_to_error(err);
+}
+
 
 Error catch_if(Stack* S, Stack* scope_arr)
 {
@@ -1667,7 +1686,7 @@ Error pairs(Stack* S, Stack* scope_arr)
 				{
 					clear_ref(dict);
 					clear_ref(list);
-					error_msg = "keys and values should have simple types";
+					set_error_msg("keys and values should have simple types");
 					return TypeError;
 				}
 				push(s, new_pair(add_ref(k), add_ref(v)));
@@ -2101,7 +2120,7 @@ Error make_frac(Stack* S, Stack* scope_arr)
 	}
 	if (toInt(d) == 0)
 	{
-		error_msg = "division by zero";
+		set_error_msg("division by zero");
 		return ValueError;
 	}
 	pushS(new_frac(toInt(n), toInt(d)));
@@ -2137,7 +2156,7 @@ Error persist_value(Stack *S, Stack *scope_arr)
 	if (!valid_persist_name(location))
 	{
 		clear_ref(location);
-		error_msg = "invalid name for persisted data file";
+		set_error_msg("invalid name for persisted data file");
 		return ValueError;
 	}
 	V pval = popS();
@@ -2167,7 +2186,7 @@ Error persist_stack(Stack *S, Stack *scope_arr)
 	if (!valid_persist_name(location))
 	{
 		clear_ref(location);
-		error_msg = "invalid name for persisted data file";
+		set_error_msg("invalid name for persisted data file");
 		return ValueError;
 	}
 	char *path = make_persist_path(location);
@@ -2194,7 +2213,7 @@ Error unpersist(Stack *S, Stack *scope_arr)
 	if (!valid_persist_name(location))
 	{
 		clear_ref(location);
-		error_msg = "invalid name for persisted data file";
+		set_error_msg("invalid name for persisted data file");
 		return ValueError;
 	}
 	char *path = make_persist_path(location);
@@ -2233,7 +2252,7 @@ Error chance(Stack *S, Stack *scope_arr)
 	if (threshold < 0 || threshold > RAND_MAX)
 	{
 		clear_ref(p);
-		error_msg = "probability should be between 0 and 1";
+		set_error_msg("probability should be between 0 and 1");
 		return ValueError;
 	}
 
@@ -2316,6 +2335,7 @@ static CFunc stdlib[] = {
 	{"error", error},
 	{"raise", raise_},
 	{"reraise", reraise_},
+	{"Raise", raise_msg},
 	{"catch-if", catch_if},
 	{"len", len},
 	{"yield", yield},

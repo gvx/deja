@@ -123,7 +123,7 @@ Error open_file(Stack *S, Stack *scope_arr)
 	}
 	else
 	{
-		error_msg = "Invalid open mode, use one of :read, :write, :append or :read-write";
+		set_error_msg("Invalid open mode, use one of :read, :write, :append or :read-write");
 		clear_ref(mode);
 		clear_ref(file_name);
 		return ValueError;
@@ -244,7 +244,7 @@ Error find_module(Stack *S, Stack *scope_arr)
 		}
 		free(fname);
 	}
-	error_msg = malloc(23 + l);
+	set_error_msg_ref(malloc(23 + l));
 	sprintf(error_msg, "could not find module %*s", l, mod_name);
 	clear_ref(module_name);
 	return IllegalFile;

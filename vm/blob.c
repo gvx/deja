@@ -86,7 +86,7 @@ Error getbyte_blob_(Stack *S, Stack *scope_arr)
 	int byte = getbyte_blob(blob, toNumber(index));
 	if (byte < 0)
 	{
-		error_msg = "Index out of range";
+		set_error_msg("Index out of range");
 		e = ValueError;
 		goto cleanup;
 	}
@@ -112,14 +112,14 @@ Error setbyte_blob_(Stack *S, Stack *scope_arr)
 	int num = toNumber(value);
 	if (num < 0 || num > 255)
 	{
-		error_msg = "Value not in range [0,255]";
+		set_error_msg("Value not in range [0,255]");
 		e = ValueError;
 		goto cleanup;
 	}
 	int byte = setbyte_blob(blob, toNumber(index), num);
 	if (byte < 0)
 	{
-		error_msg = "Index out of range";
+		set_error_msg("Index out of range");
 		e = ValueError;
 		goto cleanup;
 	}
@@ -178,7 +178,7 @@ Error blit_blob_(Stack *S, Stack *scope_arr)
 	}
 	if (blit_blob(dest, src, toNumber(offset) - 1) < 0)
 	{
-		error_msg = "Index out of range";
+		set_error_msg("Index out of range");
 		e = ValueError;
 		goto cleanup;
 	}

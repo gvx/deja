@@ -25,6 +25,9 @@ typedef enum
 V error_names[UnknownError];
 char *error_msg;
 
+#define set_error_msg_ref(s) do { free(error_msg); error_msg = (s);} while (0)
+#define set_error_msg(s) set_error_msg_ref(strdup(s))
+
 void init_errors();
 
 V error_to_ident(Error e);
