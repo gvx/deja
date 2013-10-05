@@ -920,6 +920,7 @@ Error in(Stack* S, Stack* scope_arr)
 	else
 	{
 		pushS(add_ref(v_false));
+		clear_ref(list);
 	}
 	return Nothing;
 }

@@ -163,6 +163,7 @@ Error chars(Stack* S, Stack* scope_arr)
 		push(st, unichar_to_value(decode_codepoint(chrs, &index)));
 	}
 	pushS(list);
+	clear_ref(source);
 	return Nothing;
 }
 
@@ -380,6 +381,7 @@ Error concat(Stack *S, Stack *scope_arr) /* concat( "a" "b" "c" ) */
 	}
 	*currpoint = '\0';
 	pushS(str_to_string(newlength, new));
+	free(new);
 	return Nothing;
 }
 
@@ -415,6 +417,8 @@ Error concat_list(Stack *S, Stack *scope_arr) /* concat [ "a" "b" "c" ] */
 		}
 		*currpoint = '\0';
 		pushS(str_to_string(newlength, new));
+
+		free(new);
 		clear_ref(v1);
 		return Nothing;
 	}
