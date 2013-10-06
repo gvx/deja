@@ -11,20 +11,20 @@ V new_blob(int size)
 
 int getbyte_blob(V blob, blobsize_t index)
 {
-	if (index <= 0 || index > toBlob(blob)->size)
+	if (index < 0 || index >= toBlob(blob)->size)
 	{
 		return -1; // :(
 	}
-	return toBlob(blob)->data[index - 1];
+	return toBlob(blob)->data[index];
 }
 
 int setbyte_blob(V blob, blobsize_t index, unsigned char value)
 {
-	if (index <= 0 || index > toBlob(blob)->size)
+	if (index < 0 || index >= toBlob(blob)->size)
 	{
 		return -1; // :(
 	}
-	toBlob(blob)->data[index - 1] = value;
+	toBlob(blob)->data[index] = value;
 	return 0;
 }
 
@@ -176,7 +176,7 @@ Error blit_blob_(Stack *S, Stack *scope_arr)
 		e = TypeError;
 		goto cleanup;
 	}
-	if (blit_blob(dest, src, toNumber(offset) - 1) < 0)
+	if (blit_blob(dest, src, toNumber(offset)) < 0)
 	{
 		set_error_msg("Index out of range");
 		e = ValueError;
