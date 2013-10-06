@@ -8,6 +8,7 @@
 #include "eva.h"
 #include "blob.h"
 #include "strings.h"
+#include "literals.h"
 
 Error decode(Stack *S, Stack *scope_arr)
 {
@@ -39,19 +40,52 @@ Error encode(Stack *S, Stack *scope_arr)
 	require(2);
 	V encoding = popS();
 	V cooked_data = popS();
-	if (getType(encoding) != T_IDENT || getType(cooked_data) != T_STR)
+	if (getType(encoding) != T_IDENT)
 	{
 		clear_ref(encoding);
 		clear_ref(cooked_data);
 		return TypeError;
 	}
-	//just assume UTF-8 for now
-	V output = new_blob(toNewString(cooked_data)->size);
-	memcpy(toBlob(output)->data, toNewString(cooked_data)->text, toNewString(cooked_data)->size);
-	pushS(output);
-	clear_ref(encoding);
-	clear_ref(cooked_data);
-	return Nothing;
+	if (encoding == get_ident("utf-8"))
+	{
+		if (getType(cooked_data) != T_STR)
+		{
+			clear_ref(encoding);
+			clear_ref(cooked_data);
+			return TypeError;
+		}
+		V output = new_blob(toNewString(cooked_data)->size);
+		memcpy(toBlob(output)->data, toNewString(cooked_data)->text, toNewString(cooked_data)->size);
+		pushS(output);
+		clear_ref(encoding);
+		clear_ref(cooked_data);
+		return Nothing;
+	}
+	else if (encoding == get_ident("ieee-754"))
+	{
+		if (getType(cooked_data) != T_NUM)
+		{
+			clear_ref(encoding);
+			clear_ref(cooked_data);
+			return TypeError;
+		}
+		V output = new_blob(8);
+		union double_or_uint64_t v;
+		v.d = toNumber(cooked_data);
+		v.i = htonll(v.i);
+		memcpy(toBlob(output)->data, &v, 8);
+		pushS(output);
+		clear_ref(encoding);
+		clear_ref(cooked_data);
+		return Nothing;
+	}
+	else
+	{
+		clear_ref(encoding);
+		clear_ref(cooked_data);
+		set_error_msg("unrecognised encoding");
+		return ValueError;
+	}
 }
 
 #define READ_BUFF_SIZE 1048576
