@@ -7,7 +7,7 @@ debug: vu-dbg
 clean:
 	rm *.o
 
-CFILES := $(wildcard *.c) $(shell if [ ! -e "std.c" ]; then echo "std.c"; fi)
+CFILES := $(wildcard *.c) $(shell if [ ! -e "std.c" ]; then echo "std.c"; fi) $(shell if [ ! -e "compiler.c" ]; then echo "compiler.c"; fi)
 OFILES = $(patsubst %.c, %.o, $(CFILES))
 ODBGFILES = $(patsubst %.c, %.dbg.o, $(CFILES))
 CFLAGS = -Wall -falign-functions=4
@@ -47,3 +47,9 @@ std.vu: std.dva
 
 std.c: std.vu
 	python ../genstdc.py
+
+compiler.vu: compiler.deja
+	python ../dvc.py $^ > $@
+
+compiler.c: compiler.vu
+	python ../gencompilerc.py

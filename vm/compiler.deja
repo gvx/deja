@@ -1,0 +1,742 @@
+local syntax-error l msg:
+	Raise :error concat( "syntax error: " msg chr 10 l!fname ":" to-str l!linenr chr 10 l!text )
+
+local split-lines fname text:
+	local :i 1
+	]
+	for line in split text chr 10:
+		{ :fname fname :linenr i :text line }
+		set :i ++ i
+	[
+
+local (*remove-comments*):
+	for frag in split swap "#":
+		frag
+		if = 0 % count frag chr 34 2:
+			return
+
+#this function works because of magic
+local remove-comments:
+	for l in copy dup:
+		set-to l :text join "#" [ (*remove-comments*) l!text ]
+
+local split-strings lines:
+	for i range 0 -- len lines:
+		local :line get-from lines i
+		local :s split line!text chr 34
+		if = 0 % len s 2:
+			syntax-error line "unended string"
+		set-to line :words s
+	lines
+
+local ws:
+	>= 32 ord
+
+local non-empty:
+	for c in chars:
+		if not ws c:
+			return true
+	false
+
+local remove-empties lines:
+	]
+	for l in lines:
+		local :line l!words
+		if /= 1 len line:
+			l
+		elseif non-empty get-from line 0:
+			l
+	[
+
+local get-ws rfrag:
+	if rfrag:
+		ws dup pop-from rfrag
+	else:
+		dup false
+
+local is-num wrd:
+	local :.count count wrd "."
+	if < 1 .count:
+		return false
+	local :-count count wrd "-"
+	if < 1 -count:
+		return false
+	if and -count not starts-with wrd "-":
+		return false
+	local :no- replace wrd "-" ""
+	local :no. replace no- "." ""
+	if not no.:
+		return false
+	is-digit no.
+
+local is-frac wrd:
+	local :-count count wrd "-"
+	if < 1 -count:
+		return false
+	if and -count not starts-with wrd "-":
+		return false
+	local :/count count wrd "/"
+	if /= 1 /count:
+		return false
+	dup split wrd "/"
+	if not and is-digit dup replace swap "-" swap "" pop-from:
+		drop
+		return false
+	and is-digit dup pop-from
+
+local word-type wrd:
+	if is-num wrd:
+		return :num wrd
+	if is-frac wrd:
+		return :frac wrd
+	if starts-with wrd "@":
+		return :get slice wrd 1 len wrd
+	if starts-with wrd ":":
+		return :ident slice wrd 1 len wrd
+	:word wrd
+
+local split-words lines:
+	for l in copy lines:
+		local :line l!words
+
+		]
+		local :indent []
+		local :rfrag reversed copy chars get-from line -- len line
+
+		while get-ws rfrag:
+			push-to indent
+		drop
+
+		& :indent concat indent
+
+		true
+		for fragment in line:
+			if:
+				local :frag chars fragment
+				local :current []
+				local :fragmentcache []
+
+				while frag:
+					if ws dup pop-from frag:
+						drop
+						if current:
+							push-to fragmentcache & word-type concat current
+							set :current []
+					else:
+						push-to current
+
+				if current:
+					push-to fragmentcache & word-type concat current
+
+				for in fragmentcache
+				false
+			else:
+				& :string fragment
+				true
+		drop
+		[
+		set-to l :words
+	lines
+
+local :stmt-types set{ "if" "repeat" "while" "else" "elseif" "func" "local" "labda" "for" "try" "catch" }
+local :cont-stmts { "else" "if" "elseif" "if" "catch" "try" }
+
+local remove-first l:
+	[]
+	for item in l:
+		push-through swap item
+	drop pop-from dup
+	for item in:
+		push-to l item
+
+local find-statements lines:
+	local :acc [ { :lines [] :indent "" :type "(module)" } ]
+	local :prev-stmt false
+	local :this-stmt false
+	for l in lines:
+		local :line l!words
+		local :last-type &< dup get-from line 0
+		local :last-data &>
+		false
+		if /= :string last-type:
+			if ends-with last-data ":":
+				if < 1 len last-data:
+					# remove : and also recalculate type
+					# (i'm looking at you, if = 0 % len s 2:)
+					set-to line 0 & word-type slice last-data 0 -1
+				not
+			elseif not last-data: # a lone : will be seen as an ident, which now no longer exists
+				remove-first line
+				not
+		set :this-stmt
+		local :indent &> pop-from line
+		local :context get-from acc -- len acc
+		if prev-stmt:
+			if and /= indent context!indent starts-with indent context!indent:
+				set-to context :indent indent
+			else:
+				syntax-error l "a statement needs to be followed by an indent"
+		else:
+			#unwind indent/acc
+			while /= indent context!indent:
+				drop pop-from acc
+				if not acc:
+					#inconsistent indentation!
+					syntax-error l "inconsistent indentation"
+				set :context get-from acc -- len acc
+		if this-stmt:
+			local :stmt-type pop-from line
+			if /= :word &< stmt-type:
+				#start with a string?!
+				syntax-error l "statements cannot start with strings"
+			set :stmt-type' &> stmt-type
+			if not has stmt-types stmt-type':
+				push-to line stmt-type
+				set :stmt-type & :word "func"
+				set :stmt-type' "func"
+			if has cont-stmts stmt-type':
+				if not context!lines:
+					syntax-error l concat( "this statement needs to be preceded by " get-from cont-stmts stmt-type' )
+				local :parent get-from swap -- len dup context!lines
+				if not has parent :type:
+					syntax-error l concat( "this statement needs to be preceded by " get-from cont-stmts stmt-type' )
+				if /= parent!type get-from cont-stmts stmt-type':
+					syntax-error l concat( "this statement needs to be preceded by " get-from cont-stmts stmt-type' ", not " parent!type )
+				if not has parent :child:
+					set-to parent :child []
+				push-to parent!child dup { :type stmt-type' :stmt l :lines [] :indent indent }
+			else:
+				push-to context!lines dup { :type stmt-type' :stmt l :lines [] :indent indent }
+			push-to acc
+		else:
+			push-to context!lines l
+		set :prev-stmt this-stmt
+	get-from acc 0
+
+# BEGIN CODE FOR FLATTEN
+
+local :(max-marker) 1
+local make-marker:
+	& :marker (max-marker)
+	set :(max-marker) ++ (max-marker)
+
+}
+
+labda tree acc:
+	push-to acc & :return 0
+	for line in tree!lines:
+		(flatten) line acc
+"(module)"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	push-to acc m
+	push-to acc & :return 0
+	for line in tree!lines:
+		(flatten) line acc
+	for arg in reversed stmt!words:
+		push-to acc & :set-local & :ident &> arg
+	push-to acc & :labda m
+"labda"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	push-to acc & :set-global & :ident &> pop-from stmt!words
+	push-to acc m
+	push-to acc & :return 0
+	for line in tree!lines:
+		(flatten) line acc
+	for arg in reversed stmt!words:
+		push-to acc & :set-local & :ident &> arg
+	push-to acc & :labda m
+"func"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	push-to acc & :set-local & :ident &> pop-from stmt!words
+	push-to acc m
+	push-to acc & :return 0
+	for line in tree!lines:
+		(flatten) line acc
+	for arg in reversed stmt!words:
+		push-to acc & :set-local & :ident &> arg
+	push-to acc & :labda m
+"local"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	local :m2 make-marker
+
+	push-to acc & :leave-scope 0
+	push-to acc m2
+	push-to acc & :jmp m
+
+	for line in tree!lines:
+		(flatten) line acc
+
+	push-to acc & :jmpz m2
+
+	(flatten) stmt acc
+
+	push-to acc m
+	push-to acc & :enter-scope 0
+"while"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	local :m2 make-marker
+
+	push-to acc & :leave-scope 0
+	push-to acc m2
+	push-to acc & :jmp m
+	push-to acc & :set-local & :ident "#r"
+	push-to acc & :push-word & :ident "--"
+	push-to acc & :push-word & :ident "#r"
+
+	for line in tree!lines:
+		(flatten) line acc
+
+	push-to acc & :jmpz m2
+	push-to acc & :push-word & :ident "#r"
+	push-to acc m
+	push-to acc & :set-local & :ident "#r"
+	push-to acc & :enter-scope 0
+
+	(flatten) stmt acc
+"repeat"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	local :m2 make-marker
+
+	push-to acc & :drop 0
+	push-to acc m2
+	push-to acc & :jmp m
+	push-to acc & :leave-scope 0
+	push-to acc & :push-word & :ident "#f"
+	push-to acc & :push-word & :ident "#h"
+
+	for line in tree!lines:
+		(flatten) line acc
+
+	push-to acc & :set-local & :ident &> pop-from stmt!words
+	push-to acc & :set-local & :ident "#h"
+	push-to acc & :set-local & :ident "#f"
+	push-to acc & :enter-scope 0
+	push-to acc & :jmpz m2
+	push-to acc & :dup 0
+	push-to acc m
+
+	(flatten) stmt acc
+
+	drop pop-from acc #horrible hack to prevent duplicate linenumbers
+"for"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	local :m2 make-marker
+
+	push-to acc & :leave-scope 0
+	push-to acc m2
+
+	if has tree :child:
+		false
+		for child in tree!child:
+			if:
+				if = child!type "else":
+					syntax-error child "an else can only be the last in an if/elseif/else chain"
+			if = child!type "else":
+				(flatten) child acc
+			else:
+				local :m make-marker
+				push-to acc m
+				push-to acc & :jmp m2
+
+				(flatten) child acc
+
+				push-to acc & :jmpz m
+
+				(flatten) child!stmt acc
+			true
+		drop
+
+		push-to acc m
+		push-to acc & :jmp m2
+	else:
+		push-to acc m
+
+	for line in tree!lines:
+		(flatten) line acc
+
+	push-to acc & :jmpz m
+
+	stmt!linenr #horrible hack, i am so sorry
+	delete-from stmt :linenr #this makes sure that there is no double line number
+	(flatten) stmt acc
+	set-to stmt :linenr
+
+	push-to acc & :enter-scope 0
+"if"
+
+labda tree acc:
+	local :stmt tree!stmt
+
+	local :m make-marker
+	local :m2 make-marker
+
+	if not has tree :child:
+		syntax-error stmt "a try statement makes no sense without a catch clause"
+
+	if stmt!words:
+		syntax-error stmt "try takes no arguments"
+
+	push-to acc m2
+	push-to acc & :leave-errhand 0
+
+	for line in tree!lines:
+		(flatten) line acc
+
+	push-to acc m
+	push-to acc & :reraise 0
+
+	for child in tree!child:
+		local :h make-marker
+		local :h2 make-marker
+
+		push-to acc h2
+		push-to acc & :jmp m2
+
+		(flatten) child acc
+
+		push-to acc & :drop 0
+		push-to acc h
+		push-to acc & :jmpne h2
+
+		false
+		for w in get-from child!stmt!words:
+			if:
+				push-to acc & :jmpeq h
+			push-to acc & :push-literal & :ident &> w
+			push-to acc & :dup 0
+			true
+		drop
+	push-to acc & :enter-errhand m
+"try"
+
+local :flatten-types {
+
+local :(ok-types) set{ :frac :string }
+local (flatten) tree acc:
+	if has tree :type:
+		call get-from flatten-types tree!type tree acc
+	else:
+		for word in tree!words:
+			local :type &< word
+			if = :num type:
+				local :value &> word
+				local :nvalue to-num value
+				if and >= 8388607 nvalue and <= -8388608 nvalue not contains value ".":
+					push-to acc & :push-integer nvalue
+				else:
+					push-to acc & :push-literal word
+			elseif has (ok-types) type:
+				push-to acc & :push-literal word
+			else:
+				local :value &> word
+				if contains value "!":
+					if /= type :word:
+						syntax-error tree "method calls only available on proper words"
+					if starts-with value "!":
+						set :value concat( "eva" value )
+					push-to acc & :call 0
+					push-to acc & :get-dict 0
+					split value "!"
+					push-to acc & :push-word & :ident pop-from dup
+					for frag in:
+						push-to acc & :push-literal & :ident frag
+				elseif = type :ident:
+					push-to acc & :push-literal word
+				elseif = type :get:
+					push-to acc & :get & :ident value
+				else:
+					push-to acc & :push-word & :ident value
+	if has tree :linenr:
+		push-to acc & :line-number tree!linenr
+	elseif has tree :stmt:
+		if has tree!stmt :linenr:
+			push-to acc & :line-number get-from tree!stmt!linenr
+
+local flatten src tree:
+	(flatten) tree dup []
+	push-through swap & :source-file & :string src
+
+#END CODE FOR FLATTEN
+
+local :(optimizers) { "set" :set "setglobal" :set-global "local" :set-local "get" :get "getglobal" :get-global "return" :return "recurse" :recurse "drop" :drop "dup" :dup "swap" :swap "rot" :rot "over" :over "[]" :new-list "{}" :new-dict "pop-from" :pop-from "push-to" :push-to "push-through" :push-through "has" :has-dict "get-from" :get-dict "set-to" :set-dict "raise" :raise "reraise" :reraise "call" :call }
+
+local :(arged-opt) set{ :set :set-local :set-global :get :get-global }
+
+}
+labda:
+	pass
+"pass"
+
+labda:
+	local :mstart make-marker
+	local :mend make-marker
+	& :drop 0
+	mend
+	& :jmp mstart
+	& :call 0
+	& :jmpz mend
+	& :dup 0
+	mstart
+"for"
+local :(specials) {
+
+#basically convert and optimize in one
+local optimize opcodes:
+	]
+	for op in opcodes:
+		if = :push-word &< op:
+			if opt-get (optimizers) &> &> op:
+				if has (arged-opt) dup:
+					if = ] over:
+						op drop
+					elseif = :push-literal &< over:
+						& swap &> swap
+					else:
+						op drop
+				else:
+					& swap 0
+			elseif opt-get (specials) &> &> op:
+				call
+			else:
+				op
+		elseif = :line-number &< op:
+			if opcodes:
+				if = :line-number dup &< get-from opcodes -- len opcodes:
+					drop
+				elseif = :return: #line number followed by return? get rid of it
+					pass
+				else:
+					op
+			else:
+				op
+		elseif = :return &< op:
+			if opcodes:
+				if = :return: #return followed by other return? get rid of it
+					pass
+				else:
+					op
+			else:
+				op
+		else:
+			op
+	[
+
+local is-marker:
+	if /= :pair type dup:
+		return false drop
+	= :marker &<
+
+local collect-markers opcodes:
+	local :memo {}
+	0
+	for opcode in copy opcodes:
+		if is-marker opcode:
+			set-to memo &> opcode dup
+		else:
+			++
+	drop
+	]
+	0
+	for opcode in opcodes:
+		if is-marker opcode:
+			pass
+		elseif is-marker &> opcode:
+			& &< opcode - get-from memo &> &> opcode dup
+			++ swap
+		else:
+			opcode
+			++ swap
+	[ drop
+
+local collect-literals opcodes:
+	local :literals_had {}
+	local :literals []
+	for i range 0 -- len opcodes:
+		local :opcode get-from opcodes i
+		if = :pair type &> opcode:
+			if not has literals_had &> opcode:
+				set-to literals_had len literals &> opcode
+				set-to opcodes i & &< opcode len literals
+				push-to literals &> opcode
+			else:
+				set-to opcodes i & &< opcode get-from literals_had &> opcode
+	opcodes literals
+
+local 2^:
+	1
+	while over:
+		* 2
+		swap -- swap
+	drop swap
+
+local make-number blob offset size number:
+	if > 0 number:
+		set :number + 2^ * 8 size number
+	for i range 0 -- size:
+		set-to-blob blob -- + offset - size i % number 256
+		set :number floor / number 256
+
+}
+labda v blob i:
+	if > 256 len v:
+		set-to-blob blob i 129
+		set-to-blob blob ++ i len v
+		2
+	else:
+		set-to-blob blob i 1
+		make-number blob ++ i 4 len v
+		5
+	set :i + i
+	blit-blob blob !encode!utf-8 v i
+	+ i len v
+:string
+
+labda v blob i:
+	if > 256 len v:
+		set-to-blob blob i 128
+		set-to-blob blob ++ i len v
+		2
+	else:
+		set-to-blob blob i 0
+		make-number blob ++ i 4 len v
+		5
+	set :i + i
+	blit-blob blob !encode!utf-8 v i
+	+ i len v
+:ident
+
+labda v blob i:
+	set-to-blob blob i 2
+	blit-blob blob !encode!ieee-754 to-num v ++ i
+	+ i 9
+:num
+
+labda v blob i:
+	local :n to-num pop-from dup split v "/"
+	local :d to-num pop-from
+	if and and <= -128 n < n 128 < d 256:
+		set-to-blob blob i 135
+		make-number blob ++ i 1 n
+		set-to-blob blob + 2 i d
+		3
+	else:
+		set-to-blob blob i 7
+		make-number blob ++ i 8 n
+		make-number blob + 9 i 8 d
+		17
+	+ i
+:frac
+local :literal-writers {
+
+}
+labda v:
+	if > 256 len v:
+		2
+	else:
+		5
+	+ len v
+:string
+
+:ident over
+
+labda:
+	9 drop
+:num
+
+labda v:
+	local :n to-num pop-from dup split v "/"
+	local :d to-num pop-from
+	if and and <= -128 n < n 128 < d 256:
+		3
+	else:
+		17
+:frac
+local :literal-sizers {
+
+local :(opcode-table) { :push-literal 0 :push-integer 1 :push-word 2 :set 3 :set-local 4 :set-global 5 :get 6 :get-global 7 :jmp 16 :jmpz 17 :return 18 :recurse 19 :jmpeq 20 :jmpne 21 :labda 32 :enter-scope 33 :leave-scope 34 :new-list 48 :pop-from 49 :push-to 50 :push-through 51 :drop 64 :dup 65 :swap 66 :rot 67 :over 68 :line-number 80 :source-file 82 :enter-errhand 96 :leave-errhand 97 :raise 98 :reraise 99 :new-dict 112 :has-dict 113 :get-dict 114 :set-dict 115 :call 128 }
+
+local :(header) make-blob 4
+set-to-blob (header) 0 7       #\e
+set-to-blob (header) 1 ord "D" #D
+set-to-blob (header) 2 ord "V" #V
+set-to-blob (header) 3 3       #0.3
+local make-bytecode opcodes literals:
+	#size for:
+	#header, opcodes
+	+ 8 * 4 len opcodes
+	#literals
+	for lit in copy literals:
+		+ call get-from literal-sizers &<> lit
+	local :output make-blob
+	blit-blob output (header) 0
+	make-number output 4 4 len opcodes
+	8
+	for op in opcodes:
+		set-to-blob output over get-from (opcode-table) &< op
+		++
+		make-number output swap 3 over &> op
+		+ 3
+	for lit in reversed literals:
+		call get-from literal-writers &<> lit output
+	drop
+	output
+
+labda src dst:
+	!decode!utf-8 !read src
+	split-lines src
+	remove-comments
+	split-strings
+	remove-empties
+	split-words
+	find-statements
+	flatten src
+	optimize
+	collect-markers
+	collect-literals
+	make-bytecode
+	!write dst
+set-to eva :compile
+
+labda:
+	!find-module
+	if dup:
+		!compile swap over
+	else:
+		drop
+	!run-file
+set-to eva :use
+
+local :loaded {}
+labda m:
+	if not has loaded m:
+		setglobal m !use m
+		set-to loaded m true
+set-to eva :import

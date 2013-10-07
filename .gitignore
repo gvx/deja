@@ -3,5 +3,7 @@
 *.o
 vm/std.c
 vm/std.vu
+vm/compiler.c
+vm/compiler.vu
 vm/vu
 vm/vu-dbg

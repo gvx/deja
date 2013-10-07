@@ -1,6 +1,7 @@
 #include "run.h"
 #include "lib.h"
 #include "std.h"
+#include "compiler.h"
 #include "error.h"
 #include "debug.h"
 #include "persist.h"
@@ -35,6 +36,8 @@ void run(V file_name, Stack *S)
 		}
 		push(scope, add_rooted(new_file_scope(stdinfile)));
 	}
+	//loading compiler
+	push(scope, add_rooted(new_file_scope(load_compiler(global))));
 	//loading the dva part of the standard library
 	push(scope, add_rooted(new_file_scope(load_std(global))));
 	while (e == Nothing)
