@@ -139,6 +139,13 @@ $endwrite
 push_literal 14
 get 16
 set_dict
+labda $endreplace
+	push_word 21
+	swap
+	push_word 22
+	return
+$endreplace
+set_global 23
 return
 ...
 ia
@@ -162,3 +169,6 @@ itype
 iblob
 iclose
 iwrite-fragment
+isplit
+ijoin
+ireplace
