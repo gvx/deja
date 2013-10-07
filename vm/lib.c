@@ -2279,6 +2279,28 @@ Error set_default(Stack *S, Stack *scope_arr)
 	}
 }
 
+Error opt_get(Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V dct = popS();
+	V key = popS();
+	if (getType(dct) != T_DICT)
+	{
+		clear_ref(dct);
+		clear_ref(key);
+		return TypeError;
+	}
+	V r = get_hashmap(toHashMap(dct), key);
+	if (r)
+	{
+		pushS(add_ref(r));
+	}
+	pushS(add_ref(r ? v_true: v_false));
+	clear_ref(dct);
+	clear_ref(key);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2387,6 +2409,7 @@ static CFunc stdlib[] = {
 	{"chance", chance},
 	{"set-default", set_default},
 	{"random-int", random_int},
+	{"opt-get", opt_get},
 	//blob
 	{"make-blob", make_blob},
 	{"get-from-blob", getbyte_blob_},
