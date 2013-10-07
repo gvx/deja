@@ -478,20 +478,6 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_CALL:
 			v = popS();
-			if (getType(v) == T_IDENT)
-			{
-				key = v;
-				v = get_hashmap(&sc->hm, key);
-				while (v == NULL)
-				{
-					if (sc->parent == NULL)
-					{
-						return NameError;
-					}
-					sc = toScope(sc->parent);
-					v = get_hashmap(&sc->hm, key);
-				}
-			}
 			if (getType(v) == T_FUNC)
 			{
 				push(scope_arr, add_rooted(new_function_scope(v)));

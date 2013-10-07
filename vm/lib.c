@@ -1149,16 +1149,7 @@ Error use(Stack* S, Stack* scope_arr)
 Error call(Stack* S, Stack* scope_arr)
 {
 	require(1);
-	V v = get_head(S);
-	if (getType(v) == T_IDENT)
-	{
-		Error e = get(S, scope_arr);
-		if (e != Nothing)
-		{
-			return e;
-		}
-	}
-	v = popS();
+	V v = popS();
 	if (getType(v) == T_FUNC)
 	{
 		push(scope_arr, add_rooted(new_function_scope(v)));
