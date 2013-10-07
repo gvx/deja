@@ -7,7 +7,7 @@ V load_file(V file_name, V global)
 	if (file_name == NULL || getType(file_name) != T_STR)
 	{
 		clear_ref(file_name);
-		return file_name;
+		return NULL;
 	}
 	FILE* f = fopen(toNewString(file_name)->text, "rb");
 	if (f == NULL)

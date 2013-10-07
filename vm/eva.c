@@ -313,6 +313,26 @@ void init_module_path()
 	}
 }
 
+Error run_file(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V fname = popS();
+	if (getType(fname) != T_STR)
+	{
+		clear_ref(fname);
+		return TypeError;
+	}
+	V file = load_file(fname, toFile(toScope(get_head(scope_arr))->file)->global);
+	if (file == NULL)
+	{
+		clear_ref(fname);
+		return IllegalFile;
+	}
+	push(scope_arr, add_rooted(new_file_scope(file)));
+	clear_ref(fname);
+	clear_ref(file);
+	return Nothing;
+}
 
 CFunc eva[] = {
 	{"encode", encode},
@@ -322,5 +342,6 @@ CFunc eva[] = {
 	{"close", close_file},
 	{"write-fragment", write_fragment},
 	{"find-module", find_module},
+	{"run-file", run_file},
 	{NULL, NULL}
 };
