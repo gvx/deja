@@ -1919,6 +1919,21 @@ Error get_second(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error get_both(Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V pair = popS();
+	if (getType(pair) != T_PAIR)
+	{
+		clear_ref(pair);
+		return TypeError;
+	}
+	pushS(add_ref(toSecond(pair)));
+	pushS(add_ref(toFirst(pair)));
+	clear_ref(pair);
+	return Nothing;
+}
+
 Error file_info(Stack* S, Stack* scope_arr)
 {
 	File *f = toFile(toScope(get_head(scope_arr))->file);
@@ -2390,6 +2405,7 @@ static CFunc stdlib[] = {
 	{"&", make_pair},
 	{"&<", get_first},
 	{"&>", get_second},
+	{"&<>", get_both},
 	{"(file-info)", file_info},
 	{"abs", abs_},
 	{"sin", sin_},
