@@ -10,16 +10,46 @@ utf8index nextchar(utf8 chars, utf8index start)
 	return start;
 }
 
-uint32_t new_string_hash(size_t length, const char *key)
+// MurmerHash3
+// the original implementation is in the public domain
+uint32_t new_string_hash(const size_t length, const char *key)
 {
-	uint32_t hash = 2166136261;
-	size_t i;
-	for (i = 0; i < length; i++)
-	{
-		hash = (16777619 * hash) ^ (*key);
-		key++;
-	}
-	return hash;
+    uint32_t hash = 1; /* randomize seed? */
+    size_t index, k;
+
+    for (index = 0; index + 3 < length; index += 4)
+    {
+        k = *(uint32_t*)(key + index);
+        k *= 0xcc9e2d51;
+        k = (k << 15) | (k >> (32 - 15));
+        k *= 0x1b873593;
+        hash ^= k;
+        hash = (hash << 13) | (hash >> (32 - 13));
+        hash = hash * 5 + 0xe6546b64;
+    }
+
+    k = 0;
+    switch (length & 3) {
+        case 3:
+            k ^= *(uint8_t*)(key + index + 2) << 16;
+        case 2:
+            k ^= *(uint8_t*)(key + index + 1) << 8;
+        case 1:
+            k ^= *(uint8_t*)(key + index);
+            k *= 0xcc9e2d51;
+            k = (k << 15) | (k >> (32 - 15));
+            k *= 0x1b873593;
+            hash ^= k;
+    }
+
+    hash ^= length;
+
+    hash ^= (hash >> 16);
+    hash *= 0x85ebca6b;
+    hash ^= (hash >> 13);
+    hash *= 0xc2b2ae35;
+    hash ^= (hash >> 16);
+    return hash;
 }
 
 size_t count_characters(size_t size, const utf8 chars)
