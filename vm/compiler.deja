@@ -462,6 +462,8 @@ local (flatten) tree acc:
 						syntax-error tree "method calls only available on proper words"
 					if starts-with value "!":
 						set :value concat( "eva" value )
+					if ends-with value "!":
+						set :value slice value 0 -- len value
 					push-to acc & :call 0
 					push-to acc & :get-dict 0
 					split value "!"
@@ -694,7 +696,7 @@ local make-bytecode opcodes literals:
 	+ 8 * 4 len opcodes
 	#literals
 	for lit in copy literals:
-		+ call get-from literal-sizers &<> lit
+		+ literal-sizers! &<> lit
 	local :output make-blob
 	blit-blob output (header) 0
 	make-number output 4 4 len opcodes
@@ -705,7 +707,7 @@ local make-bytecode opcodes literals:
 		make-number output swap 3 over &> op
 		+ 3
 	for lit in reversed literals:
-		call get-from literal-writers &<> lit output
+		literal-writers! &<> lit output
 	drop
 	output
 
