@@ -1034,7 +1034,7 @@ Error tail_call(Stack* S, Stack* scope_arr)
 	}
 	else if (getType(v) == T_CFUNC)
 	{
-		e = toCFunc(v)(S, scope_arr);
+		Error e = toCFunc(v)(S, scope_arr);
 		clear_ref(v);
 		return e;
 	}
