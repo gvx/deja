@@ -88,13 +88,11 @@ void print_value(V v, int depth)
 			printf("%ld/%ld", toNumerator(v), toDenominator(v));
 			break;
 		case T_CFUNC:
-			printf("<func:%p>", toCFunc(v));
-			break;
 		case T_FUNC:
-			printf("<func:%p>", toFunc(v));
+			fputs("(func)", stdout);
 			break;
 		case T_BLOB:
-			printf("<blob:%p>", v);
+			printf("(blob)");
 			break;
 	};
 }
@@ -1941,18 +1939,35 @@ Error print_f(Stack* S, Stack* scope_arr)
 			break;
 		case T_BLOB:
 			size = toBlob(v)->size > 31 ? 30 : toBlob(v)->size;
-			fputs("<blob:(", stdout);
+			fputs("(blob:", stdout);
+			bool is_printable_ascii = true;
 			for (i = 0; i < size; i++)
 			{
-				printf("%02hhx", toBlob(v)->data[i]);
+				char c = toBlob(v)->data[i];
+				if (c < 32 || c >= 128)
+				{
+					is_printable_ascii = false;
+					break;
+				}
 			}
-			if (size < toBlob(v)->size)
+			if (is_printable_ascii)
 			{
-				fputs("...)>", stdout);
+				printf("\"%.*s\"", (int)size, toBlob(v)->data);
 			}
 			else
 			{
-				fputs(")>", stdout);
+				for (i = 0; i < size; i++)
+				{
+					printf("%02hhx", toBlob(v)->data[i]);
+				}
+			}
+			if (size < toBlob(v)->size)
+			{
+				fputs("...)", stdout);
+			}
+			else
+			{
+				fputs(")", stdout);
 			}
 			break;
 		default:
