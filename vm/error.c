@@ -79,12 +79,11 @@ void handle_error(Error e, Stack *scope_arr)
 	}
 	fputs(":\n", stderr);
 	Scope *sc;
-	bool show_next = true;
 	int n;
 	for (n = 0; n < scope_arr->used; n++)
 	{
 		sc = toScope(scope_arr->nodes[n]);
-		if (show_next)
+		if (n == scope_arr->used - 1 || toScope(scope_arr->nodes[n + 1])->is_func_scope)
 		{
 			NewString *s = toFile(sc->file)->source != NULL ? toNewString(toFile(sc->file)->source) : toNewString(toFile(sc->file)->name);
 			if (sc->linenr > 0)
@@ -92,6 +91,5 @@ void handle_error(Error e, Stack *scope_arr)
 			else
 				fprintf(stderr, "%*s\n", (int)s->size, s->text);
 		}
-		show_next = sc->is_func_scope || (n == scope_arr->used - 2);
 	}
 }
