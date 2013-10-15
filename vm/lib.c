@@ -1014,15 +1014,6 @@ Error pop_from(Stack* S, Stack* scope_arr)
 Error tail_call(Stack* S, Stack* scope_arr)
 {
 	require(1);
-	if (getType(get_head(S)) != T_IDENT)
-	{
-		return TypeError;
-	}
-	Error e = get(S, scope_arr);
-	if (e != Nothing)
-	{
-		return e;
-	}
 	V v = NULL;
 	V file = toScope(get_head(scope_arr))->file;
 	do

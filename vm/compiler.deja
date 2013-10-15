@@ -738,5 +738,5 @@ local :loaded {}
 labda m:
 	if not has loaded m:
 		set-to loaded m !use m
-	tail-call :local m get-from loaded m
+	tail-call @local m get-from loaded m
 set-to eva :import
