@@ -77,6 +77,6 @@ V new_global_scope(void)
 	scope->func = NULL;
 	scope->file = NULL;
 	scope->pc = NULL;
-	hashmap_from_scope(sc, 128);
+	hashmap_from_scope(sc, 256);
 	return sc;
 }
