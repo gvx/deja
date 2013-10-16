@@ -270,7 +270,7 @@ Error find_module(Stack *S, Stack *scope_arr)
 			}
 			else
 			{
-				pushS(v_false);
+				pushS(add_ref(v_false));
 			}
 			free(fname);
 			clear_ref(module_name);
