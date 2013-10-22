@@ -334,6 +334,73 @@ Error run_file(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error find_file_(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V file_name = popS();
+	if (getType(file_name) != T_STR)
+	{
+		clear_ref(file_name);
+		return TypeError;
+	}
+	NewString *fn = toNewString(file_name);
+	int l = fn->size;
+	char *f_name = fn->text;
+	struct stat deja_file;
+	struct stat vu_file;
+	int deja_exists;
+	int vu_exists;
+	if (l > 5 && !memcmp(f_name + l - 5, ".deja", 5))
+	{
+		// .deja
+		// check if we need to invoke compiler
+		deja_exists = stat(f_name, &deja_file) == 0;
+
+		utf8 text;
+		V compiled_name = empty_string_to_value(l - 2, &text);
+		memcpy(text, f_name, l - 4);
+		text[l - 4] = 'v';
+		text[l - 3] = 'u';
+
+		vu_exists = stat(text, &vu_file) == 0;
+
+		if (!deja_exists && !vu_exists)
+		{
+			clear_ref(file_name);
+			set_error_msg_ref(malloc(21 + l));
+			sprintf(error_msg, "could not find file %*s", l, f_name);
+			return IllegalFile;
+		}
+
+		pushS(compiled_name);
+
+		if (!vu_exists || difftime(deja_file.st_mtime, vu_file.st_mtime) > 0)
+		{
+			pushS(file_name);
+		}
+		else
+		{
+			pushS(add_ref(v_false));
+		}
+	}
+	else
+	{
+		// .vu
+		// never invoke compiler
+		vu_exists = stat(f_name, &vu_file) == 0;
+		if (!vu_exists)
+		{
+			clear_ref(file_name);
+			set_error_msg_ref(malloc(21 + l));
+			sprintf(error_msg, "could not find file %*s", l, f_name);
+			return IllegalFile;
+		}
+		pushS(file_name);
+		pushS(add_ref(v_false));
+	}
+	return Nothing;
+}
+
 CFunc eva[] = {
 	{"encode", encode},
 	{"decode", decode},
@@ -342,6 +409,7 @@ CFunc eva[] = {
 	{"close", close_file},
 	{"write-fragment", write_fragment},
 	{"find-module", find_module},
+	{"find-file", find_file_},
 	{"run-file", run_file},
 	{NULL, NULL}
 };
