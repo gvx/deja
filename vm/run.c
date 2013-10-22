@@ -11,10 +11,8 @@ bool vm_silent = false;
 bool vm_debug = false;
 bool vm_persist = false;
 
-void run(V file_name, Stack *S)
+void run(V file_name, V global, Stack *S)
 {
-	V global = new_global_scope();
-	open_std_lib(&toScope(global)->hm);
 	Error e = Nothing;
 	V file = load_file(file_name, global);
 	if (file == NULL)

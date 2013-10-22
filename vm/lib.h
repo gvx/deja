@@ -24,7 +24,7 @@ V new_cfunc(CFuncP);
 V v_true;
 V v_false;
 void open_lib(CFunc[], HashMap*);
-void open_std_lib(HashMap*);
+V open_std_lib(HashMap*);
 
 #define require(x) if (stack_size(S) < (x)) return StackEmpty;
 

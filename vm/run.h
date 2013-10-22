@@ -1,3 +1,3 @@
 #include "stack.h"
 
-void run(V, Stack*);
+void run(V, V, Stack*);

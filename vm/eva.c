@@ -401,6 +401,85 @@ Error find_file_(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+int init_argv(int argc, char** argv, V v_eva)
+{
+	V args = new_list();
+	V kwargs = new_dict();
+	int argi;
+	for (argi = 0; argi < argc; argi++)
+	{
+		char *arg = argv[argi];
+		int len = strlen(arg);
+		if (!valid_utf8(len, arg))
+		{
+			handle_error(UnicodeError, NULL);
+			return 1;
+		}
+		if (arg[0] == '-')
+		{
+			if (len == 1) // -
+			{
+				goto add_arg;
+			}
+			if (arg[1] == '-')
+			{
+				if (len == 2) // --
+				{
+					goto add_arg;
+				}
+				char *eq;
+				if ((eq = strchr(arg, '='))) // --arg=val
+				{
+					*eq = '\0';
+					V key = get_ident(arg + 2);
+					V value = a_to_string(eq + 1);
+					set_hashmap(toHashMap(kwargs), key, value);
+				}
+				else // --arg
+				{
+					V key = get_ident(arg + 2);
+					V current = get_hashmap(toHashMap(kwargs), key);
+					if (!current)
+					{
+						current = intToV(0);
+					}
+					if (isInt(current))
+					{
+						set_hashmap(toHashMap(kwargs), key, intToV(toInt(current) + 1));
+					}
+				}
+			}
+			else // -arg
+			{
+				char key[] = {'\0', '\0'};
+				int i;
+				for (i = 1; i < len; i++)
+				{
+					key[0] = arg[i];
+					V keyv = get_ident(key);
+					V current = get_hashmap(toHashMap(kwargs), keyv);
+					if (!current)
+					{
+						current = intToV(0);
+					}
+					if (isInt(current))
+					{
+						set_hashmap(toHashMap(kwargs), keyv, intToV(toInt(current) + 1));
+					}
+				}
+			}
+		}
+		else //arg
+		{
+			add_arg:
+			push(toStack(args), a_to_string(arg));
+		}
+	}
+	set_hashmap(toHashMap(v_eva), get_ident("args"), args);
+	set_hashmap(toHashMap(v_eva), get_ident("kwargs"), kwargs);
+	return 0;
+}
+
 CFunc eva[] = {
 	{"encode", encode},
 	{"decode", decode},

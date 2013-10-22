@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0},
 	};
 	char opt;
-	int i;
 	while ((opt = getopt_long(argc, argv, "+hdvsp", options, NULL)) != -1)
 	{
 		switch (opt)
@@ -60,20 +59,12 @@ int main(int argc, char *argv[])
 		init_path();
 		init_module_path();
 		init_errors();
+		V global = new_global_scope();
+		V v_eva = open_std_lib(&toScope(global)->hm);
 		Stack *S = new_stack();
+		init_argv(argc - optind, argv + optind, v_eva);
 
-		for (i = argc - 1; i > optind; i--)
-		{
-			if (!valid_utf8(strlen(argv[i]), argv[i]))
-			{
-				handle_error(UnicodeError, NULL);
-				clear_stack(S);
-				return 1;
-			}
-			pushS(a_to_string(argv[i]));
-		}
-
-		run(find_file(get_ident(argv[optind])), S);
+		run(find_file(get_ident(argv[optind])), global, S);
 		clear_stack(S);
 	}
 	return 0;

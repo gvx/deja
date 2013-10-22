@@ -3,6 +3,7 @@
 #include "persist.h"
 #include "mersenne.h"
 #include "blob.h"
+#include "eva.h"
 
 #include <time.h>
 #include <sys/time.h>
@@ -2463,7 +2464,7 @@ void open_lib(CFunc lib[], HashMap* hm)
 	}
 }
 
-void open_std_lib(HashMap* hm)
+V open_std_lib(HashMap* hm)
 {
 	open_lib(stdlib, hm);
 	char** k;
@@ -2489,4 +2490,6 @@ void open_std_lib(HashMap* hm)
 	struct timespec tm;
 	clock_gettime(CLOCK_MONOTONIC, &tm);
 	init_random(tm.tv_sec ^ (tm.tv_sec >> 32) ^ tm.tv_nsec ^ (tm.tv_nsec >> 32));
+
+	return v_eva;
 }
