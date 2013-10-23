@@ -1019,12 +1019,8 @@ Error tail_call(Stack* S, Stack* scope_arr)
 	{
 		clear_base_ref(v);
 		v = pop(scope_arr);
-		if (v == NULL)
-		{
-			return Exit;
-		}
 	}
-	while (!toScope(v)->is_func_scope && toScope(v)->file == file);
+	while (v && !toScope(v)->is_func_scope && toScope(v)->file == file);
 	v = popS();
 	if (getType(v) == T_FUNC)
 	{
