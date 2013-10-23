@@ -8,7 +8,6 @@
 #include "scope.h"
 #include "func.h"
 #include "opcodes.h"
-#include "module.h"
 #include "idents.h"
 #include "strings.h"
 

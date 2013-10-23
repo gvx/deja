@@ -742,3 +742,11 @@ labda m:
 		set-to loaded m !use m
 	tail-call @local m get-from loaded m
 set-to eva :import
+
+if !args:
+	!find-file get-from !args 0
+	if dup:
+		!compile swap over
+	else:
+		drop
+	!run-file

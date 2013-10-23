@@ -1111,27 +1111,6 @@ Error copy(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error use(Stack* S, Stack* scope_arr)
-{
-	require(1);
-	V fname = popS();
-	if (getType(fname) != T_IDENT)
-	{
-		return TypeError;
-	}
-	V file = load_file(find_file(fname), toFile(toScope(get_head(scope_arr))->file)->global);
-	if (file == NULL)
-	{
-		return IllegalFile;
-	}
-	if (getType(file) == T_FILE)
-	{
-		push(scope_arr, add_rooted(new_file_scope(file)));
-	}
-	clear_ref(file);
-	return Nothing;
-}
-
 Error call(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -2358,7 +2337,6 @@ static CFunc stdlib[] = {
 	{"(print-depth)", print_depth},
 	{"input", input},
 	{"copy", copy},
-	{"use", use},
 	{"call", call},
 	{"dup", dup},
 	{"drop", drop},

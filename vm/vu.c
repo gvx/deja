@@ -7,7 +7,6 @@
 #include "utf8.h"
 #include "run.h"
 #include "error.h"
-#include "module.h"
 #include "strings.h"
 #include "eva.h"
 
@@ -56,15 +55,13 @@ int main(int argc, char *argv[])
 	}
 	if (argc - optind > 0)
 	{
-		init_path();
 		init_module_path();
 		init_errors();
 		V global = new_global_scope();
 		V v_eva = open_std_lib(&toScope(global)->hm);
 		Stack *S = new_stack();
 		init_argv(argc - optind, argv + optind, v_eva);
-
-		run(find_file(get_ident(argv[optind])), global, S);
+		run(global, S);
 		clear_stack(S);
 	}
 	return 0;

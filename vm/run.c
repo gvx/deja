@@ -11,19 +11,12 @@ bool vm_silent = false;
 bool vm_debug = false;
 bool vm_persist = false;
 
-void run(V file_name, V global, Stack *S)
+void run(V global, Stack *S)
 {
 	Error e = Nothing;
-	V file = load_file(file_name, global);
-	if (file == NULL)
-	{
-		handle_error(IllegalFile, NULL);
-		return;
-	}
 	Stack *scope = new_stack();
 	Stack *save_scopes = new_stack();
 	Scope *sc;
-	push(scope, add_rooted(new_file_scope(file)));
 	if (vm_persist)
 	{
 		V stdinfile = load_stdin(global);
@@ -99,5 +92,4 @@ void run(V file_name, V global, Stack *S)
 	//clean-up
 	clear_stack(scope);
 	clear_stack(save_scopes);
-	clear_ref(file);
 }
