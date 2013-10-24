@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -71,7 +72,7 @@ G = buildgraph(getnames())
 
 for name, deps in prettylist2(removable(G)):
 	if deps:
-		print name, "has a superfluous dependency on", ', '.join(deps)
+		print(name, "has a superfluous dependency on", ', '.join(deps))
 
 nx.draw(G)
 plt.show()

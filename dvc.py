@@ -1,3 +1,4 @@
+from __future__ import print_function
 from bytecode import *
 
 if __name__ == '__main__':
@@ -6,4 +7,4 @@ if __name__ == '__main__':
 		try:
 			sys.stdout.write(write_bytecode(collect(refine(optimize(convert(sys.argv[1], flatten(parse(sys.argv[1]))))))))
 		except DejaSyntaxError as e:
-			print >>sys.stderr, e
+			print(e, file=sys.stderr)
