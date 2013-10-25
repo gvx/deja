@@ -186,7 +186,7 @@ Error chars(Stack* S, Stack* scope_arr)
 	utf8index index = 0;
 	V list = new_list();
 	Stack *st = toStack(list);
-	size_t size = toNewString(source)->size;
+	size_t size = string_length(toNewString(source));
 	size_t i;
 	for (i = 0; i < size; i++)
 	{
