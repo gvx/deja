@@ -104,23 +104,23 @@ bool valid_utf8(size_t size, utf8 source)
 		{
 			if (!(c & 64))
 				return false;
-			if ((source[index + 1] & 192) != 128)
+			if (index + 1 >= size || (source[index + 1] & 192) != 128)
 				return false;
 			if (c & 32)
 			{
-				if ((source[index + 2] & 192) != 128)
+				if (index + 2 >= size || (source[index + 2] & 192) != 128)
 					return false;
 				if (c & 16)
 				{
-					if ((source[index + 3] & 192) != 128)
+					if (index + 3 >= size || (source[index + 3] & 192) != 128)
 						return false;
 					if (c & 8)
 					{
-						if ((source[index + 4] & 192) != 128)
+						if (index + 4 >= size || (source[index + 4] & 192) != 128)
 							return false;
 						if (c & 4)
 						{
-							if ((source[index + 5] & 192) != 128)
+							if (index + 5 >= size || (source[index + 5] & 192) != 128)
 								return false;
 							if (c & 3)
 								return false;
