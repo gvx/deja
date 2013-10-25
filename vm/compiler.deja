@@ -608,6 +608,7 @@ local make-number blob offset size number:
 
 }
 labda v blob i:
+	set :v !encode!utf-8 v
 	if > 256 len v:
 		set-to-blob blob i 129
 		set-to-blob blob ++ i len v
@@ -617,11 +618,12 @@ labda v blob i:
 		make-number blob ++ i 4 len v
 		5
 	set :i + i
-	blit-blob blob !encode!utf-8 v i
+	blit-blob blob v i
 	+ i len v
 :string
 
 labda v blob i:
+	set :v !encode!utf-8 v
 	if > 256 len v:
 		set-to-blob blob i 128
 		set-to-blob blob ++ i len v
@@ -631,7 +633,7 @@ labda v blob i:
 		make-number blob ++ i 4 len v
 		5
 	set :i + i
-	blit-blob blob !encode!utf-8 v i
+	blit-blob blob v i
 	+ i len v
 :ident
 
@@ -660,6 +662,7 @@ local :literal-writers {
 
 }
 labda v:
+	set :v !encode!utf-8 v
 	if > 256 len v:
 		2
 	else:
