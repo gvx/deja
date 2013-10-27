@@ -437,6 +437,14 @@ labda tree acc:
 	push-to acc & :enter-errhand m
 "try"
 
+labda tree acc:
+	for line in tree!lines:
+		(flatten) line acc
+
+"elseif"
+
+"else" over
+
 local :flatten-types {
 
 local :(ok-types) set{ :frac :string }
@@ -534,14 +542,6 @@ local optimize opcodes:
 				if = :line-number dup &< get-from opcodes -- len opcodes:
 					drop
 				elseif = :return: #line number followed by return? get rid of it
-					pass
-				else:
-					op
-			else:
-				op
-		elseif = :return &< op:
-			if opcodes:
-				if = :return: #return followed by other return? get rid of it
 					pass
 				else:
 					op
