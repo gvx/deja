@@ -578,18 +578,22 @@ local collect-markers opcodes:
 			++ swap
 	[ drop
 
+local find-in l x:
+	for i range 0 -- len l:
+		if = x get-from l i:
+			return true i
+	false
+
 local collect-literals opcodes:
-	local :literals_had {}
 	local :literals []
 	for i range 0 -- len opcodes:
 		local :opcode get-from opcodes i
 		if = :pair type &> opcode:
-			if not has literals_had &> opcode:
-				set-to literals_had len literals &> opcode
+			if not find-in literals &> opcode:
 				set-to opcodes i & &< opcode len literals
 				push-to literals &> opcode
 			else:
-				set-to opcodes i & &< opcode get-from literals_had &> opcode
+				set-to opcodes i & &< opcode
 	opcodes literals
 
 local 2^:
