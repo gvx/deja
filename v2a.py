@@ -15,6 +15,9 @@ def d_signed_int(x):
         x = '\x00' + x
     return signed_int_s.unpack(x)[0]
 
+def d_double(x):
+    return str(double_s.unpack(x)[0])
+
 def op_arg(chunk):
     return DECODE_OPCODES[ord(chunk[0])], d_signed_int(chunk[1:])
 
