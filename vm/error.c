@@ -14,7 +14,8 @@ void init_errors(void)
 	error_names[5] = get_ident("stack-empty");
 	error_names[6] = get_ident("illegal-file");
 	error_names[7] = get_ident("unicode-error");
-	error_names[8] = get_ident("error");
+	error_names[8] = get_ident("interrupt");
+	error_names[9] = get_ident("error");
 }
 
 char* error_name(Error e)
@@ -33,6 +34,8 @@ char* error_name(Error e)
 			return "Not a valid program";
 		case UnicodeError:
 			return "Error decoding string";
+		case Interrupt:
+			return "Process interrupted";
 		case UserError:
 			return "Error";
 		default:

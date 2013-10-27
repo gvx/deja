@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <signal.h>
 
 #include "utf8.h"
 #include "run.h"
@@ -13,6 +14,12 @@
 extern bool vm_silent;
 extern bool vm_debug;
 extern bool vm_persist;
+extern bool vm_interrupt;
+
+void handle_interrupt()
+{
+	vm_interrupt = true;
+}
 
 int main(int argc, char *argv[])
 {
@@ -55,6 +62,7 @@ int main(int argc, char *argv[])
 	}
 	if (argc - optind > 0)
 	{
+		signal(SIGINT, handle_interrupt);
 		init_module_path();
 		init_errors();
 		V global = new_global_scope();

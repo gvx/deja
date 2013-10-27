@@ -10,6 +10,7 @@ bool reraise;
 bool vm_silent = false;
 bool vm_debug = false;
 bool vm_persist = false;
+bool vm_interrupt = false;
 
 void run(V global, Stack *S)
 {
@@ -37,6 +38,11 @@ void run(V global, Stack *S)
 		sc->pc++;
 		reraise = false;
 		e = do_instruction(&toFile(sc->file)->header, S, scope);
+		if (vm_interrupt)
+		{
+			vm_interrupt = false;
+			e = Interrupt;
+		}
 		if (e != Nothing && e != Exit)
 		{
 			DBG_PRINTF("Error %d %sraised", e, reraise ? "re" : "");
