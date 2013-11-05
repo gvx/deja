@@ -45,7 +45,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 				break;
 			case TYPE_STR | TYPE_SHORT:
 			case TYPE_IDENT | TYPE_SHORT:
-				str_length = *curpos++;
+				str_length = (unsigned char)*curpos++;
 				curpos += str_length;
 				break;
 			case TYPE_PAIR:
@@ -115,7 +115,7 @@ bool read_literals(char *oldpos, size_t size, Header* h)
 		}
 		else if (type == (TYPE_STR | TYPE_SHORT))
 		{
-			str_length = *curpos++;
+			str_length = (unsigned char)*curpos++;
 			if (!valid_utf8(str_length, curpos))
 			{
 				set_error_msg("wrong encoding for string literal, should be UTF-8");
