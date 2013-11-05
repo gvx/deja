@@ -146,6 +146,48 @@ labda $endreplace
 	return
 $endreplace
 set_global 23
+labda $endsort
+    push_word 12
+    push_word 24
+    return
+$endsort
+set_global 25
+labda $endsort-by
+    set_local 27
+    dup
+    push_word 28
+    dup
+    push_word 30
+    push_word 29
+    set_local 0
+    $start-sort-by-repeat
+    push_word 0
+    jmpz $end-sort-by-repeat
+        push_word 0
+        over
+        get_dict
+        push_word 27
+        dup
+        push_word 17
+        push_literal 31
+        jmpeq $no-number
+            push_literal 32
+            push_literal 33
+            push_word 34
+        $no-number
+        over
+        push_word 0
+        swap
+        set_dict
+    push_word 0
+    push_word 29
+    set_local 0
+    jmp $start-sort-by-repeat
+    $end-sort-by-repeat
+    push_word 24
+    return
+$endsort-by
+set_global 26
 return
 ...
 ia
@@ -172,3 +214,14 @@ iwrite-fragment
 isplit
 ijoin
 ireplace
+i(sort)
+isort
+isort-by
+ikey
+icopy
+i--
+ilen
+inum
+sssorting keys must return numbers for now
+itype-error
+iRaise

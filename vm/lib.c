@@ -2289,6 +2289,146 @@ Error opt_get(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+extern bool vm_interrupt;
+#define LE(a, b) (toNumber(a) <= toNumber(b))
+void merge_sort(size_t n, size_t start, size_t end, V *key_arr, V *obj_arr, V *workspace)
+{
+	if (vm_interrupt)
+		return;
+	int len = end - start;
+	if (len < 2)
+		return;
+	int i;
+	for (i = start + 1; i < end; i++)
+		if (!LE(key_arr[i - 1], key_arr[i]))
+			goto unsorted;
+	return;
+	unsorted:
+	if (len == 2)
+	{
+		V tmp = key_arr[start];
+		key_arr[start] = key_arr[start + 1];
+		key_arr[start + 1] = tmp;
+		if (obj_arr)
+		{
+			tmp = obj_arr[start];
+			obj_arr[start] = obj_arr[start + 1];
+			obj_arr[start + 1] = tmp;
+		}
+		return;
+	}
+
+	int leftlen = len / 2;
+	int rightlen = len - leftlen;
+	int middle = start + leftlen;
+
+	merge_sort(n, start, middle, key_arr, obj_arr, workspace);
+	merge_sort(n, middle, end, key_arr, obj_arr, workspace);
+
+	memcpy(workspace, key_arr + start, leftlen * sizeof(V));
+	if (obj_arr)
+	{
+		memcpy(workspace + leftlen, obj_arr + start, leftlen * sizeof(V));
+	}
+
+	int lefti = 0, righti = 0;
+
+	while (true)
+	{
+		if (vm_interrupt)
+			return;
+		if (lefti < leftlen && righti < rightlen)
+		{
+			if (LE(workspace[lefti], key_arr[middle + righti]))
+			{
+				key_arr[start + lefti + righti] = workspace[lefti];
+				if (obj_arr)
+				{
+					obj_arr[start + lefti + righti] = workspace[leftlen + lefti];
+				}
+				lefti++;
+			}
+			else
+			{
+				key_arr[start + lefti + righti] = key_arr[middle + righti];
+				if (obj_arr)
+				{
+					obj_arr[start + lefti + righti] = obj_arr[middle + righti];
+				}
+				righti++;
+			}
+		}
+		else if (lefti < leftlen)
+		{
+			memcpy(key_arr + start + lefti + righti, workspace + lefti, (leftlen - lefti) * sizeof(V));
+			if (obj_arr)
+			{
+				memcpy(obj_arr + start + lefti + righti, workspace + leftlen + lefti, (leftlen - lefti) * sizeof(V));
+			}
+			return;
+		}
+		else // if (righti < rightlen) : everything is already in place
+		{
+			return;
+		}
+	}
+}
+
+void sort_inplace(size_t n, V *key_arr, V *obj_arr)
+{
+	V *workspace = malloc((obj_arr ? n : n/2) * sizeof(V));
+
+	merge_sort(n, 0, n, key_arr, obj_arr, workspace);
+
+	free(workspace);
+}
+
+Error sort_list(Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V keys = popS();
+	V list = popS();
+	V *key_arr;
+	V *obj_arr;
+	size_t n;
+	if (getType(list) != T_LIST)
+	{
+		clear_ref(keys);
+		clear_ref(list);
+		return TypeError;
+	}
+	if (keys == v_false)
+	{
+		key_arr = toStack(list)->nodes;
+		obj_arr = NULL;
+		n = stack_size(toStack(list));
+	}
+	else if (getType(keys) != T_LIST)
+	{
+		clear_ref(keys);
+		clear_ref(list);
+		return TypeError;
+	}
+	else
+	{
+		key_arr = toStack(keys)->nodes;
+		obj_arr = toStack(list)->nodes;
+		n = stack_size(toStack(list));
+		if (n != stack_size(toStack(keys)))
+		{
+			clear_ref(keys);
+			clear_ref(list);
+			return ValueError;
+		}
+	}
+
+	sort_inplace(n, key_arr, obj_arr);
+
+	clear_ref(keys);
+	pushS(list);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2398,6 +2538,7 @@ static CFunc stdlib[] = {
 	{"set-default", set_default},
 	{"random-int", random_int},
 	{"opt-get", opt_get},
+	{"(sort)", sort_list},
 	//blob
 	{"make-blob", make_blob},
 	{"get-from-blob", getbyte_blob_},
