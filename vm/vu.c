@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 			     "                 This option is intended for internal use; implies --silent");
 			return 0;
 		case 'v':
-			printf("vu virtual machine 0.1\nbyte code protocol %d.%d\n", VERSION >> 4, VERSION & 15);
+			printf("vu virtual machine 0.2\nbyte code protocol %d.%d\n", VERSION >> 4, VERSION & 15);
 			return 0;
 		case 's':
 			vm_silent = true;
