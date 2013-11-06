@@ -1,10 +1,10 @@
 local syntax-error l msg:
-	Raise :error concat( "syntax error: " msg chr 10 l!fname ":" to-str l!linenr chr 10 l!text )
+	Raise :error concat( "syntax error: " msg "\n" l!fname ":" to-str l!linenr "\n" l!text )
 
 local split-lines fname text:
 	local :i 1
 	]
-	for line in split text chr 10:
+	for line in split text "\n":
 		{ :fname fname :linenr i :text line }
 		set :i ++ i
 	[
@@ -12,7 +12,7 @@ local split-lines fname text:
 local (*remove-comments*):
 	for frag in split swap "#":
 		frag
-		if = 0 % count frag chr 34 2:
+		if = 0 % count frag "\q" 2:
 			return
 
 #this function works because of magic
@@ -23,7 +23,7 @@ local remove-comments:
 local split-strings lines:
 	for i range 0 -- len lines:
 		local :line get-from lines i
-		local :s split line!text chr 34
+		local :s split line!text "\q"
 		if = 0 % len s 2:
 			syntax-error line "unended string"
 		set-to line :words s
@@ -95,6 +95,37 @@ local word-type wrd:
 		return :ident slice wrd 1 len wrd
 	:word wrd
 
+local :single-quoted { "q" "\q" "n" "\n" "r" "\r" "t" "\t" "\\" "\\" }
+string-unquote l s:
+	local :index find s "\\"
+	]
+	while < -1 index:
+		slice s 0 index
+		slice s ++ index + 2 index
+		set :s slice s + 2 index len s
+		if has single-quoted dup:
+			single-quoted!
+		elseif = "{" dup:
+			drop
+			local :end find s "}"
+			if = -1 end:
+				syntax-error l "unclosed ordinal escape (\q\\{N}\q)"
+			slice s 0 end
+			if not is-digit dup:
+				drop
+				syntax-error l "invalid ordinal escape (\q\\{N}\q)"
+			to-num
+			try:
+				chr
+			catch unicode-error:
+				syntax-error l "invalid unicode character in ordinal escape"
+			set :s slice s ++ end len s
+		else:
+			swap "\\"
+		set :index find s "\\"
+	s
+	concat [
+
 local split-words lines:
 	for l in copy lines:
 		local :line l!words
@@ -131,7 +162,7 @@ local split-words lines:
 				for in fragmentcache
 				false
 			else:
-				& :string fragment
+				& :string string-unquote l fragment
 				true
 		drop
 		[
@@ -214,7 +245,7 @@ local find-statements lines:
 		set :prev-stmt this-stmt
 		set :lastl l
 	if prev-stmt:
-		Raise :illegal-file concat( "syntax error: incomplete statement" chr 10 lastl!fname ":" to-str lastl!linenr chr 10 lastl!text )
+		Raise :illegal-file concat( "syntax error: incomplete statement\n" lastl!fname ":" to-str lastl!linenr "\n" lastl!text )
 	get-from acc 0
 
 # BEGIN CODE FOR FLATTEN
@@ -787,7 +818,7 @@ local try-compile linenr fname:
 			return false
 		drop
 		try:
-			return true !compile-string fname join chr 10 reversed lines
+			return true !compile-string fname join "\n" reversed lines
 		catch illegal-file error:
 			print-traceback
 			return false

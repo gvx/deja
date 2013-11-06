@@ -3,6 +3,7 @@ from bytecode import (
 	OPCODES, unsigned_int_s, signed_int_s, double_s, signed_long_int_s,
 	unsigned_long_int_s, signed_char_s, positional_instructions
 )
+from strquot import quote
 
 DECODE_OPCODES = {}
 for k in OPCODES:
@@ -49,7 +50,7 @@ class Literals(object):
 				self.source = self.source[5 + length:]
 			elif s == '\x01':
 				length = unsigned_int(self.source[1:5]) #<-- length?
-				b = '"' + self.source[5:5 + length] + '"'
+				b = '"' + quote(self.source[5:5 + length]) + '"'
 				self.source = self.source[5 + length:]
 			if s == '\x80':
 				length = ord(self.source[1])
@@ -57,7 +58,7 @@ class Literals(object):
 				self.source = self.source[2 + length:]
 			elif s == '\x81':
 				length = ord(self.source[1]) #<-- length?
-				b = '"' + self.source[2:2 + length] + '"'
+				b = '"' + quote(self.source[2:2 + length]) + '"'
 				self.source = self.source[2 + length:]
 			elif s == '\x02':
 				b = d_double(self.source[1:9])

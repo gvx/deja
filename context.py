@@ -6,6 +6,8 @@ from loop import *
 from func import *
 from trycatch import *
 
+from strquot import unquote
+
 STATEMENTS = set('func labda local if elseif else while for try catch repeat'.split())
 STATEMENT_CLASS = {'func': FuncStatement, 'labda': LabdaStatement,
 	'local': LocalFuncStatement, 'while': WhileStatement,
@@ -53,7 +55,7 @@ class LineContext(Context):
 		self.tokens = []
 		for i, s in enumerate(self.stringwise):
 			if i % 2:
-				self.tokens.append('"' + s)
+				self.tokens.append('"' + unquote(s))
 			else:
 				tokens = s.split()
 				for i, token in enumerate(tokens):

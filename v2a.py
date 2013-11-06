@@ -1,6 +1,7 @@
 import struct
 from bytecode import *
 from collections import defaultdict
+from strquot import quote
 
 DECODE_OPCODES = {}
 for k in OPCODES:
@@ -55,7 +56,7 @@ def get_literals(code):
             i += 5 + length
         elif s == '\x01':
             length = unsigned_int(code[i+1:i+5])
-            yield "s" + code[i+5:i+5 + length]
+            yield "s" + quote(code[i+5:i+5 + length])
             i += 5 + length
         elif s == '\x80':
             length = ord(code[i+1])
@@ -63,7 +64,7 @@ def get_literals(code):
             i += 1 + length
         elif s == '\x81':
             length = ord(code[i+1])
-            yield "s" + code[i+2:i+2 + length]
+            yield "s" + quote(code[i+2:i+2 + length])
             i += 1 + length
         elif s == '\x02':
             yield 'n' + d_double(code[i+1:i+9])

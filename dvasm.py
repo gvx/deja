@@ -1,5 +1,6 @@
 from bytecode import *
 from collections import defaultdict
+from strquot import unquote
 
 def asm(intext):
 	acc = [HEADER, chr(VERSION[0] * 16 + VERSION[1]), None]
@@ -48,6 +49,7 @@ def asm(intext):
 						acc.append(unsigned_int(len(r)))
 						acc.append(r)
 				elif t == 's':
+					r = unquote(r)
 					if len(r) < 256:
 						acc.append('\x81')
 						acc.append(chr(len(r)))
