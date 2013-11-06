@@ -84,8 +84,7 @@ $endlist
 set_global 11
 labda $endonce
 	push_word 12
-	labda $endoncelabda
-	$endoncelabda
+	get 35
 	return
 $endonce
 set_global 13
@@ -225,3 +224,4 @@ inum
 sssorting keys must return numbers for now
 itype-error
 iRaise
+ipass
