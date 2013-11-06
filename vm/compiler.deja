@@ -794,7 +794,10 @@ local :loaded {}
 !import m:
 	if not has loaded m:
 		set-to loaded m !use m
-	tail-call @local m get-from loaded m
+	m get-from loaded m
+	if interactive:
+		return setglobal
+	tail-call @local
 
 local prompt linenr n:
 	print\( "<" linenr ":" n "> " )
@@ -834,15 +837,8 @@ local try-compile linenr fname:
 		return false
 	true drop swap
 
-if !args:
-	#run main file
-	!find-file get-from !args 0
-	if dup:
-		!compile swap over
-	else:
-		drop
-	!run-file
-else:
+local :interactive not !args
+if interactive:
 	#interactive interpreter
 	local :linenr 1
 	while true:
@@ -853,3 +849,11 @@ else:
 				print-traceback
 
 		set :linenr ++ linenr
+else:
+	#run main file
+	!find-file get-from !args 0
+	if dup:
+		!compile swap over
+	else:
+		drop
+	!run-file
