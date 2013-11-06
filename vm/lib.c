@@ -2415,6 +2415,13 @@ Error sort_list(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+extern Stack *traceback;
+Error print_traceback(Stack *S, Stack *scope_arr)
+{
+	handle_error(UserError, traceback);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2525,6 +2532,7 @@ static CFunc stdlib[] = {
 	{"random-int", random_int},
 	{"opt-get", opt_get},
 	{"(sort)", sort_list},
+	{"print-traceback", print_traceback},
 	//blob
 	{"make-blob", make_blob},
 	{"get-from-blob", getbyte_blob_},
