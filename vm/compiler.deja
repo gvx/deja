@@ -153,6 +153,7 @@ local find-statements lines:
 	local :acc [ { :lines [] :indent "" :type "(module)" } ]
 	local :prev-stmt false
 	local :this-stmt false
+	local :lastl @undef
 	for l in lines:
 		local :line l!words
 		local :last-type &< dup get-from line 0
@@ -211,6 +212,9 @@ local find-statements lines:
 		else:
 			push-to context!lines l
 		set :prev-stmt this-stmt
+		set :lastl l
+	if prev-stmt:
+		Raise :illegal-file concat( "syntax error: incomplete statement" chr 10 lastl!fname ":" to-str lastl!linenr chr 10 lastl!text )
 	get-from acc 0
 
 # BEGIN CODE FOR FLATTEN
@@ -718,8 +722,7 @@ local make-bytecode opcodes literals:
 	drop
 	output
 
-labda src dst:
-	!decode!utf-8 !read src
+labda src:
 	split-lines src
 	remove-comments
 	split-strings
@@ -731,6 +734,11 @@ labda src dst:
 	collect-markers
 	collect-literals
 	make-bytecode
+set-to eva :compile-string
+
+labda src dst:
+	!decode!utf-8 !read src
+	!compile-string src
 	!write dst
 set-to eva :compile
 
@@ -750,10 +758,60 @@ labda m:
 	tail-call @local m get-from loaded m
 set-to eva :import
 
+local prompt linenr n:
+	print\( "<" linenr ":" n "> " )
+	!read-line!stdin
+	if = :eof dup:
+		drop
+		print ""
+		exit
+	!decode!utf-8
+
+local try-compile linenr fname:
+	try:
+		prompt linenr 1
+	catch interrupt:
+		return false
+	try:
+		!compile-string fname dup
+	catch illegal-file:
+		local :lines [ swap ]
+		try:
+			2
+			while dup prompt linenr dup:
+				push-to lines
+				++
+			drop
+		catch interrupt:
+			return false
+		drop
+		try:
+			return true !compile-string fname join chr 10 reversed lines
+		catch illegal-file error:
+			print-traceback
+			return false
+	catch error:
+		drop
+		print-traceback
+		return false
+	true drop swap
+
 if !args:
+	#run main file
 	!find-file get-from !args 0
 	if dup:
 		!compile swap over
 	else:
 		drop
 	!run-file
+else:
+	#interactive interpreter
+	local :linenr 1
+	while true:
+		if try-compile linenr concat( "session:" to-str linenr ):
+			try:
+				!run-blob
+			catch name-error value-error type-error stack-empty illegal-file unicode-error interrupt error:
+				print-traceback
+
+		set :linenr ++ linenr
