@@ -18,6 +18,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 	V scope = get_head(scope_arr);
 	Scope *sc = toScope(scope);
 	V file;
+	Error e;
 	bool t;
 	uint32_t *pc;
 	int argument;
@@ -384,54 +385,50 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 		case OP_GET_DICT:
 			container = popS();
 			key = popS();
-			Error e = Nothing;
-			char t = getType(container);
-			if (t == T_DICT)
+			e = Nothing;
+			switch (getType(container))
 			{
-				v = get_hashmap(toHashMap(container), key);
-			}
-			else if (t == T_LIST)
-			{
-				if (getType(key) != T_NUM)
-				{
+				case T_DICT:
+					v = get_hashmap(toHashMap(container), key);
+					break;
+				case T_LIST:
+					if (getType(key) != T_NUM)
+					{
+						e = TypeError;
+						goto cleanupgetfrom;
+						return TypeError;
+					}
+					int index = (int)toNumber(key);
+					Stack *s = toStack(container);
+					if (index < 0)
+						index = s->used + index;
+					if (index < 0 || index >= s->used)
+					{
+						v = NULL;
+					}
+					else
+					{
+						v = s->nodes[index];
+					}
+					break;
+				case T_BLOB:
+					if (getType(key) != T_NUM)
+					{
+						e = TypeError;
+						goto cleanupgetfrom;
+					}
+					int byte = getbyte_blob(container, (int)toNumber(key));
+					if (byte < 0)
+					{
+						set_error_msg("Index out of range");
+						e = ValueError;
+						goto cleanupgetfrom;
+					}
+					v = int_to_value(byte);
+					break;
+				default:
 					e = TypeError;
 					goto cleanupgetfrom;
-					return TypeError;
-				}
-				int index = (int)toNumber(key);
-				Stack *s = toStack(container);
-				if (index < 0)
-					index = s->used + index;
-				if (index < 0 || index >= s->used)
-				{
-					v = NULL;
-				}
-				else
-				{
-					v = s->nodes[index];
-				}
-			}
-			else if (t == T_BLOB)
-			{
-				if (getType(key) != T_NUM)
-				{
-					e = TypeError;
-					goto cleanupgetfrom;
-				}
-				int index = (int)toNumber(key);
-				int byte = getbyte_blob(container, index);
-				if (byte < 0)
-				{
-					set_error_msg("Index out of range");
-					e = ValueError;
-					goto cleanupgetfrom;
-				}
-				v = int_to_value(byte);
-			}
-			else
-			{
-				e = TypeError;
-				goto cleanupgetfrom;
 			}
 			if (v == NULL)
 			{
@@ -451,46 +448,62 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			container = popS();
 			key = popS();
 			v = popS();
-			if (getType(container) == T_DICT)
+			e = Nothing;
+			switch (getType(container))
 			{
-				set_hashmap(toHashMap(container), key, v);
+				case T_DICT:
+					set_hashmap(toHashMap(container), key, v);
+					break;
+				case T_LIST:
+					if (getType(key) != T_NUM)
+					{
+						e = TypeError;
+						goto cleanupsetto;
+					}
+					int index = (int)toNumber(key);
+					Stack *s = toStack(container);
+					if (index < 0)
+						index = s->used + index;
+					if (index < 0 || index >= s->used)
+					{
+						e = ValueError;
+						goto cleanupsetto;
+					}
+					else
+					{
+						s->nodes[index] = add_ref(v);
+					}
+					break;
+				case T_BLOB:
+					if (getType(key) != T_NUM || getType(v) != T_NUM)
+					{
+						e = TypeError;
+						goto cleanupsetto;
+					}
+					int num = toNumber(v);
+					if (num < 0 || num > 255)
+					{
+						set_error_msg("Value not in range [0,255]");
+						e = ValueError;
+						goto cleanupsetto;
+					}
+					int byte = setbyte_blob(container, toNumber(key), num);
+					if (byte < 0)
+					{
+						set_error_msg("Index out of range");
+						e = ValueError;
+						goto cleanupsetto;
+					}
+					break;
+				default:
+					e = TypeError;
+					goto cleanupsetto;
 			}
-			else if (getType(container) == T_LIST)
-			{
-				if (getType(key) != T_NUM)
-				{
-					clear_ref(container);
-					clear_ref(key);
-					clear_ref(v);
-					return TypeError;
-				}
-				int index = (int)toNumber(key);
-				Stack *s = toStack(container);
-				if (index < 0)
-					index = s->used + index;
-				if (index < 0 || index >= s->used)
-				{
-					clear_ref(key);
-					clear_ref(v);
-					clear_ref(container);
-					return ValueError;
-				}
-				else
-				{
-					s->nodes[index] = add_ref(v);
-				}
-			}
-			else
-			{
-				clear_ref(key);
-				clear_ref(v);
-				clear_ref(container);
-				return TypeError;
-			}
+			cleanupsetto:
 			clear_ref(key);
 			clear_ref(v);
 			clear_ref(container);
-			break;
+			return e;
 		case OP_CALL:
 			v = popS();
 			if (getType(v) == T_FUNC)

@@ -1380,18 +1380,18 @@ Error set_to(Stack* S, Stack* scope_arr)
 	V container = popS();
 	V key = popS();
 	V value = popS();
-	if (getType(container) == T_DICT)
+	Error e = Nothing;
+	char t = getType(container);
+	if (t == T_DICT)
 	{
 		set_hashmap(toHashMap(container), key, value);
 	}
-	else if (getType(container) == T_LIST)
+	else if (t == T_LIST)
 	{
 		if (getType(key) != T_NUM)
 		{
-			clear_ref(container);
-			clear_ref(key);
-			clear_ref(value);
-			return TypeError;
+			e = TypeError;
+			goto cleanup;
 		}
 		int index = (int)toNumber(key);
 		Stack *s = toStack(container);
@@ -1399,27 +1399,46 @@ Error set_to(Stack* S, Stack* scope_arr)
 			index = s->used + index;
 		if (index < 0 || index >= s->used)
 		{
-			clear_ref(key);
-			clear_ref(value);
-			clear_ref(container);
-			return ValueError;
+			e = ValueError;
+			goto cleanup;
 		}
 		else
 		{
 			s->nodes[index] = add_ref(value);
 		}
 	}
+	else if (t == T_BLOB)
+	{
+		if (getType(key) != T_NUM || getType(value) != T_NUM)
+		{
+			e = TypeError;
+			goto cleanup;
+		}
+		int num = toNumber(value);
+		if (num < 0 || num > 255)
+		{
+			set_error_msg("Value not in range [0,255]");
+			e = ValueError;
+			goto cleanup;
+		}
+		int byte = setbyte_blob(container, toNumber(key), num);
+		if (byte < 0)
+		{
+			set_error_msg("Index out of range");
+			e = ValueError;
+			goto cleanup;
+		}
+	}
 	else
 	{
-		clear_ref(key);
-		clear_ref(value);
-		clear_ref(container);
-		return TypeError;
+		e = TypeError;
+		goto cleanup;
 	}
+	cleanup:
 	clear_ref(key);
 	clear_ref(value);
 	clear_ref(container);
-	return Nothing;
+	return e;
 }
 
 Error delete_from(Stack* S, Stack* scope_arr)
