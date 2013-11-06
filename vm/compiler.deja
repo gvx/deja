@@ -457,34 +457,35 @@ local (flatten) tree acc:
 		call get-from flatten-types tree!type tree acc
 	else:
 		for word in tree!words:
-			local :type &< word
-			if = :num type:
+			local :word-type &< word
+			if = :num word-type:
 				local :value &> word
 				local :nvalue to-num value
 				if and >= 8388607 nvalue and <= -8388608 nvalue not contains value ".":
 					push-to acc & :push-integer nvalue
 				else:
 					push-to acc & :push-literal word
-			elseif has (ok-types) type:
+			elseif has (ok-types) word-type:
 				push-to acc & :push-literal word
 			else:
 				local :value &> word
 				if contains value "!":
-					if /= type :word:
-						syntax-error tree "method calls only available on proper words"
+					if and /= word-type :word /= word-type :get:
+						syntax-error tree "method calls only available on proper words and gets"
 					if starts-with value "!":
 						set :value concat( "eva" value )
 					if ends-with value "!":
 						set :value slice value 0 -- len value
-					push-to acc & :call 0
+					if = word-type :word:
+						push-to acc & :call 0
 					push-to acc & :get-dict 0
 					split value "!"
 					push-to acc & :push-word & :ident pop-from dup
 					for frag in:
 						push-to acc & :push-literal & :ident frag
-				elseif = type :ident:
+				elseif = word-type :ident:
 					push-to acc & :push-literal word
-				elseif = type :get:
+				elseif = word-type :get:
 					push-to acc & :get & :ident value
 				else:
 					push-to acc & :push-word & :ident value

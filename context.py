@@ -58,8 +58,18 @@ class LineContext(Context):
 				tokens = s.split()
 				for i, token in enumerate(tokens):
 					if token.startswith('@') and len(token) > 1:
-						tokens[i] = ":%s" % token[1:]
-						tokens.insert(i, 'get')
+						token = token[1:]
+						if '!' in token:
+							if token.startswith('!'):
+								token = 'eva' + token
+							if token.endswith('!'):
+								token = token[:-1]
+							args = token.split('!')
+							base = args.pop(0)
+							tokens[i:i+1] = ['get-from', base] + [":" + x for x in args]
+						else:
+							tokens[i] = ":%s" % token
+							tokens.insert(i, 'get')
 				self.tokens.extend(tokens)
 		return self
 
