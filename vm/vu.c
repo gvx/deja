@@ -60,17 +60,15 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
-	if (argc - optind > 0)
-	{
-		signal(SIGINT, handle_interrupt);
-		init_module_path();
-		init_errors();
-		V global = new_global_scope();
-		V v_eva = open_std_lib(&toScope(global)->hm);
-		Stack *S = new_stack();
-		init_argv(argc - optind, argv + optind, v_eva);
-		run(global, S);
-		clear_stack(S);
-	}
+
+	signal(SIGINT, handle_interrupt);
+	init_module_path();
+	init_errors();
+	V global = new_global_scope();
+	V v_eva = open_std_lib(&toScope(global)->hm);
+	Stack *S = new_stack();
+	init_argv(argc - optind, argv + optind, v_eva);
+	run(global, S);
+	clear_stack(S);
 	return 0;
 }
