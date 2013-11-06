@@ -226,7 +226,7 @@ Error close_file(Stack *S, Stack *scope_arr)
 		clear_ref(file_obj);
 		return TypeError;
 	}
-	V handle = get_hashmap(toHashMap(file_obj), get_ident("handle"));
+	V handle = get_dict(toHashMap(file_obj), get_ident("handle"));
 	if (handle == NULL || getType(handle) != T_NUM)
 	{
 		clear_ref(file_obj);
@@ -248,7 +248,7 @@ Error write_fragment(Stack *S, Stack *scope_arr)
 		clear_ref(blob);
 		return TypeError;
 	}
-	V handle = get_hashmap(toHashMap(file_obj), get_ident("handle"));
+	V handle = get_dict(toHashMap(file_obj), get_ident("handle"));
 	if (handle == NULL || getType(handle) != T_NUM)
 	{
 		clear_ref(file_obj);

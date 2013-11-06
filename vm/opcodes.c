@@ -377,7 +377,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return TypeError;
 			}
-			v = real_get_hashmap(toHashMap(container), key);
+			v = get_hashmap(toHashMap(container), key);
 			pushS(add_ref(v != NULL ? v_true : v_false));
 			clear_ref(container);
 			clear_ref(key);
@@ -389,7 +389,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			switch (getType(container))
 			{
 				case T_DICT:
-					v = get_hashmap(toHashMap(container), key);
+					v = get_dict(toHashMap(container), key);
 					break;
 				case T_LIST:
 					if (getType(key) != T_NUM)

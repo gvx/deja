@@ -1300,7 +1300,7 @@ Error has(Stack* S, Stack* scope_arr)
 		clear_ref(key);
 		return TypeError;
 	}
-	V v = real_get_hashmap(toHashMap(container), key);
+	V v = get_hashmap(toHashMap(container), key);
 	pushS(add_ref(v == NULL ? v_false : v_true));
 	clear_ref(container);
 	clear_ref(key);
@@ -1317,7 +1317,7 @@ Error get_from(Stack* S, Stack* scope_arr)
 	char t = getType(container);
 	if (t == T_DICT)
 	{
-		v = get_hashmap(toHashMap(container), key);
+		v = get_dict(toHashMap(container), key);
 	}
 	else if (t == T_LIST)
 	{
@@ -2293,7 +2293,7 @@ Error set_default(Stack *S, Stack *scope_arr)
 	V p = popS();
 	if (getType(p) == T_DICT)
 	{
-		toHashMap(p)->asdefault = popS();
+		dictDefault(toHashMap(p)) = popS();
 		clear_ref(p);
 		return Nothing;
 	}

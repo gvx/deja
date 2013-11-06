@@ -13,7 +13,6 @@ HashMap* new_hashmap(int initialsize)
 	hm->used = 0;
 	hm->size = initialsize;
 	hm->map = NULL;
-	hm->asdefault = NULL;
 	return hm;
 }
 
@@ -23,7 +22,6 @@ void hashmap_from_value(V v, int initialsize)
 	hm->used = 0;
 	hm->size = initialsize;
 	hm->map = NULL;
-	hm->asdefault = NULL;
 }
 
 void hashmap_from_scope(V v_scope, int initialsize)
@@ -32,7 +30,6 @@ void hashmap_from_scope(V v_scope, int initialsize)
 	scope->hm.used = 0;
 	scope->hm.size = initialsize;
 	scope->hm.map = NULL;
-	scope->hm.asdefault = NULL;
 }
 
 uint32_t get_hash(V v)
@@ -69,12 +66,6 @@ uint32_t get_hash(V v)
 
 V get_hashmap(HashMap* hm, V key)
 {
-	V actual = real_get_hashmap(hm, key);
-	return actual ? actual : hm->asdefault;
-}
-
-V real_get_hashmap(HashMap* hm, V key)
-{
 	if (hm->map == NULL)
 	{
 		return NULL;
@@ -89,6 +80,12 @@ V real_get_hashmap(HashMap* hm, V key)
 		b = b->next;
 	}
 	return NULL;
+}
+
+V get_dict(HashMap* hm, V key)
+{
+	V v = get_hashmap(hm, key);
+	return v ? v : dictDefault(hm);
 }
 
 Bucket* new_bucket(V key, V value)

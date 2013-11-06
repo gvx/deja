@@ -28,6 +28,7 @@
 #define getNumer(x) ((frac_long)toNumerator(x))
 #define getDenom(x) ((frac_long)toDenominator(x))
 #define toBlob(x) ((Blob*)(x + 1))
+#define dictDefault(x) (*((V*)((x)+1)))
 
 #define new_dict() new_sized_dict(16)
 

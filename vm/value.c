@@ -46,8 +46,9 @@ V new_list(void)
 
 V new_sized_dict(int size)
 {
-	V t = make_new_value(T_DICT, false, sizeof(HashMap));
+	V t = make_new_value(T_DICT, false, sizeof(HashMap) + sizeof(V));
 	hashmap_from_value(t, size);
+	dictDefault(toHashMap(t)) = NULL;
 	return t;
 }
 

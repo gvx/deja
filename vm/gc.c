@@ -186,6 +186,7 @@ void iter_children(V t, void (*iter)(V))
 					}
 				}
 			}
+			iter(dictDefault(hm));
 			break;
 		case T_PAIR:
 			iter(toFirst(t));
