@@ -6,6 +6,7 @@
 #include "types.h"
 #include "literals.h"
 #include "lib.h"
+#include "blob.h"
 
 extern V lastCall;
 
@@ -381,22 +382,20 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(key);
 			break;
 		case OP_GET_DICT:
-			if (stack_size(S) < 2)
-			{
-				return StackEmpty;
-			}
 			container = popS();
 			key = popS();
-			if (getType(container) == T_DICT)
+			Error e = Nothing;
+			char t = getType(container);
+			if (t == T_DICT)
 			{
 				v = get_hashmap(toHashMap(container), key);
 			}
-			else if (getType(container) == T_LIST)
+			else if (t == T_LIST)
 			{
 				if (getType(key) != T_NUM)
 				{
-					clear_ref(container);
-					clear_ref(key);
+					e = TypeError;
+					goto cleanupgetfrom;
 					return TypeError;
 				}
 				int index = (int)toNumber(key);
@@ -412,22 +411,38 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 					v = s->nodes[index];
 				}
 			}
+			else if (t == T_BLOB)
+			{
+				if (getType(key) != T_NUM)
+				{
+					e = TypeError;
+					goto cleanupgetfrom;
+				}
+				int index = (int)toNumber(key);
+				int byte = getbyte_blob(container, index);
+				if (byte < 0)
+				{
+					set_error_msg("Index out of range");
+					e = ValueError;
+					goto cleanupgetfrom;
+				}
+				v = int_to_value(byte);
+			}
 			else
 			{
-				clear_ref(container);
-				clear_ref(key);
-				return TypeError;
+				e = TypeError;
+				goto cleanupgetfrom;
 			}
 			if (v == NULL)
 			{
-				clear_ref(container);
-				clear_ref(key);
-				return ValueError;
+				e = ValueError;
+				goto cleanupgetfrom;
 			}
 			pushS(add_ref(v));
+			cleanupgetfrom:
 			clear_ref(container);
 			clear_ref(key);
-			break;
+			return e;
 		case OP_SET_DICT:
 			if (stack_size(S) < 3)
 			{

@@ -1313,16 +1313,18 @@ Error get_from(Stack* S, Stack* scope_arr)
 	V container = popS();
 	V key = popS();
 	V v;
-	if (getType(container) == T_DICT)
+	Error e = Nothing;
+	char t = getType(container);
+	if (t == T_DICT)
 	{
 		v = get_hashmap(toHashMap(container), key);
 	}
-	else if (getType(container) == T_LIST)
+	else if (t == T_LIST)
 	{
 		if (getType(key) != T_NUM)
 		{
-			clear_ref(container);
-			clear_ref(key);
+			e = TypeError;
+			goto cleanup;
 			return TypeError;
 		}
 		int index = (int)toNumber(key);
@@ -1338,22 +1340,38 @@ Error get_from(Stack* S, Stack* scope_arr)
 			v = s->nodes[index];
 		}
 	}
+	else if (t == T_BLOB)
+	{
+		if (getType(key) != T_NUM)
+		{
+			e = TypeError;
+			goto cleanup;
+		}
+		int index = (int)toNumber(key);
+		int byte = getbyte_blob(container, index);
+		if (byte < 0)
+		{
+			set_error_msg("Index out of range");
+			e = ValueError;
+			goto cleanup;
+		}
+		v = int_to_value(byte);
+	}
 	else
 	{
-		clear_ref(container);
-		clear_ref(key);
-		return TypeError;
+		e = TypeError;
+		goto cleanup;
 	}
 	if (v == NULL)
 	{
-		clear_ref(container);
-		clear_ref(key);
-		return ValueError;
+		e = ValueError;
+		goto cleanup;
 	}
 	pushS(add_ref(v));
+	cleanup:
 	clear_ref(container);
 	clear_ref(key);
-	return Nothing;
+	return e;
 }
 
 Error set_to(Stack* S, Stack* scope_arr)
