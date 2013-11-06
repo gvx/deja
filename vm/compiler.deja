@@ -280,7 +280,24 @@ labda tree acc:
 	local :stmt tree!stmt
 
 	local :m make-marker
-	push-to acc & :set-global & :ident &> pop-from stmt!words
+	local :name &> pop-from stmt!words
+	if contains name "!":
+		if or < 1 count name "!" ends-with name "!":
+			syntax-error stmt "methods need exactly one method name"
+		if starts-with name "!":
+			"eva"
+			slice name 1 len name
+		else:
+			split name "!"
+			pop-from dup
+			pop-from swap
+		local :method
+		local :base
+		push-to acc & :set-dict 0
+		push-to acc & :push-word & :ident base
+		push-to acc & :push-literal & :ident method
+	else:
+		push-to acc & :set-global & :ident name
 	push-to acc m
 	push-to acc & :return 0
 	for line in tree!lines:
@@ -646,8 +663,9 @@ local make-number blob offset size number:
 		set-to-blob blob -- + offset - size i % number 256
 		set :number floor / number 256
 
-}
-labda v blob i:
+local :literal-writers {}
+
+literal-writers!string v blob i:
 	set :v !encode!utf-8 v
 	if > 256 len v:
 		set-to-blob blob i 129
@@ -660,9 +678,8 @@ labda v blob i:
 	set :i + i
 	blit-blob blob v i
 	+ i len v
-:string
 
-labda v blob i:
+literal-writers!ident v blob i:
 	set :v !encode!utf-8 v
 	if > 256 len v:
 		set-to-blob blob i 128
@@ -675,15 +692,13 @@ labda v blob i:
 	set :i + i
 	blit-blob blob v i
 	+ i len v
-:ident
 
-labda v blob i:
+literal-writers!num v blob i:
 	set-to-blob blob i 2
 	blit-blob blob !encode!ieee-754 to-num v ++ i
 	+ i 9
-:num
 
-labda v blob i:
+literal-writers!frac v blob i:
 	local :n to-num pop-from dup split v "/"
 	local :d to-num pop-from
 	if and and <= -128 n < n 128 < d 256:
@@ -697,34 +712,29 @@ labda v blob i:
 		make-number blob + 9 i 8 d
 		17
 	+ i
-:frac
-local :literal-writers {
 
-}
-labda v:
+local :literal-sizers {}
+
+literal-sizers!string v:
 	set :v !encode!utf-8 v
 	if > 256 len v:
 		2
 	else:
 		5
 	+ len v
-:string
 
-:ident over
+set-to literal-sizers :ident @literal-sizers!string
 
-labda:
+literal-sizers!num:
 	9 drop
-:num
 
-labda v:
+literal-sizers!frac v:
 	local :n to-num pop-from dup split v "/"
 	local :d to-num pop-from
 	if and and <= -128 n < n 128 < d 256:
 		3
 	else:
 		17
-:frac
-local :literal-sizers {
 
 local :(opcode-table) { :push-literal 0 :push-integer 1 :push-word 2 :set 3 :set-local 4 :set-global 5 :get 6 :get-global 7 :jmp 16 :jmpz 17 :return 18 :recurse 19 :jmpeq 20 :jmpne 21 :labda 32 :enter-scope 33 :leave-scope 34 :new-list 48 :pop-from 49 :push-to 50 :push-through 51 :drop 64 :dup 65 :swap 66 :rot 67 :over 68 :line-number 80 :source-file 82 :enter-errhand 96 :leave-errhand 97 :raise 98 :reraise 99 :new-dict 112 :has-dict 113 :get-dict 114 :set-dict 115 :call 128 }
 
@@ -754,7 +764,7 @@ local make-bytecode opcodes literals:
 	drop
 	output
 
-labda src:
+!compile-string src:
 	split-lines src
 	remove-comments
 	split-strings
@@ -766,29 +776,25 @@ labda src:
 	collect-markers
 	collect-literals
 	make-bytecode
-set-to eva :compile-string
 
-labda src dst:
+!compile src dst:
 	!decode!utf-8 !read src
 	!compile-string src
 	!write dst
-set-to eva :compile
 
-labda:
+!use:
 	!find-module
 	if dup:
 		!compile swap over
 	else:
 		drop
 	!run-file
-set-to eva :use
 
 local :loaded {}
-labda m:
+!import m:
 	if not has loaded m:
 		set-to loaded m !use m
 	tail-call @local m get-from loaded m
-set-to eva :import
 
 local prompt linenr n:
 	print\( "<" linenr ":" n "> " )

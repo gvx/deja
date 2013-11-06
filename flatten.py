@@ -74,7 +74,18 @@ def flatten(tree, acc=None):
 			if isinstance(branch, LocalFuncStatement):
 				acc.append(SingleInstruction('SET_LOCAL', branch.name))
 			elif isinstance(branch, FuncStatement):
-				acc.append(SingleInstruction('SET_GLOBAL', branch.name))
+				name = branch.name
+				if '!' in name:
+					if name.count('!') > 1 or name.endswith('!'):
+						raise DejaSyntaxError('methods need exactly one method name')
+					if name.startswith('!'):
+						name = 'eva' + name
+					base, method = name.split('!')
+					acc.append(SingleInstruction('PUSH_LITERAL', method))
+					acc.append(SingleInstruction('PUSH_WORD', base))
+					acc.append(SingleInstruction('SET_DICT', 0))
+				else:
+					acc.append(SingleInstruction('SET_GLOBAL', name))
 		elif isinstance(branch, WhileStatement):
 			m1 = Marker()
 			m2 = Marker()
