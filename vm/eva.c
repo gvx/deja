@@ -127,6 +127,49 @@ Error read_file(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+#define READ_LINE_BUFF_SIZE 256
+Error read_line(Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V file_name = popS();
+	if (getType(file_name) == T_IDENT && file_name == get_ident("stdin"))
+	{
+		V output = new_blob(READ_LINE_BUFF_SIZE);
+		size_t extrasize = 0;
+		while(fgets((char*)toBlob(output)->data + extrasize, READ_LINE_BUFF_SIZE, stdin))
+		{
+			char last = toBlob(output)->data[toBlob(output)->size - 1];
+			if (!last || last == '\n')
+			{
+				break;
+			}
+			extrasize += READ_LINE_BUFF_SIZE;
+			resize_blob(output, extrasize + READ_LINE_BUFF_SIZE);
+		}
+		size_t len = strlen((char*)toBlob(output)->data);
+		if (len == 0)
+		{
+			pushS(get_ident("eof"));
+			clear_ref(file_name);
+			clear_ref(output);
+			return Nothing;
+		}
+		if (toBlob(output)->data[len - 1] == '\n')
+		{
+			len--;
+		}
+		resize_blob(output, len);
+		pushS(output);
+	}
+	else
+	{
+		clear_ref(file_name);
+		return TypeError;
+	}
+	clear_ref(file_name);
+	return Nothing;
+}
+
 Error open_file(Stack *S, Stack *scope_arr)
 {
 	require(2);
@@ -490,5 +533,6 @@ CFunc eva[] = {
 	{"find-module", find_module},
 	{"find-file", find_file_},
 	{"run-file", run_file},
+	{"read-line", read_line},
 	{NULL, NULL}
 };
