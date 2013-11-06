@@ -377,6 +377,27 @@ Error run_file(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error run_blob(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V blob = popS();
+	if (getType(blob) != T_BLOB)
+	{
+		clear_ref(blob);
+		return TypeError;
+	}
+	V file = load_memfile((char*)toBlob(blob)->data, toBlob(blob)->size, a_to_string("(blob)"), toFile(toScope(get_head(scope_arr))->file)->global);
+	if (file == NULL)
+	{
+		clear_ref(blob);
+		return IllegalFile;
+	}
+	push(scope_arr, add_rooted(new_file_scope(file)));
+	clear_ref(blob);
+	clear_ref(file);
+	return Nothing;
+}
+
 Error find_file_(Stack *S, Stack *scope_arr)
 {
 	require(1);
@@ -534,5 +555,6 @@ CFunc eva[] = {
 	{"find-file", find_file_},
 	{"run-file", run_file},
 	{"read-line", read_line},
+	{"run-blob", run_blob},
 	{NULL, NULL}
 };
