@@ -100,8 +100,8 @@ Error read_file(Stack *S, Stack *scope_arr)
 		size_t nread;
 		while ((nread = fread(toBlob(output)->data + extrasize, 1, READ_BUFF_SIZE, stdin)) == READ_BUFF_SIZE)
 		{
-			resize_blob(output, extrasize + READ_BUFF_SIZE);
 			extrasize += READ_BUFF_SIZE;
+			resize_blob(output, extrasize + READ_BUFF_SIZE);
 		}
 		resize_blob(output, extrasize + nread);
 		pushS(output);
