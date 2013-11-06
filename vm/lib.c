@@ -2333,54 +2333,36 @@ void merge_sort(size_t n, size_t start, size_t end, V *key_arr, V *obj_arr, V *w
 
 	int lefti = 0, righti = 0;
 
-	while (true)
+	while (lefti < leftlen && righti < rightlen)
 	{
-		if (vm_interrupt)
-			return;
-		if (lefti < leftlen && righti < rightlen)
+		if (LE(workspace[lefti], key_arr[middle + righti]))
 		{
-			if (LE(workspace[lefti], key_arr[middle + righti]))
-			{
-				key_arr[start + lefti + righti] = workspace[lefti];
-				if (obj_arr)
-				{
-					obj_arr[start + lefti + righti] = workspace[leftlen + lefti];
-				}
-				lefti++;
-			}
-			else
-			{
-				key_arr[start + lefti + righti] = key_arr[middle + righti];
-				if (obj_arr)
-				{
-					obj_arr[start + lefti + righti] = obj_arr[middle + righti];
-				}
-				righti++;
-			}
-		}
-		else if (lefti < leftlen)
-		{
-			memcpy(key_arr + start + lefti + righti, workspace + lefti, (leftlen - lefti) * sizeof(V));
+			key_arr[start + lefti + righti] = workspace[lefti];
 			if (obj_arr)
 			{
-				memcpy(obj_arr + start + lefti + righti, workspace + leftlen + lefti, (leftlen - lefti) * sizeof(V));
+				obj_arr[start + lefti + righti] = workspace[leftlen + lefti];
 			}
-			return;
+			lefti++;
 		}
-		else // if (righti < rightlen) : everything is already in place
+		else
 		{
-			return;
+			key_arr[start + lefti + righti] = key_arr[middle + righti];
+			if (obj_arr)
+			{
+				obj_arr[start + lefti + righti] = obj_arr[middle + righti];
+			}
+			righti++;
 		}
 	}
-}
-
-void sort_inplace(size_t n, V *key_arr, V *obj_arr)
-{
-	V *workspace = malloc((obj_arr ? n : n/2) * sizeof(V));
-
-	merge_sort(n, 0, n, key_arr, obj_arr, workspace);
-
-	free(workspace);
+	if (lefti < leftlen)
+	{
+		memcpy(key_arr + start + lefti + righti, workspace + lefti, (leftlen - lefti) * sizeof(V));
+		if (obj_arr)
+		{
+			memcpy(obj_arr + start + lefti + righti, workspace + leftlen + lefti, (leftlen - lefti) * sizeof(V));
+		}
+	}
+	// if (righti < rightlen) : everything is already in place
 }
 
 Error sort_list(Stack *S, Stack *scope_arr)
@@ -2422,7 +2404,11 @@ Error sort_list(Stack *S, Stack *scope_arr)
 		}
 	}
 
-	sort_inplace(n, key_arr, obj_arr);
+	V *workspace = malloc((obj_arr ? n : n/2) * sizeof(V));
+
+	merge_sort(n, 0, n, key_arr, obj_arr, workspace);
+
+	free(workspace);
 
 	clear_ref(keys);
 	pushS(list);
