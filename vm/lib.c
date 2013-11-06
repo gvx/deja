@@ -2422,6 +2422,29 @@ Error print_traceback(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error list_globals(Stack *S, Stack *scope_arr)
+{
+	V list = new_list();
+	HashMap *hm = &toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm;
+	if (hm->map != NULL)
+	{
+		Stack *s = toStack(list);
+		int i;
+		Bucket *b;
+		for (i = 0; i < hm->size; i++)
+		{
+			b = hm->map[i];
+			while(b != NULL)
+			{
+				push(s, add_ref(b->key));
+				b = b->next;
+			}
+		}
+	}
+	pushS(list);
+	return Nothing;
+}
+
 static CFunc stdlib[] = {
 	{"get", get},
 	{"getglobal", getglobal},
@@ -2533,6 +2556,7 @@ static CFunc stdlib[] = {
 	{"opt-get", opt_get},
 	{"(sort)", sort_list},
 	{"print-traceback", print_traceback},
+	{"(list-globals)", list_globals},
 	//blob
 	{"make-blob", make_blob},
 	{"get-from-blob", getbyte_blob_},
