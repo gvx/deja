@@ -12,12 +12,14 @@ bool vm_debug = false;
 bool vm_persist = false;
 bool vm_interrupt = false;
 
+Stack *traceback;
+
 void run(V global, Stack *S)
 {
+	Scope *sc;
 	Error e = Nothing;
 	Stack *scope = new_stack();
-	Stack *save_scopes = new_stack();
-	Scope *sc;
+	traceback = new_stack();
 	if (vm_persist)
 	{
 		V stdinfile = load_stdin(global);
@@ -48,16 +50,16 @@ void run(V global, Stack *S)
 			DBG_PRINTF("Error %d %sraised", e, reraise ? "re" : "");
 			if (!reraise)
 			{
-				while (stack_size(save_scopes) > 0)
+				while (stack_size(traceback) > 0)
 				{
-					clear_base_ref(pop(save_scopes));
+					clear_base_ref(pop(traceback));
 				}
 
 			}
 			do
 			{
-				push(save_scopes, pop(scope));
-				sc = toScope(get_head(save_scopes));
+				push(traceback, pop(scope));
+				sc = toScope(get_head(traceback));
 			}
 			while (stack_size(scope) > 0 && !sc->is_error_handler);
 			if (stack_size(scope) > 0)
@@ -67,9 +69,9 @@ void run(V global, Stack *S)
 			}
 			else
 			{ //Error slips away, uncaught
-				while (stack_size(save_scopes) > 0)
+				while (stack_size(traceback) > 0)
 				{
-					push(scope, pop(save_scopes));
+					push(scope, pop(traceback));
 				}
 			}
 		}
@@ -97,5 +99,5 @@ void run(V global, Stack *S)
 	}
 	//clean-up
 	clear_stack(scope);
-	clear_stack(save_scopes);
+	clear_stack(traceback);
 }
