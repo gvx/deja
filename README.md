@@ -6,7 +6,7 @@ Inspired by Python and Forth. I'm talking about Déjà Vu.
 # Setting up the virtual machine
 
 	$ cd vm/
-	$ make release
+	$ make
 	$ cd ..
 
 # Running things
@@ -14,14 +14,13 @@ Inspired by Python and Forth. I'm talking about Déjà Vu.
 Assuming you have a module called `yourfile.deja`, you can compile and
 run it with:
 
-	$ python dvc.py yourfile.deja yourfile.vu
-	$ vm/vu yourfile
+	$ vm/vu yourfile.deja
 
 # Examples
 
 ## Hello world
 
-	print "Hello world!"
+	!print "Hello world!"
 
 ## Fibonacci
 
@@ -37,8 +36,8 @@ run it with:
 
 ## Quine
 
-	"print . dup"
-	print . dup
+	"!print !. dup"
+	!print !. dup
 
 ## Fractions
 
@@ -57,11 +56,11 @@ is, here's the one for Déjà Vu:
 	        | <TryBlock>
 
 	IfBlock ::= "if" <Space> <Line> ":" <NewLine>+ (<Indentation> <Block>)+
-	            ("elseif" <Space> <Line> ":" <NewLine>+ (<Indentation> <Block>)+)*
+	            ("elseif" <Space> <Line> <Space>? ":" <NewLine>+ (<Indentation> <Block>)+)*
 	            ("else" <Space>? ":" <NewLine>+ (<Indentation> <Block>)+)?
 
-	TryBlock ::= "try" <Space>* ":" <NewLine>+ (<Indentation> <Block>)+
-	             ("catch" <Space> <ProperWord> ":" <NewLine>+ (<Indentation> <Block>)+)*
+	TryBlock ::= "try" <Space>? ":" <NewLine>+ (<Indentation> <Block>)+
+	             ("catch" (<Space> <ProperWord>)+ <Space>? ":" <NewLine>+ (<Indentation> <Block>)+)*
 
 	Head ::= "while" <Space> <Line>
 	       | "for" <Space> <ProperWord> (<Space> <Line>)? <Space>?
@@ -71,19 +70,22 @@ is, here's the one for Déjà Vu:
 	       | "labda" <Arguments>
 	       | <ProperWord> <Arguments>
 
-	Indentation ::= <Tab>*
+	Indentation ::= (" " | <Tab>)*
 
 	Line ::= (<Word> (<Space> <Word>)*)? <Space>?
 
 	Arguments ::= (<Space> <ProperWord>)* <Space>?
 
-	Space ::= " "+
+	Space ::= (" " | <Tab>)+
 
 	Word ::= ProperWord
+	       | Get
 	       | Identity
 	       | String
 	       | Number
 	       | Fraction
+
+	Get ::= "@" <ProperWord>?
 
 	Identity ::= ":" <ProperWord>?
 
