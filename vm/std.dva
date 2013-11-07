@@ -187,6 +187,141 @@ labda $endsort-by
     return
 $endsort-by
 set_global 26
+push_integer 1
+push_word 36
+set_local 37
+push_integer 32
+push_integer 0
+push_word 37
+set_dict
+push_integer 1
+push_word 36
+set_local 38
+push_integer 10
+push_integer 0
+push_word 38
+set_dict
+labda $endecho
+	push_literal 39
+	push_literal 20
+	push_word 16
+	get_dict
+	call
+	return
+$endecho
+set_local 40
+labda $end!print\
+	push_word 41
+	push_literal 42
+	push_literal 43
+	push_word 16
+	get_dict
+	call
+	push_word 40
+	return
+$end!print\
+push_literal 44
+push_word 16
+set_dict
+labda $end!print
+	push_literal 44
+	push_word 16
+	get_dict
+	call
+	push_word 38
+	push_word 40
+	return
+$end!print
+push_literal 47
+push_word 16
+set_dict
+labda $end!print\(
+	$startwhile!print\(
+	dup
+	push_literal 48
+		jmpeq $endwhile!print\(
+		push_literal 44
+		push_word 16
+		get_dict
+		call
+	jmp $startwhile!print\(
+	$endwhile!print\(
+	drop
+	return
+$end!print\(
+push_literal 45
+push_word 16
+set_dict
+labda $end!print(
+	push_literal 45
+	push_word 16
+	get_dict
+	call
+	push_word 38
+	push_word 40
+	return
+$end!print(
+push_literal 46
+push_word 16
+set_dict
+labda $end!.\
+	push_literal 49
+	push_literal 43
+	push_word 16
+	get_dict
+	call
+	push_word 40
+	return
+$end!.\
+push_literal 51
+push_word 16
+set_dict
+labda $end!.
+	push_literal 51
+	push_word 16
+	get_dict
+	call
+	push_word 38
+	push_word 40
+	return
+$end!.
+push_literal 53
+push_word 16
+set_dict
+labda $end!.\(
+	dup
+	push_literal 48
+	jmpeq $endwhile!.\(
+		$startwhile!.\(
+		push_literal 51
+		push_word 16
+		get_dict
+		call
+		dup
+		push_literal 48
+		jmpeq $endwhile!.\(
+		push_word 37
+		push_word 40
+		jmp $startwhile!.\(
+	$endwhile!.\(
+	drop
+	return
+$end!.\(
+push_literal 50
+push_word 16
+set_dict
+labda $end!.(
+	push_literal 50
+	push_word 16
+	get_dict
+	call
+	push_word 38
+	push_word 40
+	return
+$end!.(
+push_literal 52
+push_word 16
+set_dict
 return
 ...
 ia
@@ -225,3 +360,21 @@ sssorting keys must return numbers for now
 itype-error
 iRaise
 ipass
+imake-blob
+ispace
+inewline
+istdout
+iecho
+ito-str
+iutf-8
+iencode
+iprint\
+iprint\(
+iprint(
+iprint
+i)
+iquoted
+i.\(
+i.\
+i.(
+i.

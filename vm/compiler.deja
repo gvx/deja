@@ -796,11 +796,11 @@ local :loaded {}
 	tail-call @local
 
 local prompt linenr n:
-	print\( "<" linenr ":" n "> " )
+	!print\( "<" linenr ":" n "> " )
 	!read-line!stdin
 	if = :eof dup:
 		drop
-		print ""
+		!print ""
 		exit
 	!decode!utf-8
 
