@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include "eva.h"
 #include "blob.h"
@@ -33,6 +34,212 @@ Error decode(Stack *S, Stack *scope_arr)
 	clear_ref(encoding);
 	clear_ref(raw_data);
 	return Nothing;
+}
+
+#define ENSURE_BIG_ENOUGH(extrasize) while (index + (extrasize) >= toBlob(output)->size) { resize_blob(output, 2 * toBlob(output)->size); }
+
+int quote_string(V output, int index, char *text, size_t size)
+{
+	int copysize;
+	//under-estimation, needs to account for escape sequences
+	ENSURE_BIG_ENOUGH(size + 2);
+	setbyte_blob(output, index++, '"');
+	int x, lastindex = 0;
+	for (x = 0; x < size; x++)
+	{
+		unsigned char current = text[x];
+		char *special = "\\\t\n\r\"";
+		char *special_index;
+		if (current && (special_index = strchr(special, current)))
+		{
+			copysize = x - lastindex;
+			ENSURE_BIG_ENOUGH(copysize + 2);
+			memcpy(toBlob(output)->data + index, text + lastindex, copysize);
+			index += copysize;
+			setbyte_blob(output, index++, '\\');
+			setbyte_blob(output, index++, "\\tnrq"[special_index - special]);
+			lastindex = x + 1;
+		}
+		else if (current < 32)
+		{
+			copysize = x - lastindex;
+			ENSURE_BIG_ENOUGH(copysize + 5);
+			memcpy(toBlob(output)->data + index, text + lastindex, copysize);
+			index += copysize;
+			setbyte_blob(output, index++, '\\');
+			setbyte_blob(output, index++, '{');
+			if (current > 9)
+				setbyte_blob(output, index++, '0' + (current / 10));
+			setbyte_blob(output, index++, '0' + (current % 10));
+			setbyte_blob(output, index++, '}');
+			lastindex = x + 1;
+		}
+	}
+	copysize = x - lastindex;
+	ENSURE_BIG_ENOUGH(copysize + 1);
+	memcpy(toBlob(output)->data + index, text + lastindex, copysize);
+	index += copysize;
+	setbyte_blob(output, index++, '"');
+	return index;
+}
+
+int encode_quoted(V output, int index, V object, int level)
+{
+	ITreeNode* i;
+	switch (getType(object))
+	{
+		case T_IDENT:
+			i = toIdent(object);
+			ENSURE_BIG_ENOUGH(i->length + 1);
+			setbyte_blob(output, index++, ':');
+			memcpy(toBlob(output)->data + index, i->data, i->length);
+			index += i->length;
+			break;
+		case T_STR:
+			index = quote_string(output, index, toNewString(object)->text, toNewString(object)->size);
+			break;
+		case T_NUM:
+			if (object == v_true)
+			{
+				ENSURE_BIG_ENOUGH(4);
+				memcpy(toBlob(output)->data + index, "true", 4);
+				index += 4;
+			}
+			else if (object == v_false)
+			{
+				ENSURE_BIG_ENOUGH(5);
+				memcpy(toBlob(output)->data + index, "false", 5);
+				index += 5;
+			}
+			else
+			{
+				ENSURE_BIG_ENOUGH(34);
+				index += sprintf((char*)toBlob(output)->data + index, "%.15g", toNumber(object));
+			}
+			break;
+		case T_LIST:
+			if (level < 4)
+			{
+				ENSURE_BIG_ENOUGH(3);
+				setbyte_blob(output, index++, '[');
+				setbyte_blob(output, index++, ' ');
+				int i;
+				for (i = 0; i < toStack(object)->used; i++)
+				{
+					index = encode_quoted(output, index, toStack(object)->nodes[i], level + 1);
+					ENSURE_BIG_ENOUGH(1);
+					setbyte_blob(output, index++, ' ');
+				}
+				ENSURE_BIG_ENOUGH(1);
+				setbyte_blob(output, index++, ']');
+			}
+			else
+			{
+				ENSURE_BIG_ENOUGH(5);
+				memcpy(toBlob(output)->data + index, "[...]", 5);
+				index += 5;
+			}
+			break;
+		case T_DICT:
+			if (level < 4)
+			{
+				ENSURE_BIG_ENOUGH(2);
+				setbyte_blob(output, index++, '{');
+				setbyte_blob(output, index++, ' ');
+				int i;
+				HashMap *hm = toHashMap(object);
+				if (hm->map != NULL)
+				{
+					for (i = 0; i < hm->size; i++)
+					{
+						Bucket *b = hm->map[i];
+						while (b)
+						{
+							index = encode_quoted(output, index, b->key, level + 1);
+							ENSURE_BIG_ENOUGH(1);
+							setbyte_blob(output, index++, ' ');
+							index = encode_quoted(output, index, b->value, level + 1);
+							ENSURE_BIG_ENOUGH(1);
+							setbyte_blob(output, index++, ' ');
+							b = b->next;
+						}
+					}
+				}
+				ENSURE_BIG_ENOUGH(1);
+				setbyte_blob(output, index++, '}');
+			}
+			else
+			{
+				ENSURE_BIG_ENOUGH(5);
+				memcpy(toBlob(output)->data + index, "{...}", 5);
+				index += 5;
+			}
+			break;
+		case T_PAIR:
+			// note: pairs are not cyclic, so no need to increase the level
+			ENSURE_BIG_ENOUGH(2);
+			memcpy(toBlob(output)->data + index, "& ", 2);
+			index += 2;
+			index = encode_quoted(output, index, toFirst(object), level);
+			ENSURE_BIG_ENOUGH(1);
+			setbyte_blob(output, index++, ' ');
+			index = encode_quoted(output, index, toSecond(object), level);
+			break;
+		case T_FRAC:
+			ENSURE_BIG_ENOUGH(42);
+			index += sprintf((char*)toBlob(output)->data + index, "%ld/%ld", toNumerator(object), toDenominator(object));
+			break;
+		case T_CFUNC:
+		case T_FUNC:
+			ENSURE_BIG_ENOUGH(6);
+			memcpy(toBlob(output)->data + index, "(func)", 6);
+			index += 6;
+			break;
+		case T_BLOB:
+			ENSURE_BIG_ENOUGH(6);
+			memcpy(toBlob(output)->data + index, "(blob:", 6);
+			index += 6;
+			int size = toBlob(object)->size > 31 ? 30 : toBlob(object)->size;
+			int i;
+			bool is_printable_ascii = true;
+			for (i = 0; i < size; i++)
+			{
+				unsigned char c = toBlob(object)->data[i];
+				if (c >= 128)
+				{
+					is_printable_ascii = false;
+					break;
+				}
+			}
+			if (is_printable_ascii)
+			{
+				index = quote_string(output, index, (char*)toBlob(object)->data, size);
+			}
+			else
+			{
+				ENSURE_BIG_ENOUGH(size * 2);
+				for (i = 0; i < size; i++)
+				{
+					int x = toBlob(object)->data[i];
+					setbyte_blob(output, index + i * 2, "0123456789abcdef"[x / 16]);
+					setbyte_blob(output, index + i * 2 + 1, "0123456789abcdef"[x % 16]);
+				}
+				index += size * 2;
+			}
+			if (size < toBlob(object)->size)
+			{
+				ENSURE_BIG_ENOUGH(4);
+				memcpy(toBlob(output)->data + index, "...)", 4);
+				index += 4;
+			}
+			else
+			{
+				ENSURE_BIG_ENOUGH(1);
+				setbyte_blob(output, index++, ')');
+			}
+			break;
+	}
+	return index;
 }
 
 Error encode(Stack *S, Stack *scope_arr)
@@ -74,6 +281,15 @@ Error encode(Stack *S, Stack *scope_arr)
 		v.d = toNumber(cooked_data);
 		v.i = htonll(v.i);
 		memcpy(toBlob(output)->data, &v, 8);
+		pushS(output);
+		clear_ref(encoding);
+		clear_ref(cooked_data);
+		return Nothing;
+	}
+	else if (encoding == get_ident("quoted"))
+	{
+		V output = new_blob(256);
+		resize_blob(output, encode_quoted(output, 0, cooked_data, 0));
 		pushS(output);
 		clear_ref(encoding);
 		clear_ref(cooked_data);
