@@ -242,7 +242,20 @@ Error write_fragment(Stack *S, Stack *scope_arr)
 	require(2);
 	V file_obj = popS();
 	V blob = popS();
-	if (getType(file_obj) != T_DICT || getType(blob) != T_BLOB)
+	if (getType(blob) != T_BLOB)
+	{
+		clear_ref(file_obj);
+		clear_ref(blob);
+		return TypeError;
+	}
+	if (getType(file_obj) == T_IDENT && file_obj == get_ident("stdout"))
+	{
+		fwrite(toBlob(blob)->data, 1, toBlob(blob)->size, stdout);
+		clear_ref(file_obj);
+		clear_ref(blob);
+		return Nothing;
+	}
+	if (getType(file_obj) != T_DICT)
 	{
 		clear_ref(file_obj);
 		clear_ref(blob);
