@@ -1024,7 +1024,7 @@ Error tail_call(Stack* S, Stack* scope_arr)
 	v = popS();
 	if (getType(v) == T_FUNC)
 	{
-		push(scope_arr, add_rooted(new_function_scope(v)));
+		push(scope_arr, add_rooted(new_function_scope(v, NULL)));
 		clear_ref(v);
 	}
 	else if (getType(v) == T_CFUNC)
@@ -1117,7 +1117,7 @@ Error call(Stack* S, Stack* scope_arr)
 	V v = popS();
 	if (getType(v) == T_FUNC)
 	{
-		push(scope_arr, add_rooted(new_function_scope(v)));
+		push(scope_arr, add_rooted(new_function_scope(v, NULL)));
 		clear_ref(v);
 	}
 	else if (getType(v) == T_CFUNC)

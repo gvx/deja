@@ -10,6 +10,7 @@ typedef struct Scope
 	V file;
 	V func;
 	V parent;
+	V callname;
 	int index;
 	uint32_t is_func_scope : 4;
 	uint32_t is_error_handler : 4;
@@ -29,7 +30,7 @@ ValueScope SCOPECACHE[MAXCACHE];
 int MAXSCOPE;
 
 V new_scope(V);
-V new_function_scope(V);
+V new_function_scope(V, V);
 V new_file_scope(V);
 V new_global_scope(void);
 

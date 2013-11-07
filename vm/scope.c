@@ -34,13 +34,14 @@ V new_scope(V parent)
 	scope->parent = add_ref(parent);
 	scope->func = pscope->func == NULL ? NULL : add_ref(pscope->func);
 	scope->file = pscope->file == NULL ? NULL : add_ref(pscope->file);
+	scope->callname = pscope->callname == NULL ? NULL : add_ref(pscope->callname);
 	scope->pc = pscope->pc;
 	scope->linenr = pscope->linenr;
 	hashmap_from_scope(sc, 16);
 	return sc;
 }
 
-V new_function_scope(V function)
+V new_function_scope(V function, V callname)
 {
 	V sc = create_scope();
 	Scope* scope = toScope(sc);
@@ -49,6 +50,7 @@ V new_function_scope(V function)
 	scope->parent = add_ref(toFunc(function)->defscope);
 	scope->func = add_ref(function);
 	scope->file = add_ref(toScope(scope->parent)->file);
+	scope->callname = callname == NULL ? NULL : add_ref(callname);
 	scope->pc = toFunc(function)->start;
 	hashmap_from_scope(sc, 32);
 	return sc;
@@ -63,6 +65,7 @@ V new_file_scope(V file)
 	scope->parent = add_ref(toFile(file)->global);
 	scope->func = NULL;
 	scope->file = add_ref(file);
+	scope->callname = NULL;
 	scope->pc = toFile(file)->code - 1;
 	hashmap_from_scope(sc, 64);
 	return sc;
@@ -76,6 +79,7 @@ V new_global_scope(void)
 	scope->parent = NULL;
 	scope->func = NULL;
 	scope->file = NULL;
+	scope->callname = NULL;
 	scope->pc = NULL;
 	hashmap_from_scope(sc, 256);
 	return sc;

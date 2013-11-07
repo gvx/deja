@@ -89,10 +89,20 @@ void handle_error(Error e, Stack *scope_arr)
 		if (n == scope_arr->used - 1 || toScope(scope_arr->nodes[n + 1])->is_func_scope)
 		{
 			NewString *s = toFile(sc->file)->source != NULL ? toNewString(toFile(sc->file)->source) : toNewString(toFile(sc->file)->name);
-			if (sc->linenr > 0)
-				fprintf(stderr, "%*s:%d\n", (int)s->size, s->text, sc->linenr);
+			if (sc->callname && getType(sc->callname) == T_IDENT)
+			{
+				if (sc->linenr > 0)
+					fprintf(stderr, "%*s:%d in %*s\n", (int)s->size, s->text, sc->linenr, toIdent(sc->callname)->length, toIdent(sc->callname)->data);
+				else
+					fprintf(stderr, "%*s in %*s\n", (int)s->size, s->text, toIdent(sc->callname)->length, toIdent(sc->callname)->data);
+			}
 			else
-				fprintf(stderr, "%*s\n", (int)s->size, s->text);
+			{
+				if (sc->linenr > 0)
+					fprintf(stderr, "%*s:%d\n", (int)s->size, s->text, sc->linenr);
+				else
+					fprintf(stderr, "%*s\n", (int)s->size, s->text);
+			}
 		}
 	}
 }

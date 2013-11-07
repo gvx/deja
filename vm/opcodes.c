@@ -63,7 +63,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			if (getType(v) == T_FUNC)
 			{
-				push(scope_arr, add_rooted(new_function_scope(v)));
+				push(scope_arr, add_rooted(new_function_scope(v, key)));
 			}
 			else if (getType(v) == T_CFUNC)
 			{
@@ -508,7 +508,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			v = popS();
 			if (getType(v) == T_FUNC)
 			{
-				push(scope_arr, add_rooted(new_function_scope(v)));
+				push(scope_arr, add_rooted(new_function_scope(v, NULL)));
 				clear_ref(v);
 			}
 			else if (getType(v) == T_CFUNC)

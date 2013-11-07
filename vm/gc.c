@@ -202,6 +202,10 @@ void iter_children(V t, void (*iter)(V))
 			{
 				iter(sc->func);
 			}
+			if (sc->callname)
+			{
+				iter(sc->callname);
+			}
 			if (sc->hm.map != NULL)
 			{
 				for (i = 0; i < sc->hm.size; i++)
