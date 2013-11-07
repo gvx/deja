@@ -22,7 +22,7 @@ local remove-comments:
 
 local split-strings lines:
 	for i range 0 -- len lines:
-		local :line get-from lines i
+		local :line lines! i
 		local :s split line!text "\q"
 		if = 0 % len s 2:
 			syntax-error line "unended string"
@@ -44,7 +44,7 @@ local remove-empties lines:
 		local :line l!words
 		if /= 1 len line:
 			l
-		elseif non-empty get-from line 0:
+		elseif non-empty line! 0:
 			l
 	[
 
@@ -132,7 +132,7 @@ local split-words lines:
 
 		]
 		local :indent []
-		local :rfrag reversed copy chars get-from line -- len line
+		local :rfrag reversed copy chars line! -- len line
 
 		while get-ws rfrag:
 			push-to indent
@@ -187,7 +187,7 @@ local find-statements lines:
 	local :lastl @undef
 	for l in lines:
 		local :line l!words
-		local :last-type &< dup get-from line 0
+		local :last-type &< dup line! 0
 		local :last-data &>
 		false
 		if /= :string last-type:
@@ -202,7 +202,7 @@ local find-statements lines:
 				not
 		set :this-stmt
 		local :indent &> pop-from line
-		local :context get-from acc -- len acc
+		local :context acc! -- len acc
 		if prev-stmt:
 			if and /= indent context!indent starts-with indent context!indent:
 				set-to context :indent indent
@@ -215,7 +215,7 @@ local find-statements lines:
 				if not acc:
 					#inconsistent indentation!
 					syntax-error l "inconsistent indentation"
-				set :context get-from acc -- len acc
+				set :context acc! -- len acc
 		if this-stmt:
 			local :stmt-type pop-from line
 			if /= :word &< stmt-type:
@@ -228,12 +228,12 @@ local find-statements lines:
 				set :stmt-type' "func"
 			if has cont-stmts stmt-type':
 				if not context!lines:
-					syntax-error l concat( "this statement needs to be preceded by " get-from cont-stmts stmt-type' )
+					syntax-error l concat( "this statement needs to be preceded by " cont-stmts! stmt-type' )
 				local :parent get-from swap -- len dup context!lines
 				if not has parent :type:
-					syntax-error l concat( "this statement needs to be preceded by " get-from cont-stmts stmt-type' )
-				if /= parent!type get-from cont-stmts stmt-type':
-					syntax-error l concat( "this statement needs to be preceded by " get-from cont-stmts stmt-type' ", not " parent!type )
+					syntax-error l concat( "this statement needs to be preceded by " cont-stmts! stmt-type' )
+				if /= parent!type cont-stmts! stmt-type':
+					syntax-error l concat( "this statement needs to be preceded by " cont-stmts! stmt-type' ", not " parent!type )
 				if not has parent :child:
 					set-to parent :child []
 				push-to parent!child dup { :type stmt-type' :stmt l :lines [] :indent indent }
@@ -246,7 +246,7 @@ local find-statements lines:
 		set :lastl l
 	if prev-stmt:
 		Raise :illegal-file concat( "syntax error: incomplete statement\n" lastl!fname ":" to-str lastl!linenr "\n" lastl!text )
-	get-from acc 0
+	acc! 0
 
 # BEGIN CODE FOR FLATTEN
 
@@ -502,7 +502,7 @@ local :flatten-types {
 local :(ok-types) set{ :frac :string }
 local (flatten) tree acc:
 	if has tree :type:
-		call get-from flatten-types tree!type tree acc
+		flatten-types! tree!type tree acc
 	else:
 		for word in tree!words:
 			local :word-type &< word
@@ -592,7 +592,7 @@ local optimize opcodes:
 				op
 		elseif = :line-number &< op:
 			if opcodes:
-				if = :line-number dup &< get-from opcodes -- len opcodes:
+				if = :line-number dup &< opcodes! -- len opcodes:
 					drop
 				elseif = :return: #line number followed by return? get rid of it
 					pass
@@ -624,7 +624,7 @@ local collect-markers opcodes:
 		if is-marker opcode:
 			pass
 		elseif is-marker &> opcode:
-			& &< opcode - get-from memo &> &> opcode dup
+			& &< opcode - memo! &> &> opcode dup
 			++ swap
 		else:
 			opcode
@@ -635,7 +635,7 @@ local collect-literals opcodes:
 	local :literals_had {}
 	local :literals []
 	for i range 0 -- len opcodes:
-		local :opcode get-from opcodes i
+		local :opcode opcodes! i
 		if = :pair type &> opcode:
 			if not has literals_had &> opcode:
 				set-to opcodes i & &< opcode dup len literals
@@ -751,7 +751,7 @@ local make-bytecode opcodes literals:
 	make-number output 4 4 len opcodes
 	8
 	for op in opcodes:
-		set-to-blob output over get-from (opcode-table) &< op
+		set-to-blob output over (opcode-table)! &< op
 		++
 		make-number output swap 3 over &> op
 		+ 3
@@ -790,7 +790,7 @@ local :loaded {}
 !import m:
 	if not has loaded m:
 		set-to loaded m !use m
-	m get-from loaded m
+	m @loaded! m
 	if interactive:
 		return setglobal
 	tail-call @local
