@@ -322,6 +322,26 @@ $end!.(
 push_literal 52
 push_word 16
 set_dict
+labda $endmap
+	set_local 5
+	push_literal 55
+	swap
+	push_word 57
+	$startformap
+	dup
+	jmpz $endformap
+		set_local 0
+		set_local 1
+		push_word 5
+		get 1
+		push_word 0
+	jmp $startformap
+	$endformap
+	drop
+	push_word 56
+	return
+$endmap
+set_global 54
 return
 ...
 ia
@@ -378,3 +398,7 @@ i.\(
 i.\
 i.(
 i.
+imap
+i]
+i[
+iin
