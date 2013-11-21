@@ -497,6 +497,8 @@ labda tree acc:
 
 "else" over
 
+"catch" over
+
 local :flatten-types {
 
 local :(ok-types) set{ :frac :string }
