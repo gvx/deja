@@ -90,9 +90,9 @@ local word-type wrd:
 	if is-frac wrd:
 		return :frac wrd
 	if starts-with wrd "@":
-		return :get slice wrd 1 len wrd
+		return :get wrd
 	if starts-with wrd ":":
-		return :ident slice wrd 1 len wrd
+		return :ident wrd
 	:word wrd
 
 local :single-quoted { "q" "\q" "n" "\n" "r" "\r" "t" "\t" "\\" "\\" }
@@ -518,7 +518,10 @@ local (flatten) tree acc:
 			elseif has (ok-types) word-type:
 				push-to acc & :push-literal word
 			else:
-				local :value &> word
+				&> word
+				if /= :word word-type:
+					slice swap 1 swap len dup
+				local :value
 				if contains value "!":
 					if and /= word-type :word /= word-type :get:
 						syntax-error tree "method calls only available on proper words and gets"
@@ -534,7 +537,7 @@ local (flatten) tree acc:
 					for frag in:
 						push-to acc & :push-literal & :ident frag
 				elseif = word-type :ident:
-					push-to acc & :push-literal word
+					push-to acc & :push-literal & :ident value
 				elseif = word-type :get:
 					push-to acc & :get & :ident value
 				else:
