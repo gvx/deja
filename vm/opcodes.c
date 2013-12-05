@@ -509,6 +509,10 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(container);
 			return e;
 		case OP_CALL:
+			if (stack_size(S) < 1)
+			{
+				return StackEmpty;
+			}
 			v = popS();
 			if (getType(v) == T_FUNC)
 			{
