@@ -647,6 +647,57 @@ Error run_blob(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error run_blob_in_scope(Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V scope = popS();
+	V blob = popS();
+	if (getType(blob) != T_BLOB || getType(scope) != T_SCOPE)
+	{
+		clear_ref(scope);
+		clear_ref(blob);
+		return TypeError;
+	}
+	V file = load_memfile((char*)toBlob(blob)->data, toBlob(blob)->size, a_to_string("(blob)"), toFile(toScope(get_head(scope_arr))->file)->global);
+	if (file == NULL)
+	{
+		clear_ref(scope);
+		clear_ref(blob);
+		return IllegalFile;
+	}
+	toScope(scope)->is_func_scope = true;
+	toScope(scope)->is_error_handler = false;
+	V oldparent = toScope(scope)->parent;
+	V oldfunc = toScope(scope)->func;
+	V oldfile = toScope(scope)->file;
+	V oldcallname = toScope(scope)->callname;
+
+	toScope(scope)->parent = add_ref(toFile(file)->global);
+	toScope(scope)->func = NULL;
+	toScope(scope)->file = file;
+	toScope(scope)->callname = NULL;
+	toScope(scope)->pc = toFile(file)->code - 1;
+	push(scope_arr, add_rooted(scope));
+	if (oldparent)
+	{
+		clear_ref(oldparent);
+	}
+	if (oldfunc)
+	{
+		clear_ref(oldfunc);
+	}
+	if (oldfile)
+	{
+		clear_ref(oldfile);
+	}
+	if (oldcallname)
+	{
+		clear_ref(oldcallname);
+	}
+	clear_ref(blob);
+	return Nothing;
+}
+
 Error find_file_(Stack *S, Stack *scope_arr)
 {
 	require(1);
@@ -805,6 +856,7 @@ CFunc eva[] = {
 	{"run-file", run_file},
 	{"read-line", read_line},
 	{"run-blob", run_blob},
+	{"run-blob-in", run_blob_in_scope},
 	{"(print-stack)", print_stack},
 	{NULL, NULL}
 };

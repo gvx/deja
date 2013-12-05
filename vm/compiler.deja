@@ -796,8 +796,6 @@ local :loaded {}
 	if not has loaded m:
 		set-to loaded m !use m
 	m @loaded! m
-	if interactive:
-		return setglobal
 	tail-call @local
 
 local prompt linenr n:
@@ -838,19 +836,7 @@ local try-compile linenr fname:
 		return false
 	true drop swap
 
-local :interactive not !args
-if interactive:
-	#interactive interpreter
-	local :linenr 1
-	while true:
-		if try-compile linenr concat( "session:" to-str linenr ):
-			try:
-				!run-blob
-			catch name-error value-error type-error stack-empty illegal-file unicode-error interrupt error:
-				print-traceback
-
-		set :linenr ++ linenr
-else:
+if !args:
 	#run main file
 	!find-file get-from !args 0
 	if dup:
@@ -858,3 +844,19 @@ else:
 	else:
 		drop
 	!run-file
+else:
+	#interactive interpreter
+	labda:
+		local :. @!.
+		local :; @!(print-stack)
+		yield
+	local :env call
+	local :linenr 1
+	while true:
+		if try-compile linenr concat( "session:" to-str linenr ):
+			try:
+				!run-blob-in @env
+			catch name-error value-error type-error stack-empty illegal-file unicode-error interrupt error:
+				print-traceback
+
+		set :linenr ++ linenr
