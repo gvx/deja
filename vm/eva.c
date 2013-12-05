@@ -304,6 +304,26 @@ Error encode(Stack *S, Stack *scope_arr)
 	}
 }
 
+Error print_stack(Stack *S, Stack *scope_arr)
+{
+	int i;
+	V output = new_blob(256);
+	putchar('[');
+	for (i = S->used - 1; i >= 0; i--)
+	{
+		putchar(' ');
+		fwrite(toBlob(output)->data, 1, encode_quoted(output, 0, S->nodes[i], 0), stdout);
+	}
+	if (S->used)
+	{
+		putchar(' ');
+	}
+	putchar(']');
+	putchar('\n');
+	clear_ref(output);
+	return Nothing;
+}
+
 #define READ_BUFF_SIZE 1048576
 Error read_file(Stack *S, Stack *scope_arr)
 {
@@ -785,5 +805,6 @@ CFunc eva[] = {
 	{"run-file", run_file},
 	{"read-line", read_line},
 	{"run-blob", run_blob},
+	{"(print-stack)", print_stack},
 	{NULL, NULL}
 };

@@ -8,114 +8,6 @@
 #include <time.h>
 #include <sys/time.h>
 
-void print_list_value(Stack*, int, int);
-
-void print_value(V v, int depth)
-{
-	NewString* s;
-	ITreeNode* i;
-	switch (getType(v))
-	{
-		case T_IDENT:
-			i = toIdent(v);
-			printf(":%*s", i->length, i->data);
-			break;
-		case T_STR:
-			s = toNewString(v);
-			printf("\"%*s\"", (int)s->size, s->text);
-			break;
-		case T_NUM:
-			if (v == v_true)
-			{
-				fputs("true", stdout);
-			}
-			else if (v == v_false)
-			{
-				fputs("false", stdout);
-			}
-			else
-			{
-				printf("%.15g", toNumber(v));
-			}
-			break;
-		case T_LIST:
-			if (depth < 4)
-			{
-				fputs("[ ", stdout);
-				print_list_value(toStack(v), toStack(v)->used - 1, depth);
-				fputs("]", stdout);
-			}
-			else
-			{
-				fputs("[...]", stdout);
-			}
-			break;
-		case T_DICT:
-			if (depth < 4)
-			{
-				fputs("{", stdout);
-				int i;
-				HashMap *hm = toHashMap(v);
-				if (hm->map != NULL)
-				{
-					for (i = 0; i < hm->size; i++)
-					{
-						Bucket *b = hm->map[i];
-						while (b)
-						{
-							putchar(' ');
-							print_value(b->key, depth + 1);
-							putchar(' ');
-							print_value(b->value, depth + 1);
-							b = b->next;
-						}
-					}
-				}
-				fputs(" }", stdout);
-			}
-			else
-			{
-				fputs("{...}", stdout);
-			}
-			break;
-		case T_PAIR:
-			// note: pairs are not cyclic, so no need to increase the depth
-			fputs("& ", stdout);
-			print_value(toFirst(v), depth);
-			fputs(" ", stdout);
-			print_value(toSecond(v), depth);
-			break;
-		case T_FRAC:
-			printf("%ld/%ld", toNumerator(v), toDenominator(v));
-			break;
-		case T_CFUNC:
-		case T_FUNC:
-			fputs("(func)", stdout);
-			break;
-		case T_BLOB:
-			printf("(blob)");
-			break;
-	};
-}
-
-void print_list_value(Stack *s, int n, int depth)
-{
-	if (n < 0)
-		return;
-	print_list_value(s, n - 1, depth);
-	print_value(s->nodes[n], depth + 1);
-	fputs(" ", stdout);
-}
-
-void print_list_value_rev(Stack *s, int n, int depth)
-{
-	if (n >= s->used)
-		return;
-	print_list_value_rev(s, n + 1, depth);
-	print_value(s->nodes[n], depth + 1);
-	fputs(" ", stdout);
-}
-
 Error get(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -506,23 +398,6 @@ Error type(Stack* S, Stack* scope_arr)
 	V t = get_ident(gettype(v));
 	pushS(t);
 	clear_ref(v);
-	return Nothing;
-}
-
-Error print(Stack* S, Stack* scope_arr)
-{
-	require(1);
-	V v = popS();
-	print_value(v, 0);
-	clear_ref(v);
-	return Nothing;
-}
-
-Error print_nl(Stack* S, Stack* scope_arr)
-{
-	require(1);
-	print(S, scope_arr);
-	putchar('\n');
 	return Nothing;
 }
 
@@ -939,14 +814,6 @@ Error reversed(Stack* S, Stack* scope_arr)
 		push(toStack(rev), pop(toStack(list)));
 	}
 	pushS(rev);
-	return Nothing;
-}
-
-Error print_stack(Stack* S, Stack* scope_arr)
-{
-	fputs("[ ", stdout);
-	print_list_value_rev(S, 0, 0);
-	puts("]");
 	return Nothing;
 }
 
@@ -1478,32 +1345,6 @@ Error rep(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print_var(Stack *S, Stack *scope_arr)
-{
-	while (true)
-	{
-		require(1);
-		V head = get_head(S);
-		if (getType(head) == T_IDENT && head == get_ident(")"))
-		{
-			clear_ref(popS());
-			return Nothing;
-		}
-		print(S, scope_arr);
-		putchar(' ');
-	}
-}
-
-Error print_var_nl(Stack *S, Stack *scope_arr)
-{
-	Error e = print_var(S, scope_arr);
-	if (e == Nothing)
-	{
-		putchar('\n');
-	}
-	return e;
-}
-
 Error to_num(Stack *S, Stack *scope_arr)
 {
 	char *end;
@@ -1935,92 +1776,6 @@ Error file_info(Stack* S, Stack* scope_arr)
 		h->size, h->n_literals, toNewString(f->name)->text, toNewString(f->source)->text,
 		toScope(f->global)->hm.used);
 	return Nothing;
-}
-
-Error print_f(Stack* S, Stack* scope_arr)
-{
-	require(1);
-	V v = popS();
-	int i, size;
-	switch (getType(v))
-	{
-		case T_STR:
-			printf("%*s", (int)(toNewString(v)->size), toNewString(v)->text);
-			break;
-		case T_NUM:
-			printf("%.15g", toNumber(v));
-			break;
-		case T_BLOB:
-			size = toBlob(v)->size > 31 ? 30 : toBlob(v)->size;
-			fputs("(blob:", stdout);
-			bool is_printable_ascii = true;
-			for (i = 0; i < size; i++)
-			{
-				char c = toBlob(v)->data[i];
-				if (c < 32 || c >= 128)
-				{
-					is_printable_ascii = false;
-					break;
-				}
-			}
-			if (is_printable_ascii)
-			{
-				printf("\"%.*s\"", (int)size, toBlob(v)->data);
-			}
-			else
-			{
-				for (i = 0; i < size; i++)
-				{
-					printf("%02hhx", toBlob(v)->data[i]);
-				}
-			}
-			if (size < toBlob(v)->size)
-			{
-				fputs("...)", stdout);
-			}
-			else
-			{
-				fputs(")", stdout);
-			}
-			break;
-		default:
-			print_value(v, 1);
-	}
-	clear_ref(v);
-	return Nothing;
-}
-
-Error print_f_nl(Stack* S, Stack* scope_arr)
-{
-	require(1);
-	print_f(S, scope_arr);
-	putchar('\n');
-	return Nothing;
-}
-
-Error print_f_var(Stack *S, Stack *scope_arr)
-{
-	while (true)
-	{
-		require(1);
-		V head = get_head(S);
-		if (getType(head) == T_IDENT && head == get_ident(")"))
-		{
-			clear_ref(popS());
-			return Nothing;
-		}
-		print_f(S, scope_arr);
-	}
-}
-
-Error print_f_var_nl(Stack *S, Stack *scope_arr)
-{
-	Error e = print_f_var(S, scope_arr);
-	if (e == Nothing)
-	{
-		putchar('\n');
-	}
-	return e;
 }
 
 Error abs_(Stack *S, Stack *scope_arr)
@@ -2493,14 +2248,6 @@ static CFunc stdlib[] = {
 	{"*", mul},
 	{"/", div_},
 	{"%", mod_},
-	{".", print_nl},
-	{".\\", print},
-	{".\\(", print_var},
-	{".(", print_var_nl},
-	{"print\\", print_f},
-	{"print", print_f_nl},
-	{"print\\(", print_f_var},
-	{"print(", print_f_var_nl},
 	{"type", type},
 	{"[]", make_new_list},
 	{"[", produce_list},
@@ -2526,7 +2273,6 @@ static CFunc stdlib[] = {
 	{"pop-from", pop_from},
 	{"tail-call", tail_call},
 	{"recurse", self_tail},
-	{"(print-stack)", print_stack},
 	{"(print-depth)", print_depth},
 	{"input", input},
 	{"copy", copy},

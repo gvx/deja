@@ -6,6 +6,8 @@
 #include "debug.h"
 #include "persist.h"
 
+Error print_stack(Stack*, Stack*);
+
 bool reraise;
 bool vm_silent = false;
 bool vm_debug = false;
@@ -78,15 +80,10 @@ void run(V global, Stack *S)
 	}
 	if (e == Exit)
 	{
-		int i;
 		if (stack_size(S) && !vm_silent)
 		{
 			puts("Result:");
-			for (i = 0; i < stack_size(S); i++)
-			{
-				print_value(S->nodes[i], 0);
-				putchar(10);
-			}
+			print_stack(S, NULL);
 		}
 		if (vm_persist)
 		{
