@@ -1130,7 +1130,8 @@ Error len(Stack* S, Stack* scope_arr)
 
 Error yield(Stack* S, Stack* scope_arr)
 {
-	pushS(toScope(get_head(scope_arr))->func);
+	V cont = get_head(scope_arr);
+	pushS(add_ref(cont));
 	return return_(S, scope_arr);
 }
 
