@@ -69,6 +69,10 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			{
 				return toCFunc(v)(S, scope_arr);
 			}
+			else if (getType(v) == T_SCOPE)
+			{
+				call_scope(scope_arr, v);
+			}
 			else
 			{
 				pushS(add_ref(v));
@@ -516,6 +520,10 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				Error r = toCFunc(v)(S, scope_arr);
 				clear_ref(v);
 				return r;
+			}
+			else if (getType(v) == T_SCOPE)
+			{
+				call_scope(scope_arr, v);
 			}
 			else
 			{

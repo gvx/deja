@@ -382,6 +382,7 @@ const char* gettype(V r)
 			return "frac";
 		case T_FUNC:
 		case T_CFUNC:
+		case T_SCOPE:
 			return "func";
 		case T_BLOB:
 			return "blob";
@@ -900,6 +901,10 @@ Error tail_call(Stack* S, Stack* scope_arr)
 		clear_ref(v);
 		return e;
 	}
+	else if (getType(v) == T_SCOPE)
+	{
+		call_scope(scope_arr, v);
+	}
 	else
 	{
 		pushS(v);
@@ -992,6 +997,10 @@ Error call(Stack* S, Stack* scope_arr)
 		Error e = toCFunc(v)(S, scope_arr);
 		clear_ref(v);
 		return e;
+	}
+	else if (getType(v) == T_SCOPE)
+	{
+		call_scope(scope_arr, v);
 	}
 	else
 	{

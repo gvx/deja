@@ -2,6 +2,7 @@
 #define SCOPE_DEF
 
 #include "hashmap.h"
+#include "stack.h"
 
 #include <stdint.h>
 
@@ -33,5 +34,6 @@ V new_scope(V);
 V new_function_scope(V, V);
 V new_file_scope(V);
 V new_global_scope(void);
+void call_scope(Stack*, V);
 
 #endif

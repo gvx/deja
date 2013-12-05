@@ -84,3 +84,12 @@ V new_global_scope(void)
 	hashmap_from_scope(sc, 256);
 	return sc;
 }
+
+void call_scope(Stack *scope_arr, V s)
+{
+	if (!toScope(s)->is_func_scope)
+	{
+		call_scope(scope_arr, toScope(s)->parent);
+	}
+	push(scope_arr, add_base_ref(s));
+}
