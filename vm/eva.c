@@ -191,6 +191,7 @@ int encode_quoted(V output, int index, V object, int level)
 			break;
 		case T_CFUNC:
 		case T_FUNC:
+		case T_SCOPE:
 			ENSURE_BIG_ENOUGH(6);
 			memcpy(toBlob(output)->data + index, "(func)", 6);
 			index += 6;
