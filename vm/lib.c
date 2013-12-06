@@ -963,20 +963,22 @@ Error copy(Stack* S, Stack* scope_arr)
 	require(1);
 	V v = popS();
 	V new;
-	if (getType(v) == T_LIST)
+	switch (getType(v))
 	{
-		new = new_list();
-		copy_stack(toStack(v), toStack(new));
-	}
-	else if (getType(v) == T_DICT)
-	{
-		HashMap *hm = toHashMap(v);
-		new = new_sized_dict(hm->size);
-		copy_hashmap(hm, toHashMap(new));
-	}
-	else
-	{
-		new = add_ref(v);
+		case T_LIST:
+			new = new_list();
+			copy_stack(toStack(v), toStack(new));
+			break;
+		case T_DICT:
+			new = new_sized_dict(toHashMap(v)->size);
+			copy_hashmap(toHashMap(v), toHashMap(new));
+			break;
+		case T_BLOB:
+			new = clone_blob(v);
+			break;
+		default:
+			new = add_ref(v);
+			break;
 	}
 	pushS(new);
 	clear_ref(v);
