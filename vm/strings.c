@@ -579,7 +579,12 @@ Error slice(Stack *S, Stack *scope_arr)
 		e = len + e;
 	else if (e > len)
 		e = len;
-	pushS(strslice(string->text, s, e));
+	utf8index si = 0;
+	e -= s;
+	while (s--) si = nextchar(string->text, si);
+	utf8index ei = si;
+	while (e--) ei = nextchar(string->text, ei);
+	pushS(strslice(string->text, si, ei));
 	clear_ref(str);
 	clear_ref(start);
 	clear_ref(end);
