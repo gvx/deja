@@ -98,20 +98,6 @@ void free_value(V t)
 			break;
 		case T_SCOPE:
 			sc = toScope(t);
-			if (sc->hm.map != NULL)
-			{
-				for (n = 0; n < sc->hm.size; n++)
-				{
-					b = sc->hm.map[n];
-					while(b != NULL)
-					{
-						bb = b;
-						b = b->next;
-						free(bb);
-					}
-				}
-				free(sc->hm.map);
-			}
 			if (sc->index > 0)
 			{
 				if (MAXSCOPE == sc->index)
@@ -206,18 +192,9 @@ void iter_children(V t, void (*iter)(V))
 			{
 				iter(sc->callname);
 			}
-			if (sc->hm.map != NULL)
+			if (sc->env != NULL)
 			{
-				for (i = 0; i < sc->hm.size; i++)
-				{
-					b = sc->hm.map[i];
-					while(b != NULL)
-					{
-						iter(b->key);
-						iter(b->value);
-						b = b->next;
-					}
-				}
+				iter(sc->env);
 			}
 			break;
 		case T_FILE:

@@ -51,7 +51,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_PUSH_WORD:
 			lastCall = key = get_literal(h, argument);
-			v = get_hashmap(&sc->hm, key);
+			v = get_hashmap(toHashMap(sc->env), key);
 			while (v == NULL)
 			{
 				if (sc->parent == NULL)
@@ -59,7 +59,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 					return NameError;
 				}
 				sc = toScope(sc->parent);
-				v = get_hashmap(&sc->hm, key);
+				v = get_hashmap(toHashMap(sc->env), key);
 			}
 			if (getType(v) == T_FUNC)
 			{
@@ -85,12 +85,12 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			v = popS();
 			V key = get_literal(h, argument);
-			while (!change_hashmap(&sc->hm, key, v))
+			while (!change_hashmap(toHashMap(sc->env), key, v))
 			{
 				if (sc->parent == NULL)
 				{
 					//set in the global environment
-					set_hashmap(&sc->hm, key, v);
+					set_hashmap(toHashMap(sc->env), key, v);
 					break;
 				}
 				else
@@ -106,7 +106,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			v = popS();
-			set_hashmap(&sc->hm, get_literal(h, argument), v);
+			set_hashmap(toHashMap(sc->env), get_literal(h, argument), v);
 			clear_ref(v);
 			break;
 		case OP_SET_GLOBAL:
@@ -115,12 +115,12 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			v = popS();
-			set_hashmap(&toScope(toFile(sc->file)->global)->hm, get_literal(h, argument), v);
+			set_hashmap(toHashMap(toScope(toFile(sc->file)->global)->env), get_literal(h, argument), v);
 			clear_ref(v);
 			break;
 		case OP_GET:
 			key = get_literal(h, argument);
-			v = get_hashmap(&sc->hm, key);
+			v = get_hashmap(toHashMap(sc->env), key);
 			while (v == NULL)
 			{
 				if (sc->parent == NULL)
@@ -128,12 +128,12 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 					return NameError;
 				}
 				sc = toScope(sc->parent);
-				v = get_hashmap(&sc->hm, key);
+				v = get_hashmap(toHashMap(sc->env), key);
 			}
 			pushS(add_ref(v));
 			break;
 		case OP_GET_GLOBAL:
-			v = get_hashmap(&toScope(toFile(sc->file)->global)->hm, get_literal(h, argument));
+			v = get_hashmap(toHashMap(toScope(toFile(sc->file)->global)->env), get_literal(h, argument));
 			if (v == NULL)
 			{
 				return NameError;

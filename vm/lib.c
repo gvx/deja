@@ -18,7 +18,7 @@ Error get(Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	Scope *sc = toScope(get_head(scope_arr));
-	V v = get_hashmap(&sc->hm, key);
+	V v = get_hashmap(toHashMap(sc->env), key);
 	while (v == NULL)
 	{
 		if (sc->parent == NULL)
@@ -27,7 +27,7 @@ Error get(Stack* S, Stack* scope_arr)
 			return NameError;
 		}
 		sc = toScope(sc->parent);
-		v = get_hashmap(&sc->hm, key);
+		v = get_hashmap(toHashMap(sc->env), key);
 	}
 	pushS(add_ref(v));
 	clear_ref(key);
@@ -43,7 +43,7 @@ Error getglobal(Stack* S, Stack* scope_arr)
 		clear_ref(key);
 		return TypeError;
 	}
-	V r = get_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, key);
+	V r = get_hashmap(toHashMap(toScope(toFile(toScope(get_head(scope_arr))->file)->global)->env), key);
 	clear_ref(key);
 	if (r == NULL)
 	{
@@ -64,12 +64,12 @@ Error set(Stack* S, Stack* scope_arr)
 	}
 	V v = popS();
 	Scope *sc = toScope(get_head(scope_arr));
-	while (!change_hashmap(&sc->hm, key, v))
+	while (!change_hashmap(toHashMap(sc->env), key, v))
 	{
 		if (sc->parent == NULL)
 		{
 			//set in the global environment
-			set_hashmap(&sc->hm, key, v);
+			set_hashmap(toHashMap(sc->env), key, v);
 			break;
 		}
 		else
@@ -92,7 +92,7 @@ Error setglobal(Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	V v = popS();
-	set_hashmap(&toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm, key, v);
+	set_hashmap(toHashMap(toScope(toFile(toScope(get_head(scope_arr))->file)->global)->env), key, v);
 	clear_ref(v);
 	clear_ref(key);
 	return Nothing;
@@ -108,7 +108,7 @@ Error setlocal(Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	V v = popS();
-	set_hashmap(&toScope(get_head(scope_arr))->hm, key, v);
+	set_hashmap(toHashMap(toScope(get_head(scope_arr))->env), key, v);
 	clear_ref(v);
 	clear_ref(key);
 	return Nothing;
@@ -1159,7 +1159,7 @@ Error loadlib(Stack* S, Stack* scope_arr)
 		fprintf(stderr, "%s\n", dlerror());
 		return UnknownError;
 	}
-	open_lib(lib, &toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm);
+	open_lib(lib, toHashMap(toScope(toFile(toScope(get_head(scope_arr))->file)->global)->env));
 	CFuncP initfunc = dlsym(lib_handle, "deja_vu_init");
 	if (initfunc != NULL)
 	{
@@ -1557,7 +1557,7 @@ Error exists_(Stack* S, Stack* scope_arr)
 	}
 
 	Scope *sc = toScope(get_head(scope_arr));
-	V v = get_hashmap(&sc->hm, key);
+	V v = get_hashmap(toHashMap(sc->env), key);
 	while (v == NULL)
 	{
 		if (sc->parent == NULL)
@@ -1567,7 +1567,7 @@ Error exists_(Stack* S, Stack* scope_arr)
 			return Nothing;
 		}
 		sc = toScope(sc->parent);
-		v = get_hashmap(&sc->hm, key);
+		v = get_hashmap(toHashMap(sc->env), key);
 	}
 	pushS(add_ref(v_true));
 	clear_ref(key);
@@ -1786,7 +1786,7 @@ Error file_info(Stack* S, Stack* scope_arr)
 	Header *h = &f->header;
 	printf("(source size:%d, literals:%d, filename:%s, source:%s, globals:%d)\n",
 		h->size, h->n_literals, toNewString(f->name)->text, toNewString(f->source)->text,
-		toScope(f->global)->hm.used);
+		toHashMap(toScope(f->global)->env)->used);
 	return Nothing;
 }
 
@@ -2229,7 +2229,7 @@ Error print_traceback(Stack *S, Stack *scope_arr)
 Error list_globals(Stack *S, Stack *scope_arr)
 {
 	V list = new_list();
-	HashMap *hm = &toScope(toFile(toScope(get_head(scope_arr))->file)->global)->hm;
+	HashMap *hm = toHashMap(toScope(toFile(toScope(get_head(scope_arr))->file)->global)->env);
 	if (hm->map != NULL)
 	{
 		Stack *s = toStack(list);

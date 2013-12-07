@@ -21,7 +21,6 @@ typedef struct HashMap
 
 HashMap* new_hashmap(int);
 void hashmap_from_value(V, int);
-void hashmap_from_scope(V, int);
 V get_hashmap(HashMap*, V);
 V get_dict(HashMap*, V);
 bool delete_hashmap(HashMap*, V);

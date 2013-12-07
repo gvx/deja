@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	init_module_path();
 	init_errors();
 	V global = new_global_scope();
-	V v_eva = open_std_lib(&toScope(global)->hm);
+	V v_eva = open_std_lib(toHashMap(toScope(global)->env));
 	Stack *S = new_stack();
 	init_argv(argc - optind, argv + optind, v_eva);
 	run(global, S);

@@ -17,7 +17,7 @@ typedef struct Scope
 	uint32_t is_error_handler : 4;
 	uint32_t linenr : 24;
 	uint32_t* pc;
-	struct HashMap hm;
+	V env;
 } Scope;
 
 typedef struct
@@ -33,6 +33,7 @@ int MAXSCOPE;
 V new_scope(V);
 V new_function_scope(V, V);
 V new_file_scope(V);
+V new_file_scope_env(V, V);
 V new_global_scope(void);
 void call_scope(Stack*, V);
 

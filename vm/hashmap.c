@@ -24,14 +24,6 @@ void hashmap_from_value(V v, int initialsize)
 	hm->map = NULL;
 }
 
-void hashmap_from_scope(V v_scope, int initialsize)
-{
-	Scope* scope = toScope(v_scope);
-	scope->hm.used = 0;
-	scope->hm.size = initialsize;
-	scope->hm.map = NULL;
-}
-
 uint32_t get_hash(V v)
 {
 	int t = getType(v);

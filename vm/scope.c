@@ -37,7 +37,7 @@ V new_scope(V parent)
 	scope->callname = pscope->callname == NULL ? NULL : add_ref(pscope->callname);
 	scope->pc = pscope->pc;
 	scope->linenr = pscope->linenr;
-	hashmap_from_scope(sc, 16);
+	scope->env = new_sized_dict(16);
 	return sc;
 }
 
@@ -52,11 +52,16 @@ V new_function_scope(V function, V callname)
 	scope->file = add_ref(toScope(scope->parent)->file);
 	scope->callname = callname == NULL ? NULL : add_ref(callname);
 	scope->pc = toFunc(function)->start;
-	hashmap_from_scope(sc, 32);
+	scope->env = new_sized_dict(32);
 	return sc;
 }
 
 V new_file_scope(V file)
+{
+	return new_file_scope_env(file, new_sized_dict(64));
+}
+
+V new_file_scope_env(V file, V env)
 {
 	V sc = create_scope();
 	Scope* scope = toScope(sc);
@@ -67,7 +72,7 @@ V new_file_scope(V file)
 	scope->file = add_ref(file);
 	scope->callname = NULL;
 	scope->pc = toFile(file)->code - 1;
-	hashmap_from_scope(sc, 64);
+	scope->env = env;
 	return sc;
 }
 
@@ -81,7 +86,7 @@ V new_global_scope(void)
 	scope->file = NULL;
 	scope->callname = NULL;
 	scope->pc = NULL;
-	hashmap_from_scope(sc, 256);
+	scope->env = new_sized_dict(256);
 	return sc;
 }
 
