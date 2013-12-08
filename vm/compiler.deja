@@ -799,18 +799,17 @@ local :loaded {}
 	tail-call @local
 
 local prompt linenr n:
-	!print\( "<" linenr ":" n "> " )
-	!read-line!stdin
+	!prompt concat( "<" to-str linenr ":" to-str n "> " )
 	if = :eof dup:
 		drop
 		!print ""
 		exit
-	!decode!utf-8
 
 local try-compile linenr fname:
 	try:
 		prompt linenr 1
 	catch interrupt:
+		!print ""
 		return false
 	try:
 		!compile-string fname dup
@@ -823,6 +822,8 @@ local try-compile linenr fname:
 				++
 			drop
 		catch interrupt:
+			drop
+			!print ""
 			return false
 		drop
 		try:

@@ -10,6 +10,7 @@
 #include "blob.h"
 #include "strings.h"
 #include "literals.h"
+#include "prompt.h"
 
 Error decode(Stack *S, Stack *scope_arr)
 {
@@ -404,6 +405,33 @@ Error read_line(Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	clear_ref(file_name);
+	return Nothing;
+}
+
+Error read_prompt(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V prompt_line = popS();
+	if (getType(prompt_line) != T_STR)
+	{
+		clear_ref(prompt_line);
+		return TypeError;
+	}
+	prompt_t strout;
+	switch (prompt(toNewString(prompt_line)->text, strout))
+	{
+		case prompt_result_normal:
+			pushS(a_to_string(strout));
+			clear_ref(prompt_line);
+			return Nothing;
+		case prompt_result_interrupt:
+			clear_ref(prompt_line);
+			return Interrupt;
+		case prompt_result_eof:
+			pushS(get_ident("eof"));
+			clear_ref(prompt_line);
+			return Nothing;
+	}
 	return Nothing;
 }
 
@@ -831,5 +859,6 @@ CFunc eva[] = {
 	{"run-blob", run_blob},
 	{"run-blob-in", run_blob_in_env},
 	{"(print-stack)", print_stack},
+	{"prompt", read_prompt},
 	{NULL, NULL}
 };
