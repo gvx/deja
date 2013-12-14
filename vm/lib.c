@@ -2276,6 +2276,7 @@ static CFunc stdlib[] = {
 	{"chance", chance},
 	{"set-default", set_default},
 	{"random-int", random_int},
+	{"random-range", random_range},
 	{"opt-get", opt_get},
 	{"(sort)", sort_list},
 	{"print-traceback", print_traceback},

@@ -69,3 +69,44 @@ Error random_int(Stack *S, Stack *scope_arr)
 
 	return Nothing;
 }
+
+State extract_ranged(State range)
+{
+	// If you can show this introduces
+	// a bias, please report it to me
+	// and I'll write a proper version.
+	//return extract_number() % range;
+	State rnd, limit = UINT32_MAX - UINT32_MAX % range;
+	do
+	{
+		rnd = extract_number();
+	}
+	while (rnd >= limit);
+	return rnd % range;
+}
+
+Error random_range(Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V a = popS();
+	V b = popS();
+	if (getType(a) != T_NUM || getType(b) != T_NUM)
+	{
+		clear_ref(a);
+		clear_ref(b);
+		return TypeError;
+	}
+	State min = toNumber(a);
+	State max = toNumber(b);
+	if (min >= max)
+	{
+		clear_ref(a);
+		clear_ref(b);
+		return ValueError;
+	}
+	pushS(int_to_value(min + extract_ranged(max - min)));
+
+	clear_ref(a);
+	clear_ref(b);
+	return Nothing;
+}

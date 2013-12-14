@@ -5,5 +5,6 @@
 
 void init_random(int);
 Error random_int(Stack*, Stack*);
+Error random_range(Stack*, Stack*);
 
 #endif
