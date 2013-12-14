@@ -2339,9 +2339,13 @@ V open_std_lib(HashMap* hm)
 
 	// Open EVA
 	V v_eva = new_dict();
-	extern CFunc eva[];
-	open_lib(eva, toHashMap(v_eva));
-	set_hashmap(hm, get_ident("eva"), v_eva);
+	extern bool vm_persist;
+	if (!vm_persist)
+	{
+		extern CFunc eva[];
+		open_lib(eva, toHashMap(v_eva));
+		set_hashmap(hm, get_ident("eva"), v_eva);
+	}
 
 	srand((unsigned int)time(NULL));
 	struct timespec tm;
