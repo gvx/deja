@@ -421,6 +421,10 @@ Error read_prompt(Stack *S, Stack *scope_arr)
 	switch (prompt(toNewString(prompt_line)->text, strout))
 	{
 		case prompt_result_normal:
+			if (!valid_utf8(strlen(strout), strout))
+			{
+				return UnicodeError;
+			}
 			pushS(a_to_string(strout));
 			clear_ref(prompt_line);
 			return Nothing;
