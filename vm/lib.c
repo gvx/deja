@@ -932,32 +932,6 @@ Error self_tail(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error print_depth(Stack* S, Stack* scope_arr)
-{
-	printf("(depth:%d)\n", stack_size(scope_arr));
-	return Nothing;
-}
-
-Error input(Stack* S, Stack* scope_arr)
-{
-	char line[256];
-	if (!fgets(line, 256, stdin))
-	{
-		pushS(add_ref(v_false));
-		return Nothing;
-	}
-	if (line[strlen(line) - 1] == '\n')
-	{
-		line[strlen(line) - 1] = '\0'; //removes trailing newline
-	}
-	if (!valid_utf8(strlen(line), line))
-	{
-		return UnicodeError;
-	}
-	pushS(a_to_string(line));
-	return Nothing;
-}
-
 Error copy(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -1086,24 +1060,6 @@ Error raise_msg(Stack* S, Stack* scope_arr)
 	}
 	set_error_msg(toNewString(msg)->text);
 	clear_ref(msg);
-	return ident_to_error(err);
-}
-
-
-Error catch_if(Stack* S, Stack* scope_arr)
-{
-	require(2);
-	over(S, scope_arr);
-	V err = popS();
-	eq(S, scope_arr);
-	V res = popS();
-	if (truthy(res))
-	{
-		clear_ref(res);
-		pushS(err);
-		return Nothing;
-	}
-	clear_ref(res);
 	return ident_to_error(err);
 }
 
@@ -1780,16 +1736,6 @@ Error get_both(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
-Error file_info(Stack* S, Stack* scope_arr)
-{
-	File *f = toFile(toScope(get_head(scope_arr))->file);
-	Header *h = &f->header;
-	printf("(source size:%d, literals:%d, filename:%s, source:%s, globals:%d)\n",
-		h->size, h->n_literals, toNewString(f->name)->text, toNewString(f->source)->text,
-		toHashMap(toScope(f->global)->env)->used);
-	return Nothing;
-}
-
 Error abs_(Stack *S, Stack *scope_arr)
 {
 	require(1);
@@ -1885,18 +1831,6 @@ Error atan_(Stack *S, Stack *scope_arr)
 	}
 	pushS(double_to_value(atan(toNumber(v))));
 	clear_ref(v);
-	return Nothing;
-}
-
-Error print_ident_count(Stack *S, Stack *scope_arr)
-{
-	printf("(idents:%d)\n", ident_count());
-	return Nothing;
-}
-
-Error print_ident_depth(Stack *S, Stack *scope_arr)
-{
-	printf("(ident-depth:%d)\n", ident_depth());
 	return Nothing;
 }
 
@@ -2285,8 +2219,6 @@ static CFunc stdlib[] = {
 	{"pop-from", pop_from},
 	{"tail-call", tail_call},
 	{"recurse", self_tail},
-	{"(print-depth)", print_depth},
-	{"input", input},
 	{"copy", copy},
 	{"call", call},
 	{"dup", dup},
@@ -2297,7 +2229,6 @@ static CFunc stdlib[] = {
 	{"raise", raise_},
 	{"reraise", reraise_},
 	{"Raise", raise_msg},
-	{"catch-if", catch_if},
 	{"len", len},
 	{"yield", yield},
 	{"loadlib", loadlib},
@@ -2329,7 +2260,6 @@ static CFunc stdlib[] = {
 	{"&<", get_first},
 	{"&>", get_second},
 	{"&<>", get_both},
-	{"(file-info)", file_info},
 	{"abs", abs_},
 	{"sin", sin_},
 	{"cos", cos_},
@@ -2337,8 +2267,6 @@ static CFunc stdlib[] = {
 	{"asin", asin_},
 	{"acos", acos_},
 	{"atan", atan_},
-	{"(ident-count)", print_ident_count},
-	{"(ident-depth)", print_ident_depth},
 	{"//", make_frac},
 	{"clear", clear},
 	{"time", time_},
