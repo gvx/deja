@@ -39,7 +39,7 @@ void init_random(int s)
 void generate_numbers()
 {
  	int i;
-	for (i = 1; i < 624; i++)
+	for (i = 0; i < 624; i++)
 	{
 		State y = (MTState[i] & 0x80000000L) // bit 31 (32nd bit) of MTState[i]
 						+ (MTState[(i+1) % 624] & 0x7fffffffL); // bits 0-30 (first 31 bits) of MTState[...]
