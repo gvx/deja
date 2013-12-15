@@ -51,15 +51,13 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_PUSH_WORD:
 			lastCall = key = get_literal(h, argument);
-			v = get_hashmap(toHashMap(sc->env), key);
-			while (v == NULL)
+			while (sc->env == NULL || (v = get_hashmap(toHashMap(sc->env), key)) == NULL)
 			{
 				if (sc->parent == NULL)
 				{
 					return NameError;
 				}
 				sc = toScope(sc->parent);
-				v = get_hashmap(toHashMap(sc->env), key);
 			}
 			if (getType(v) == T_FUNC)
 			{
@@ -85,7 +83,7 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			}
 			v = popS();
 			V key = get_literal(h, argument);
-			while (!change_hashmap(toHashMap(sc->env), key, v))
+			while (sc->env == NULL || !change_hashmap(toHashMap(sc->env), key, v))
 			{
 				if (sc->parent == NULL)
 				{
@@ -106,6 +104,10 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			v = popS();
+			if (sc->env == NULL)
+			{
+				sc->env = new_sized_dict(16);
+			}
 			set_hashmap(toHashMap(sc->env), get_literal(h, argument), v);
 			clear_ref(v);
 			break;
@@ -120,15 +122,13 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			break;
 		case OP_GET:
 			key = get_literal(h, argument);
-			v = get_hashmap(toHashMap(sc->env), key);
-			while (v == NULL)
+			while (sc->env == NULL || (v = get_hashmap(toHashMap(sc->env), key)) == NULL)
 			{
 				if (sc->parent == NULL)
 				{
 					return NameError;
 				}
 				sc = toScope(sc->parent);
-				v = get_hashmap(toHashMap(sc->env), key);
 			}
 			pushS(add_ref(v));
 			break;

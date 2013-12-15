@@ -37,7 +37,7 @@ V new_scope(V parent)
 	scope->callname = pscope->callname == NULL ? NULL : add_ref(pscope->callname);
 	scope->pc = pscope->pc;
 	scope->linenr = pscope->linenr;
-	scope->env = new_sized_dict(16);
+	scope->env = NULL;
 	return sc;
 }
 
@@ -52,13 +52,13 @@ V new_function_scope(V function, V callname)
 	scope->file = add_ref(toScope(scope->parent)->file);
 	scope->callname = callname == NULL ? NULL : add_ref(callname);
 	scope->pc = toFunc(function)->start;
-	scope->env = new_sized_dict(32);
+	scope->env = NULL;
 	return sc;
 }
 
 V new_file_scope(V file)
 {
-	return new_file_scope_env(file, new_sized_dict(64));
+	return new_file_scope_env(file, NULL);
 }
 
 V new_file_scope_env(V file, V env)

@@ -18,8 +18,8 @@ Error get(Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	Scope *sc = toScope(get_head(scope_arr));
-	V v = get_hashmap(toHashMap(sc->env), key);
-	while (v == NULL)
+	V v;
+	while (sc->env == NULL || (v = get_hashmap(toHashMap(sc->env), key)) == NULL)
 	{
 		if (sc->parent == NULL)
 		{
@@ -27,7 +27,6 @@ Error get(Stack* S, Stack* scope_arr)
 			return NameError;
 		}
 		sc = toScope(sc->parent);
-		v = get_hashmap(toHashMap(sc->env), key);
 	}
 	pushS(add_ref(v));
 	clear_ref(key);
@@ -64,7 +63,7 @@ Error set(Stack* S, Stack* scope_arr)
 	}
 	V v = popS();
 	Scope *sc = toScope(get_head(scope_arr));
-	while (!change_hashmap(toHashMap(sc->env), key, v))
+	while (sc->env == NULL || !change_hashmap(toHashMap(sc->env), key, v))
 	{
 		if (sc->parent == NULL)
 		{
@@ -108,7 +107,12 @@ Error setlocal(Stack* S, Stack* scope_arr)
 		return TypeError;
 	}
 	V v = popS();
-	set_hashmap(toHashMap(toScope(get_head(scope_arr))->env), key, v);
+	Scope *sc = toScope(get_head(scope_arr));
+	if (sc->env == NULL)
+	{
+		sc->env = new_sized_dict(16);
+	}
+	set_hashmap(toHashMap(sc->env), key, v);
 	clear_ref(v);
 	clear_ref(key);
 	return Nothing;
@@ -1513,8 +1517,8 @@ Error exists_(Stack* S, Stack* scope_arr)
 	}
 
 	Scope *sc = toScope(get_head(scope_arr));
-	V v = get_hashmap(toHashMap(sc->env), key);
-	while (v == NULL)
+	V v;
+	while (sc->env == NULL || (v = get_hashmap(toHashMap(sc->env), key)) == NULL)
 	{
 		if (sc->parent == NULL)
 		{
@@ -1523,7 +1527,6 @@ Error exists_(Stack* S, Stack* scope_arr)
 			return Nothing;
 		}
 		sc = toScope(sc->parent);
-		v = get_hashmap(toHashMap(sc->env), key);
 	}
 	pushS(add_ref(v_true));
 	clear_ref(key);
