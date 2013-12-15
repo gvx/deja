@@ -2154,9 +2154,10 @@ Error sort_list(Stack *S, Stack *scope_arr)
 }
 
 extern Stack *traceback;
+extern Error last_error;
 Error print_traceback(Stack *S, Stack *scope_arr)
 {
-	handle_error(UserError, traceback);
+	handle_error(last_error, traceback);
 	return Nothing;
 }
 

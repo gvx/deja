@@ -13,6 +13,7 @@ bool vm_silent = false;
 bool vm_debug = false;
 bool vm_persist = false;
 bool vm_interrupt = false;
+Error last_error = Nothing;
 
 Stack *traceback;
 
@@ -56,7 +57,11 @@ void run(V global, Stack *S)
 				{
 					clear_base_ref(pop(traceback));
 				}
-
+				last_error = e;
+			}
+			else
+			{
+				e = last_error;
 			}
 			do
 			{
