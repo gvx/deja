@@ -36,7 +36,7 @@ def find_labels(code):
 
 def make_line_00(i, op, arg, labels, literals):
     #prefix = labels[i] + '\n' if i in labels else ''
-    prefix = '{0:6}'.format(labels.get(i, ''))
+    prefix = '{0:5} '.format(labels.get(i, ''))
     if op in positional_instructions:
         arg = labels[i + arg]
     elif op in valued_opcodes and ' ' not in literals[arg]:
