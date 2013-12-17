@@ -7,7 +7,9 @@ def asm(intext):
 	mode = 'code'
 	labels = {}
 	label_reqs = defaultdict(list)
+	literal_reqs = defaultdict(list)
 	num_inst = 0
+	lit_index = 0
 	last_code = None
 	for line in intext.split('\n'):
 		if mode == 'code':
@@ -27,16 +29,19 @@ def asm(intext):
 				num_inst += 1
 				if s.upper() not in OPCODES:
 					raise Exception("%s not a legal opcode." % s)
-				if not words:
-					arg = 0
-				elif words[0].startswith('$'):
-					label_reqs[words[0][1:]].append((num_inst, len(acc)))
-					arg = 0
-				else:
-					arg = int(words[0])
+				arg = 0
+				if words:
+					if words[0].startswith('$'):
+						label_reqs[words[0][1:]].append((num_inst, len(acc)))
+					elif words[0].startswith('%'):
+						literal_reqs[words[0][1:]].append(len(acc))
+					else:
+						arg = int(words[0])
 				acc.append(OPCODES[s.upper()] | (arg & 0xFFFFFF))
 		else:
 			if line:
+				for len_acc in literal_reqs.pop(line, ()):
+					acc[len_acc] |= lit_index & 0xFFFFFF
 				t = line[0]
 				r = line[1:]
 				if t == 'i':
@@ -74,8 +79,15 @@ def asm(intext):
 					acc.append(double(float(r)))
 				else:
 					raise Exception("%s is not a legal literal type." % t)
+				lit_index += 1
 	if mode == 'code':
 		raise Exception("Literal segment missing!")
+	if literal_reqs:
+		undefined_literals = literal_reqs.keys()
+		if len(undefined_literals) > 1:
+			raise Exception("Mentioned literals %s and %s do not exist." % (', '.join(undefined_literals[0:-1]), undefined_literals[-1]))
+		else:
+			raise Exception("Mentioned literal %s does not exist." % undefined_literals[0])
 	for l in label_reqs:
 		if l not in labels:
 			raise Exception("Label %s used but not defined." % l)
