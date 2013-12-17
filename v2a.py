@@ -39,7 +39,7 @@ def make_line_00(i, op, arg, labels, literals):
     prefix = '{0:6}'.format(labels.get(i, ''))
     if op in positional_instructions:
         arg = labels[i + arg]
-    elif op in valued_opcodes:
+    elif op in valued_opcodes and ' ' not in literals[arg]:
         arg = '%' + literals[arg]
     elif op not in ops_with_arg:
         arg = ''
