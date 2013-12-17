@@ -8,106 +8,106 @@ labda $endfor
 	drop
 	return
 $endfor
-set_global 3
+set_global %ifor
 labda $endwhile
-	set_local 0
-	set_local 1
+	set_local %ia
+	set_local %ib
 	$startloop2
-	push_word 0
+	push_word %ia
 	jmpz $endloop2
-	push_word 1
+	push_word %ib
 	jmp $startloop2
 	$endloop2
 	return
 $endwhile
-set_global 4
+set_global %iwhile
 labda $endcompose
-	set_local 0
-	set_local 1
+	set_local %ia
+	set_local %ib
 	labda $endcomposed
-		push_word 1
-		push_word 0
+		push_word %ib
+		push_word %ia
 	$endcomposed
 	return
 $endcompose
-set_global 5
+set_global %i$
 labda $endover3
-	set_local 0
-	set_local 1
-	set_local 5
-	get 5
-	get 1
-	get 0
-	get 5
+	set_local %ia
+	set_local %ib
+	set_local %i$
+	get %i$
+	get %ib
+	get %ia
+	get %i$
 	return
 $endover3
-set_global 6
+set_global %iover-3
 new_dict
-set_local 0
+set_local %ia
 labda $endimport
-	set_local 1
-	push_word 1
-	push_word 0
+	set_local %ib
+	push_word %ib
+	push_word %ia
 	has_dict
-	push_word 7
+	push_word %inot
 	jmpz $already
-		push_word 1
-		push_word 8
-		push_word 1
-		push_word 0
+		push_word %ib
+		push_word %iuse
+		push_word %ib
+		push_word %ia
 		set_dict
 	$already
-	push_word 1
-	push_word 0
+	push_word %ib
+	push_word %ia
 	get_dict
-	push_word 1
-	push_word 9
+	push_word %ib
+	push_word %isetglobal
 	return
 $endimport
-set_global 10
+set_global %iimport
 labda $endlist
 	new_list
-	set_local 0
+	set_local %ia
 	$startloop3
 	dup
 	jmpz $endloop3
 		rot
-		get 0
+		get %ia
 		push_to
 		call
 		jmp $startloop3
 	$endloop3
 	drop
-	push_word 0
+	push_word %ia
 	return
 $endlist
-set_global 11
+set_global %ilist
 labda $endonce
-	push_word 12
-	get 35
+	push_word %ifalse
+	get %ipass
 	return
 $endonce
-set_global 13
+set_global %ionce
 labda $endwrite
 	swap
-	set_local 0
-	push_literal 14
-	push_literal 15
-	get 16
+	set_local %ia
+	push_literal %iwrite
+	push_literal %iopen
+	get %ieva
 	get_dict
 	call
-	set_local 1
-	push_word 0
-	get 0
-	push_word 17
-	push_literal 18
+	set_local %ib
+	push_word %ia
+	get %ia
+	push_word %itype
+	push_literal %iblob
 	jmpne $isiter
-		push_word 13
+		push_word %ionce
 	$isiter
 	enter_errhand $write-try
-		get 1
-		push_literal 19
-		get 16
+		get %ib
+		push_literal %iclose
+		get %ieva
 		get_dict
 		call
 		reraise
@@ -115,133 +115,133 @@ labda $endwrite
 		$start-write-for
 		dup
 		jmpz $end-write-for
-		set_local 3
-		set_local 4
-			get 1
-			push_literal 20
-			get 16
+		set_local %ifor
+		set_local %iwhile
+			get %ib
+			push_literal %iwrite-fragment
+			get %ieva
 			get_dict
 			call
-		push_word 4
-		push_word 3
+		push_word %iwhile
+		push_word %ifor
 		jmp $start-write-for
 		$end-write-for
 		drop
 	leave_errhand
-	get 1
-	push_literal 19
-	get 16
+	get %ib
+	push_literal %iclose
+	get %ieva
 	get_dict
 	call
 	return
 $endwrite
-push_literal 14
-get 16
+push_literal %iwrite
+get %ieva
 set_dict
 labda $endreplace
-	push_word 21
+	push_word %isplit
 	swap
-	push_word 22
+	push_word %ijoin
 	return
 $endreplace
-set_global 23
+set_global %ireplace
 labda $endsort
-    push_word 12
-    push_word 24
+    push_word %ifalse
+    push_word %i(sort)
     return
 $endsort
-set_global 25
+set_global %isort
 labda $endsort-by
-    set_local 27
+    set_local %ikey
     dup
-    push_word 28
+    push_word %icopy
     dup
-    push_word 30
-    push_word 29
-    set_local 0
+    push_word %ilen
+    push_word %i--
+    set_local %ia
     $start-sort-by-repeat
-    push_word 0
+    push_word %ia
     jmpz $end-sort-by-repeat
-        push_word 0
+        push_word %ia
         over
         get_dict
-        push_word 27
+        push_word %ikey
         dup
-        push_word 17
-        push_literal 31
+        push_word %itype
+        push_literal %inum
         jmpeq $no-number
             push_literal 32
-            push_literal 33
-            push_word 34
+            push_literal %itype-error
+            push_word %iRaise
         $no-number
         over
-        push_word 0
+        push_word %ia
         swap
         set_dict
-    push_word 0
-    push_word 29
-    set_local 0
+    push_word %ia
+    push_word %i--
+    set_local %ia
     jmp $start-sort-by-repeat
     $end-sort-by-repeat
-    push_word 24
+    push_word %i(sort)
     return
 $endsort-by
-set_global 26
+set_global %isort-by
 push_integer 1
-push_word 36
-set_local 37
+push_word %imake-blob
+set_local %ispace
 push_integer 32
 push_integer 0
-push_word 37
+push_word %ispace
 set_dict
 push_integer 1
-push_word 36
-set_local 38
+push_word %imake-blob
+set_local %inewline
 push_integer 10
 push_integer 0
-push_word 38
+push_word %inewline
 set_dict
 labda $endecho
-	push_literal 39
-	push_literal 20
-	push_word 16
+	push_literal %istdout
+	push_literal %iwrite-fragment
+	push_word %ieva
 	get_dict
 	call
 	return
 $endecho
-set_local 40
+set_local %iecho
 labda $end!print\
-	push_word 41
-	push_literal 42
-	push_literal 43
-	push_word 16
+	push_word %ito-str
+	push_literal %iutf-8
+	push_literal %iencode
+	push_word %ieva
 	get_dict
 	call
-	push_word 40
+	push_word %iecho
 	return
 $end!print\
-push_literal 44
-push_word 16
+push_literal %iprint\
+push_word %ieva
 set_dict
 labda $end!print
-	push_literal 44
-	push_word 16
+	push_literal %iprint\
+	push_word %ieva
 	get_dict
 	call
-	push_word 38
-	push_word 40
+	push_word %inewline
+	push_word %iecho
 	return
 $end!print
-push_literal 47
-push_word 16
+push_literal %iprint
+push_word %ieva
 set_dict
 labda $end!print\(
 	$startwhile!print\(
 	dup
-	push_literal 48
+	push_literal %i)
 		jmpeq $endwhile!print\(
-		push_literal 44
-		push_word 16
+		push_literal %iprint\
+		push_word %ieva
 		get_dict
 		call
 	jmp $startwhile!print\(
@@ -249,99 +249,99 @@ labda $end!print\(
 	drop
 	return
 $end!print\(
-push_literal 45
-push_word 16
+push_literal %iprint\(
+push_word %ieva
 set_dict
 labda $end!print(
-	push_literal 45
-	push_word 16
+	push_literal %iprint\(
+	push_word %ieva
 	get_dict
 	call
-	push_word 38
-	push_word 40
+	push_word %inewline
+	push_word %iecho
 	return
 $end!print(
-push_literal 46
-push_word 16
+push_literal %iprint(
+push_word %ieva
 set_dict
 labda $end!.\
-	push_literal 49
-	push_literal 43
-	push_word 16
+	push_literal %iquoted
+	push_literal %iencode
+	push_word %ieva
 	get_dict
 	call
-	push_word 40
+	push_word %iecho
 	return
 $end!.\
-push_literal 51
-push_word 16
+push_literal %i.\
+push_word %ieva
 set_dict
 labda $end!.
-	push_literal 51
-	push_word 16
+	push_literal %i.\
+	push_word %ieva
 	get_dict
 	call
-	push_word 38
-	push_word 40
+	push_word %inewline
+	push_word %iecho
 	return
 $end!.
-push_literal 53
-push_word 16
+push_literal %i.
+push_word %ieva
 set_dict
 labda $end!.\(
 	dup
-	push_literal 48
+	push_literal %i)
 	jmpeq $endwhile!.\(
 		$startwhile!.\(
-		push_literal 51
-		push_word 16
+		push_literal %i.\
+		push_word %ieva
 		get_dict
 		call
 		dup
-		push_literal 48
+		push_literal %i)
 		jmpeq $endwhile!.\(
-		push_word 37
-		push_word 40
+		push_word %ispace
+		push_word %iecho
 		jmp $startwhile!.\(
 	$endwhile!.\(
 	drop
 	return
 $end!.\(
-push_literal 50
-push_word 16
+push_literal %i.\(
+push_word %ieva
 set_dict
 labda $end!.(
-	push_literal 50
-	push_word 16
+	push_literal %i.\(
+	push_word %ieva
 	get_dict
 	call
-	push_word 38
-	push_word 40
+	push_word %inewline
+	push_word %iecho
 	return
 $end!.(
-push_literal 52
-push_word 16
+push_literal %i.(
+push_word %ieva
 set_dict
 labda $endmap
-	set_local 5
-	push_literal 55
+	set_local %i$
+	push_literal %i]
 	swap
-	push_word 57
+	push_word %iin
 	$startformap
 	dup
 	jmpz $endformap
-		set_local 0
-		set_local 1
-		push_word 5
-		get 1
-		push_word 0
+		set_local %ia
+		set_local %ib
+		push_word %i$
+		get %ib
+		push_word %ia
 	jmp $startformap
 	$endformap
 	drop
-	push_word 56
+	push_word %i[
 	return
 $endmap
-set_global 54
+set_global %imap
 return
 ...
 ia
