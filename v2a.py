@@ -34,11 +34,13 @@ def find_labels(code):
             lbls[loc] = '$' + op[0] + str(count)
     return lbls
 
-def make_line_00(i, op, arg, labels):
+def make_line_00(i, op, arg, labels, literals):
     #prefix = labels[i] + '\n' if i in labels else ''
     prefix = '{0:6}'.format(labels.get(i, ''))
     if op in positional_instructions:
         arg = labels[i + arg]
+    elif op in valued_opcodes:
+        arg = '%' + literals[arg]
     elif op not in ops_with_arg:
         arg = ''
     return prefix + op.lower() + ' ' + str(arg)
@@ -91,8 +93,8 @@ def dis_00(bc):
     bc = bc[4:]
     code = [op_arg(bc[j * 4:j * 4 + 4]) for j in range(size)]
     labels = find_labels(code)
-    literals = bc[size * 4:]
-    return '\n'.join(make_line_00(i, op, arg, labels) for i, (op, arg) in enumerate(code)) + '\n...\n' + '\n'.join(get_literals(literals)) + '\n'
+    literals = list(get_literals(bc[size * 4:]))
+    return '\n'.join(make_line_00(i, op, arg, labels, literals) for i, (op, arg) in enumerate(code)) + '\n...\n' + '\n'.join(literals) + '\n'
 
 def dis(bc):
     if not bc.startswith('\x07DV'):
