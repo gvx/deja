@@ -255,6 +255,17 @@ local make-marker:
 	& :marker (max-marker)
 	set :(max-marker) ++ (max-marker)
 
+local :(labda-types) set{ "labda" "func" "local" }
+local (find-inner-labda) tree:
+	for item in copy tree!lines:
+		if has item :type:
+			if has (labda-types) item!type:
+				return true
+			else:
+				if (find-inner-labda) item:
+					return true
+	return false
+
 }
 
 labda tree acc:
@@ -373,10 +384,15 @@ labda tree acc:
 	local :m make-marker
 	local :m2 make-marker
 
+	local :has-labda (find-inner-labda) tree
+
 	push-to acc & :drop 0
+	if not has-labda:
+		push-to acc & :leave-scope 0
 	push-to acc m2
 	push-to acc & :jmp m
-	push-to acc & :leave-scope 0
+	if has-labda:
+		push-to acc & :leave-scope 0
 	push-to acc & :push-word & :ident "#f"
 	push-to acc & :push-word & :ident "#h"
 
@@ -386,10 +402,13 @@ labda tree acc:
 	push-to acc & :set-local & :ident &> pop-from stmt!words
 	push-to acc & :set-local & :ident "#h"
 	push-to acc & :set-local & :ident "#f"
-	push-to acc & :enter-scope 0
+	if has-labda:
+		push-to acc & :enter-scope 0
 	push-to acc & :jmpz m2
 	push-to acc & :dup 0
 	push-to acc m
+	if not has-labda:
+		push-to acc & :enter-scope 0
 
 	(flatten) stmt acc
 
