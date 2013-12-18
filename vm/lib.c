@@ -1593,7 +1593,9 @@ Error produce_set(Stack *S, Stack *scope_arr)
 			}
 		}
 		set_hashmap(toHashMap(v), val, v_true);
+		clear_ref(val);
 	}
+	clear_ref(v);
 	return StackEmpty;
 }
 
