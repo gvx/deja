@@ -1578,6 +1578,7 @@ Error round_(Stack *S, Stack *scope_arr)
 Error produce_set(Stack *S, Stack *scope_arr)
 {
 	V v = new_dict();
+	dictDefault(toHashMap(v)) = add_ref(v_false);
 	V val;
 	while (stack_size(S) > 0)
 	{
