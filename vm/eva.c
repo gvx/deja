@@ -930,7 +930,7 @@ int init_argv(int argc, char** argv, V v_eva)
 		}
 	}
 	set_hashmap(toHashMap(v_eva), get_ident("args"), args);
-	set_hashmap(toHashMap(v_eva), get_ident("kwargs"), kwargs);
+	set_hashmap(toHashMap(v_eva), get_ident("opts"), kwargs);
 	return 0;
 }
 
