@@ -569,12 +569,22 @@ Error write_fragment(Stack *S, Stack *scope_arr)
 		clear_ref(blob);
 		return TypeError;
 	}
-	if (getType(file_obj) == T_IDENT && file_obj == get_ident("stdout"))
+	if (getType(file_obj) == T_IDENT)
 	{
-		fwrite(toBlob(blob)->data, 1, toBlob(blob)->size, stdout);
-		clear_ref(file_obj);
-		clear_ref(blob);
-		return Nothing;
+		if (file_obj == get_ident("stdout"))
+		{
+			fwrite(toBlob(blob)->data, 1, toBlob(blob)->size, stdout);
+			clear_ref(file_obj);
+			clear_ref(blob);
+			return Nothing;
+		}
+		else if (file_obj == get_ident("stderr"))
+		{
+			fwrite(toBlob(blob)->data, 1, toBlob(blob)->size, stderr);
+			clear_ref(file_obj);
+			clear_ref(blob);
+			return Nothing;
+		}
 	}
 	if (getType(file_obj) != T_DICT)
 	{
