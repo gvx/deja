@@ -802,13 +802,13 @@ local make-bytecode opcodes literals:
 	!compile-string src
 	!write dst
 
-!use:
-	!find-module
+!use mname:
+	!find-module mname
 	if dup:
 		!compile swap over
 	else:
 		drop
-	!run-file
+	!run-file-in { :(name) mname }
 
 local :loaded {}
 !import m:
@@ -863,10 +863,10 @@ if !args:
 		!compile swap over
 	else:
 		drop
-	!run-file
+	!run-file-in { :(name) :(main) }
 else:
 	#interactive interpreter
-	local :env { :. @!. :; @!(print-stack) }
+	local :env { :. @!. :; @!(print-stack) :(name) :(session) }
 	local :linenr 1
 	while true:
 		if try-compile linenr concat( "session:" to-str linenr ):

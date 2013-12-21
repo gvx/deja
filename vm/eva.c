@@ -659,6 +659,29 @@ Error run_file(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
+Error run_file_in_env(Stack *S, Stack *scope_arr)
+{
+	require(2);
+	V env = popS();
+	V fname = popS();
+	if (getType(fname) != T_STR)
+	{
+		clear_ref(env);
+		clear_ref(fname);
+		return TypeError;
+	}
+	V file = load_file(fname, toFile(toScope(get_head(scope_arr))->file)->global);
+	if (file == NULL)
+	{
+		clear_ref(env);
+		clear_ref(fname);
+		return IllegalFile;
+	}
+	push(scope_arr, add_rooted(new_file_scope_env(file, env)));
+	clear_ref(fname);
+	return Nothing;
+}
+
 Error run_blob(Stack *S, Stack *scope_arr)
 {
 	require(1);
@@ -859,6 +882,7 @@ CFunc eva[] = {
 	{"find-module", find_module},
 	{"find-file", find_file_},
 	{"run-file", run_file},
+	{"run-file-in", run_file_in_env},
 	{"read-line", read_line},
 	{"run-blob", run_blob},
 	{"run-blob-in", run_blob_in_env},
