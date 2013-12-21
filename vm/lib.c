@@ -1650,22 +1650,6 @@ Error undef(Stack* S, Stack* scope_arr)
 	return UnknownError;
 }
 
-Error choose(Stack* S, Stack* scope_arr)
-{
-	require(1);
-	V v = popS();
-	if (getType(v) != T_LIST)
-	{
-		clear_ref(v);
-		return TypeError;
-	}
-	int n = stack_size(toStack(v)) - 1;
-	n = (int)floor(rand() / (RAND_MAX + 1.0) * n);
-	pushS(add_ref(toStack(v)->nodes[n]));
-	clear_ref(v);
-	return Nothing;
-}
-
 Error flatten(Stack* S, Stack* scope_arr)
 {
 	require(1);
@@ -1964,36 +1948,6 @@ Error unpersist(Stack *S, Stack *scope_arr)
 	return Nothing;
 }
 
-Error chance(Stack *S, Stack *scope_arr)
-{
-	require(1);
-	V p = popS();
-	long threshold;
-	if (getType(p) == T_NUM)
-	{
-		threshold = toNumber(p) * RAND_MAX;
-	}
-	else if (getType(p) == T_FRAC)
-	{
-		threshold = toNumerator(p) * RAND_MAX / toDenominator(p);
-	}
-	else
-	{
-		clear_ref(p);
-		return TypeError;
-	}
-	if (threshold < 0 || threshold > RAND_MAX)
-	{
-		clear_ref(p);
-		set_error_msg("probability should be between 0 and 1");
-		return ValueError;
-	}
-
-	pushS(add_ref(rand() < threshold ? v_true : v_false));
-	clear_ref(p);
-	return Nothing;
-}
-
 Error set_default(Stack *S, Stack *scope_arr)
 {
 	require(2);
@@ -2261,7 +2215,7 @@ static CFunc stdlib[] = {
 	{"++", plus_one},
 	{"--", minus_one},
 	{"undef", undef},
-	{"choose", choose},
+	{"choose", random_choose},
 	{"flatten", flatten},
 	{"&", make_pair},
 	{"&<", get_first},
@@ -2280,7 +2234,7 @@ static CFunc stdlib[] = {
 	{"persist", persist_value},
 	{"persist-stack", persist_stack},
 	{"unpersist", unpersist},
-	{"chance", chance},
+	{"chance", random_chance},
 	{"set-default", set_default},
 	{"random-int", random_int},
 	{"random-range", random_range},

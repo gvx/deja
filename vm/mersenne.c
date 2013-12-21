@@ -72,10 +72,6 @@ Error random_int(Stack *S, Stack *scope_arr)
 
 State extract_ranged(State range)
 {
-	// If you can show this introduces
-	// a bias, please report it to me
-	// and I'll write a proper version.
-	//return extract_number() % range;
 	State rnd, limit = UINT32_MAX - UINT32_MAX % range;
 	do
 	{
@@ -108,5 +104,51 @@ Error random_range(Stack *S, Stack *scope_arr)
 
 	clear_ref(a);
 	clear_ref(b);
+	return Nothing;
+}
+
+Error random_choose(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V collection = popS();
+	if (getType(collection) != T_LIST)
+	{
+		clear_ref(collection);
+		return TypeError;
+	}
+	State size = stack_size(toStack(collection));
+	pushS(add_ref(toStack(collection)->nodes[extract_ranged(size)]));
+
+	clear_ref(collection);
+	return Nothing;
+}
+
+Error random_chance(Stack *S, Stack *scope_arr)
+{
+	require(1);
+	V p = popS();
+	uint64_t threshold;
+	if (getType(p) == T_NUM)
+	{
+		threshold = toNumber(p) * UINT32_MAX;
+	}
+	else if (getType(p) == T_FRAC)
+	{
+		threshold = toNumerator(p) * UINT32_MAX / toDenominator(p);
+	}
+	else
+	{
+		clear_ref(p);
+		return TypeError;
+	}
+	if (threshold < 0 || threshold > UINT32_MAX)
+	{
+		clear_ref(p);
+		set_error_msg("probability should be between 0 and 1");
+		return ValueError;
+	}
+
+	pushS(add_ref(extract_number() < threshold ? v_true : v_false));
+	clear_ref(p);
 	return Nothing;
 }
