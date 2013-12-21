@@ -2,6 +2,7 @@
 #include "hashmap.h"
 #include "idents.h"
 #include "strings.h"
+#include "blob.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -138,6 +139,8 @@ bool truthy(V t)
 			return toStack(t)->used > 0;
 		case T_DICT:
 			return toHashMap(t)->used > 0;
+		case T_BLOB:
+			return toBlob(t)->size > 0;
 		default:
 			return true;
 	}
