@@ -84,6 +84,31 @@ int quote_string(V output, int index, char *text, size_t size)
 	return index;
 }
 
+bool is_a_set(HashMap *obj)
+{
+	if (dictDefault(obj) != v_false)
+	{
+		return false;
+	}
+	if (obj->map != NULL)
+	{
+		int i;
+		for (i = 0; i < obj->size; i++)
+		{
+			Bucket *b = obj->map[i];
+			while (b)
+			{
+				if (b->value != v_true)
+				{
+					return false;
+				}
+				b = b->next;
+			}
+		}
+	}
+	return true;
+}
+
 int encode_quoted(V output, int index, V object, int level)
 {
 	ITreeNode* i;
@@ -144,30 +169,57 @@ int encode_quoted(V output, int index, V object, int level)
 		case T_DICT:
 			if (level < 4)
 			{
-				ENSURE_BIG_ENOUGH(2);
-				setbyte_blob(output, index++, '{');
-				setbyte_blob(output, index++, ' ');
-				int i;
-				HashMap *hm = toHashMap(object);
-				if (hm->map != NULL)
+				if (is_a_set(toHashMap(object)))
 				{
-					for (i = 0; i < hm->size; i++)
+					ENSURE_BIG_ENOUGH(5);
+					memcpy(toBlob(output)->data + index, "set{ ", 5);
+					index += 5;
+					int i;
+					HashMap *hm = toHashMap(object);
+					if (hm->map != NULL)
 					{
-						Bucket *b = hm->map[i];
-						while (b)
+						for (i = 0; i < hm->size; i++)
 						{
-							index = encode_quoted(output, index, b->key, level + 1);
-							ENSURE_BIG_ENOUGH(1);
-							setbyte_blob(output, index++, ' ');
-							index = encode_quoted(output, index, b->value, level + 1);
-							ENSURE_BIG_ENOUGH(1);
-							setbyte_blob(output, index++, ' ');
-							b = b->next;
+							Bucket *b = hm->map[i];
+							while (b)
+							{
+								index = encode_quoted(output, index, b->key, level + 1);
+								ENSURE_BIG_ENOUGH(1);
+								setbyte_blob(output, index++, ' ');
+								b = b->next;
+							}
 						}
 					}
+					ENSURE_BIG_ENOUGH(1);
+					setbyte_blob(output, index++, '}');
 				}
-				ENSURE_BIG_ENOUGH(1);
-				setbyte_blob(output, index++, '}');
+				else
+				{
+					ENSURE_BIG_ENOUGH(2);
+					setbyte_blob(output, index++, '{');
+					setbyte_blob(output, index++, ' ');
+					int i;
+					HashMap *hm = toHashMap(object);
+					if (hm->map != NULL)
+					{
+						for (i = 0; i < hm->size; i++)
+						{
+							Bucket *b = hm->map[i];
+							while (b)
+							{
+								index = encode_quoted(output, index, b->key, level + 1);
+								ENSURE_BIG_ENOUGH(1);
+								setbyte_blob(output, index++, ' ');
+								index = encode_quoted(output, index, b->value, level + 1);
+								ENSURE_BIG_ENOUGH(1);
+								setbyte_blob(output, index++, ' ');
+								b = b->next;
+							}
+						}
+					}
+					ENSURE_BIG_ENOUGH(1);
+					setbyte_blob(output, index++, '}');
+				}
 			}
 			else
 			{
