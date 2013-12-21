@@ -148,34 +148,39 @@ bool truthy(V t)
 
 bool equal(V v1, V v2)
 {
+	int t;
 	if (v1 == v2) //identical objects
 	{
 		return true;
 	}
-	else if (getType(v1) == getType(v2))
+	else if ((t = getType(v1)) == getType(v2))
 	{
-		if (getType(v1) == T_NUM)
+		switch (t)
 		{
-			return toNumber(v1) == toNumber(v2);
-		}
-		else if (getType(v1) == T_STR)
-		{
-			NewString* s1 = toNewString(v1);
-			NewString* s2 = toNewString(v2);
-			if (s1->size == s2->size)
+			case T_NUM:
 			{
+				return toNumber(v1) == toNumber(v2);
+			}
+			case T_STR:
+			{
+				NewString* s1 = toNewString(v1);
+				NewString* s2 = toNewString(v2);
+				if (s1->size != s2->size)
+				{
+					return false;
+				}
 				return !memcmp(s1->text, s2->text, s1->size);
 			}
-		}
-		else if (getType(v1) == T_PAIR)
-		{
-			// pairs count as simple datatypes, so this is safe
-			return equal(toFirst(v1), toFirst(v2)) && equal(toSecond(v1), toSecond(v2));
-		}
-		else if (getType(v1) == T_FRAC)
-		{
-			return toNumerator(v1) == toNumerator(v2) &&
-				toDenominator(v1) == toDenominator(v2);
+			case T_PAIR:
+			{
+				// pairs count as simple datatypes, so this is safe
+				return equal(toFirst(v1), toFirst(v2)) && equal(toSecond(v1), toSecond(v2));
+			}
+			case T_FRAC:
+			{
+				return toNumerator(v1) == toNumerator(v2) &&
+					toDenominator(v1) == toDenominator(v2);
+			}
 		}
 	}
 	return false;
