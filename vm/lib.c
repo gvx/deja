@@ -950,6 +950,7 @@ Error copy(Stack* S, Stack* scope_arr)
 		case T_DICT:
 			new = new_sized_dict(toHashMap(v)->size);
 			copy_hashmap(toHashMap(v), toHashMap(new));
+			dictDefault(toHashMap(new)) = add_ref(dictDefault(toHashMap(v)));
 			break;
 		case T_BLOB:
 			new = clone_blob(v);
