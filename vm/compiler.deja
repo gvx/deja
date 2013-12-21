@@ -196,9 +196,9 @@ local find-statements lines:
 					# remove : and also recalculate type
 					# (i'm looking at you, if = 0 % len s 2:)
 					set-to line 0 & word-type slice last-data 0 -1
-				not
-			elseif not last-data: # a lone : will be seen as an ident, which now no longer exists
-				remove-first line
+				else:
+					# a lone : will be seen as an ident, which now no longer exists
+					remove-first line
 				not
 		set :this-stmt
 		local :indent &> pop-from line
