@@ -585,13 +585,13 @@ labda:
 labda:
 	local :mstart make-marker
 	local :mend make-marker
-	& :drop 0
-	mend
-	& :jmp mstart
-	& :call 0
-	& :jmpz mend
-	& :dup 0
 	mstart
+	& :dup 0
+	& :jmpz mend
+	& :call 0
+	& :jmp mstart
+	mend
+	& :drop 0
 "for"
 local :(specials) {
 
