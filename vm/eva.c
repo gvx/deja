@@ -466,6 +466,49 @@ Error read_line(Stack* S, Stack* scope_arr)
 	return Nothing;
 }
 
+Error read_byte(Stack* S, Stack* scope_arr)
+{
+	require(1);
+	V file_obj = popS();
+	if (getType(file_obj) == T_IDENT && file_obj == get_ident("stdin"))
+	{
+		int b = fgetc(stdin);
+		if (b == EOF)
+		{
+			pushS(get_ident("eof"));
+			clear_ref(file_obj);
+			return Nothing;
+		}
+		pushS(int_to_value(b));
+	}
+	else if (getType(file_obj) == T_DICT)
+	{
+		V handle = get_hashmap(toHashMap(file_obj), get_ident("handle"));
+		if (handle == NULL || getType(handle) != T_NUM)
+		{
+			clear_ref(file_obj);
+			set_error_msg("!read-byte expects a valid file handle");
+			return ValueError;
+		}
+		FILE *file = (FILE*)(long int)toNumber(handle);
+		int b = fgetc(file);
+		if (b == EOF)
+		{
+			pushS(get_ident("eof"));
+			clear_ref(file_obj);
+			return Nothing;
+		}
+		pushS(int_to_value(b));
+	}
+	else
+	{
+		clear_ref(file_obj);
+		return TypeError;
+	}
+	clear_ref(file_obj);
+	return Nothing;
+}
+
 Error read_prompt(Stack *S, Stack *scope_arr)
 {
 	require(1);
@@ -959,6 +1002,7 @@ CFunc eva[] = {
 	{"run-file", run_file},
 	{"run-file-in", run_file_in_env},
 	{"read-line", read_line},
+	{"read-byte", read_byte},
 	{"run-blob", run_blob},
 	{"run-blob-in", run_blob_in_env},
 	{"(print-stack)", print_stack},
