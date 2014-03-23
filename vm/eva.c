@@ -399,6 +399,12 @@ Error read_file(Stack *S, Stack *scope_arr)
 	else if (getType(file_name) == T_STR)
 	{
 		FILE *input = fopen(toNewString(file_name)->text, "rb");
+		if (input == NULL)
+		{
+			clear_ref(file_name);
+			set_error_msg("Cannot open file");
+			return ValueError;
+		}
 		fseek(input, 0L, SEEK_END);
 		size_t file_size = ftell(input);
 		fseek(input, 0L, SEEK_SET);
@@ -527,6 +533,13 @@ Error open_file(Stack *S, Stack *scope_arr)
 		return ValueError;
 	}
 	FILE *file = fopen(toNewString(file_name)->text, m);
+	if (file == NULL)
+	{
+		clear_ref(mode);
+		clear_ref(file_name);
+		set_error_msg("Cannot open file");
+		return ValueError;
+	}
 	V handle = new_sized_dict(1);
 	V handle_int = int_to_value((long int)file);
 	set_hashmap(toHashMap(handle), get_ident("handle"), handle_int);
