@@ -7,4 +7,4 @@ enum prompt_result {
 	prompt_result_eof
 };
 
-enum prompt_result prompt(const char *in, prompt_t out);
+enum prompt_result prompt(const char *in, prompt_t out, prompt_t history[]);

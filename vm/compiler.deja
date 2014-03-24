@@ -817,16 +817,16 @@ local :loaded {}
 	m @loaded! m
 	tail-call @local
 
-local prompt linenr n:
-	!prompt concat( "<" to-str linenr ":" to-str n "> " )
+local prompt linenr n history:
+	!prompt concat( "<" to-str linenr ":" to-str n "> " ) history
 	if = :eof dup:
 		drop
 		!print ""
 		exit
 
-local try-compile linenr fname:
+local try-compile linenr fname history:
 	try:
-		prompt linenr 1
+		prompt linenr 1 history
 	catch interrupt:
 		!print ""
 		return false
@@ -836,7 +836,7 @@ local try-compile linenr fname:
 		local :lines [ swap ]
 		try:
 			2
-			while dup prompt linenr dup:
+			while dup prompt linenr over history:
 				push-to lines
 				++
 			drop
@@ -868,8 +868,9 @@ else:
 	#interactive interpreter
 	local :env { :. @!. :; @!(print-stack) :(name) :(session) }
 	local :linenr 1
+	local :history []
 	while true:
-		if try-compile linenr concat( "session:" to-str linenr ):
+		if try-compile linenr concat( "session:" to-str linenr ) history:
 			try:
 				!run-blob-in @env
 			catch name-error value-error type-error stack-empty illegal-file unicode-error interrupt error:

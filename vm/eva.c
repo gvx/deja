@@ -511,30 +511,68 @@ Error read_byte(Stack* S, Stack* scope_arr)
 
 Error read_prompt(Stack *S, Stack *scope_arr)
 {
-	require(1);
+	require(2);
+	prompt_t *hist = NULL;
 	V prompt_line = popS();
+	V history = popS();
 	if (getType(prompt_line) != T_STR)
 	{
 		clear_ref(prompt_line);
+		clear_ref(history);
 		return TypeError;
 	}
+	if (getType(history) == T_LIST)
+	{
+		int i;
+		Stack *h = toStack(history);
+		hist = malloc(sizeof(prompt_t) * stack_size(h));
+		for (i = 0; i < h->used; i++)
+		{
+			V v = h->nodes[i];
+			if (getType(v) != T_STR)
+			{
+				clear_ref(prompt_line);
+				clear_ref(history);
+				free(hist);
+				return TypeError;
+			}
+			NewString *vs = toNewString(v);
+			if (sizeof(prompt_t) < vs->size)
+			{
+				clear_ref(prompt_line);
+				clear_ref(history);
+				free(hist);
+				set_error_msg("String in history list too long");
+				return ValueError;
+			}
+			memcpy(hist[i], vs->text, vs->size);
+		}
+	}
 	prompt_t strout;
-	switch (prompt(toNewString(prompt_line)->text, strout))
+	switch (prompt(toNewString(prompt_line)->text, strout, hist))
 	{
 		case prompt_result_normal:
 			if (!valid_utf8(strlen(strout), strout))
 			{
 				return UnicodeError;
 			}
-			pushS(a_to_string(strout));
+			V s = a_to_string(strout);
+			pushS(s);
+			push(toStack(history), add_ref(s));
 			clear_ref(prompt_line);
+			clear_ref(history);
+			free(hist);
 			return Nothing;
 		case prompt_result_interrupt:
 			clear_ref(prompt_line);
+			clear_ref(history);
+			free(hist);
 			return Interrupt;
 		case prompt_result_eof:
 			pushS(get_ident("eof"));
 			clear_ref(prompt_line);
+			clear_ref(history);
+			free(hist);
 			return Nothing;
 	}
 	return Nothing;

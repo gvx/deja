@@ -90,7 +90,7 @@ void move_right(int n)
 	}
 }
 
-enum prompt_result prompt(const char *in, prompt_t out)
+enum prompt_result prompt(const char *in, prompt_t out, prompt_t history[])
 {
 	unsigned char tmp;
 	int index, maxindex, indentation, nleft, movei;
