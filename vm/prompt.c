@@ -210,12 +210,12 @@ enum prompt_result prompt(const char *in, prompt_t out, prompt_t history[])
 				while (index > 0 && out[index - 1] != ' ')
 				{
 					prev_char(index);
-					movei = 0;
+					movei++;
 				}
 				if (index > 0)
 				{
 					prev_char(index);
-					movei = 0;
+					movei++;
 				}
 				move_left(movei);
 				maxindex -= oldindex - index;
