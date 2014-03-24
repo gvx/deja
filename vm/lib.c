@@ -1098,37 +1098,6 @@ Error yield(Stack* S, Stack* scope_arr)
 	return return_(S, scope_arr);
 }
 
-void open_lib(CFunc[], HashMap*);
-
-Error loadlib(Stack* S, Stack* scope_arr)
-{
-	require(1);
-	V name = popS();
-	if (getType(name) != T_STR)
-	{
-		return TypeError;
-	}
-	void* lib_handle = dlopen(toNewString(name)->text, RTLD_NOW);
-	if (lib_handle == NULL)
-	{
-		fprintf(stderr, "%s\n", dlerror());
-		return UnknownError;
-	}
-	CFunc *lib = dlsym(lib_handle, "deja_vu");
-	if (lib == NULL)
-	{
-		fprintf(stderr, "%s\n", dlerror());
-		return UnknownError;
-	}
-	open_lib(lib, toHashMap(toScope(toFile(toScope(get_head(scope_arr))->file)->global)->env));
-	CFuncP initfunc = dlsym(lib_handle, "deja_vu_init");
-	if (initfunc != NULL)
-	{
-		return initfunc(S, scope_arr);
-	}
-	return Nothing;
-}
-
 Error has(Stack* S, Stack* scope_arr)
 {
 	require(2);
@@ -2193,7 +2162,6 @@ static CFunc stdlib[] = {
 	{"Raise", raise_msg},
 	{"len", len},
 	{"yield", yield},
-	{"loadlib", loadlib},
 	{"{}", make_new_dict},
 	{"{", produce_dict},
 	{"has", has},
