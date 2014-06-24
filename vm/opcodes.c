@@ -387,6 +387,10 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			clear_ref(key);
 			break;
 		case OP_GET_DICT:
+			if (stack_size(S) < 2)
+			{
+				return StackEmpty;
+			}
 			container = popS();
 			key = popS();
 			e = Nothing;
