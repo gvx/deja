@@ -36,7 +36,7 @@ void run(V global, Stack *S)
 	//loading compiler
 	push(scope, add_rooted(new_file_scope(load_compiler(global))));
 	//loading the dva part of the standard library
-	push(scope, add_rooted(new_file_scope(load_std(global))));
+	push(scope, add_rooted(new_file_scope_env(load_std(global), add_ref(toScope(global)->env))));
 	while (e == Nothing)
 	{
 		sc = toScope(get_head(scope));

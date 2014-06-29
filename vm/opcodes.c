@@ -85,9 +85,9 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 			V key = get_literal(h, argument);
 			while (sc->env == NULL || !change_hashmap(toHashMap(sc->env), key, v))
 			{
-				if (sc->parent == NULL)
+				if (sc->parent == NULL || toScope(sc->parent)->parent == NULL)
 				{
-					//set in the global environment
+					//set in the semi-global environment
 					set_hashmap(toHashMap(sc->env), key, v);
 					break;
 				}
@@ -117,7 +117,16 @@ Error inline do_instruction(Header* h, Stack* S, Stack* scope_arr)
 				return StackEmpty;
 			}
 			v = popS();
-			set_hashmap(toHashMap(toScope(toFile(sc->file)->global)->env), get_literal(h, argument), v);
+			//set in the semi-global environment
+			while (sc->parent != NULL && toScope(sc->parent)->parent != NULL)
+			{
+				sc = toScope(sc->parent);
+			}
+			if (sc->env == NULL)
+			{
+				sc->env = new_sized_dict(16);
+			}
+			set_hashmap(toHashMap(sc->env), get_literal(h, argument), v);
 			clear_ref(v);
 			break;
 		case OP_GET:
