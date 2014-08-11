@@ -1497,8 +1497,7 @@ Error exists_(Stack* S, Stack* scope_arr)
 	}
 
 	Scope *sc = toScope(get_head(scope_arr));
-	V v;
-	while (sc->env == NULL || (v = get_hashmap(toHashMap(sc->env), key)) == NULL)
+	while (sc->env == NULL || get_hashmap(toHashMap(sc->env), key) == NULL)
 	{
 		if (sc->parent == NULL)
 		{
