@@ -35,10 +35,11 @@ int get_column()
 	write_assert(1, "\e[6n", 4);
 	unsigned char tmp;
 	int column = 0;
-	while (tmp != ';')
+	do
 	{
 		read_assert(0, &tmp, 1);
 	}
+	while (tmp != ';');
 	read_assert(0, &tmp, 1);
 	while (tmp != 'R')
 	{
