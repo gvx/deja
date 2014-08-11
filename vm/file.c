@@ -43,7 +43,16 @@ struct vec read_all()
 	while (!feof(stdin))
 	{
 		buffer_size *= 2;
-		t = realloc(t, buffer_size);
+		char *nt = realloc(t, buffer_size);
+		if (nt)
+		{
+			t = nt;
+		}
+		else
+		{
+			free(t);
+			return (struct vec){-1, NULL};
+		}
 		len += fread(t + buffer_size - BUF_SIZE, 1, BUF_SIZE, stdin);
 	}
 	return (struct vec){len, t};
@@ -53,6 +62,11 @@ struct vec read_all()
 V load_stdin(V global)
 {
 	struct vec v = read_all();
+	if (v.s == -1)
+	{
+		set_error_msg("out of memory");
+		return NULL;
+	}
 	V file_name = a_to_string("(stdin)");
 	V obj = load_memfile(v.d, v.s, file_name, global);
 	free(v.d);
