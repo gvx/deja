@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 		switch (opt)
 		{
 		case 'h':
-			puts("Usage: vu [OPTIONS] module [STACK]\n"
+			puts("Usage: vu [OPTIONS] [module [SCRIPT ARGUMENTS]]\n"
 			     "  -h, --help     Show this help message and exit\n"
 			     "  -v, --version  Show the VM version and exit\n"
 			     "  -d, --debug    Enable debugging\n"
